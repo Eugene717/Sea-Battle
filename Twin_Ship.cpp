@@ -4,10 +4,10 @@ using namespace std;
 
 Twin_Ship::Twin_Ship()
 {
-	m_x1 = new short;
-	m_y1 = new short;
-	m_x2 = new short;
-	m_y2 = new short;
+	m_x1 = new int;
+	m_y1 = new int;
+	m_x2 = new int;
+	m_y2 = new int;
 }
 
 Twin_Ship::~Twin_Ship()
@@ -72,7 +72,8 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 					m_stat2 = &arr[*m_y2][*m_x2];
 					*m_stat1 = player;
 					*m_stat2 = player;
-					Zone(arr);
+					Zone(arr, m_x1, m_y1);
+					Zone(arr, m_x2, m_y2);
 					return;
 				}
 			}
@@ -80,74 +81,12 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 	} while (true);
 }
 
-void Twin_Ship::Zone(char(&arr)[ROW][COL])
-{
-	if (*m_x1 == *m_x2)  //вертикальный блять
-	{
-		if (*m_x1 != 9)
-		{
-			arr[*m_y1][*m_x1 + 1] = MISS;
-			arr[*m_y2][*m_x2 + 1] = MISS;
-		}
-		if (*m_x1 != 0)
-		{
-			arr[*m_y1][*m_x1 - 1] = MISS;
-			arr[*m_y2][*m_x2 - 1] = MISS;
-		}
-
-		if (*m_y2 != 9)
-		{
-			arr[*m_y2 + 1][*m_x2] = MISS;
-			if (*m_x2 != 9)
-				arr[*m_y2 + 1][*m_x2 + 1] = MISS;
-			if (*m_x2 != 0)
-				arr[*m_y2 + 1][*m_x2 - 1] = MISS;
-		}
-		if (*m_y1 != 0)
-		{
-			arr[*m_y1 - 1][*m_x1] = MISS;
-			if (*m_x1 != 9)
-				arr[*m_y1 - 1][*m_x1 + 1] = MISS;
-			if (*m_x1 != 0)
-				arr[*m_y1 - 1][*m_x1 - 1] = MISS;
-		}
-	}
-	if (*m_y1 == *m_y2)   //горизонтальный ебать
-	{
-		if (*m_y1 != 0)
-		{
-			arr[*m_y1 - 1][*m_x1] = MISS;
-			arr[*m_y2 - 1][*m_x2] = MISS;
-		}
-		if (*m_y1 != 9)
-		{
-			arr[*m_y1 + 1][*m_x1] = MISS;
-			arr[*m_y2 + 1][*m_x2] = MISS;
-		}
-		if (*m_x1 != 9)
-		{
-			arr[*m_y1][*m_x1 + 1] = MISS;
-			if (*m_y1 != 9)
-				arr[*m_y1 + 1][*m_x1 + 1] = MISS;
-			if (*m_y1 != 0)
-				arr[*m_y1 - 1][*m_x1 + 1] = MISS;
-		}
-		if (*m_x2 != 0)
-		{
-			arr[*m_y2][*m_x2 - 1] = MISS;
-			if (*m_y2 != 9)
-				arr[*m_y2 + 1][*m_x2 - 1] = MISS;
-			if (*m_y2 != 0)
-				arr[*m_y2 - 1][*m_x2 - 1] = MISS;
-		}
-	}
-}
-
 bool Twin_Ship::Kill(char(&arr)[ROW][COL])
 {
 	if (*m_stat1 == DEAD && *m_stat2 == DEAD)
 	{
-		Zone(arr);
+		Zone(arr, m_x1, m_y1);
+		Zone(arr, m_x2, m_y2);
 		return true;
 	}
 	return false;

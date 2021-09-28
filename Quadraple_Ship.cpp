@@ -4,14 +4,14 @@ using namespace std;
 
 Quadraple_Ship::Quadraple_Ship()
 {
-	m_x1 = new short;
-	m_y1 = new short;
-	m_x2 = new short;
-	m_y2 = new short;
-	m_x3 = new short;
-	m_y3 = new short;
-	m_x4 = new short;
-	m_y4 = new short;
+	m_x1 = new int;
+	m_y1 = new int;
+	m_x2 = new int;
+	m_y2 = new int;
+	m_x3 = new int;
+	m_y3 = new int;
+	m_x4 = new int;
+	m_y4 = new int;
 }
 
 Quadraple_Ship::~Quadraple_Ship()
@@ -149,87 +149,23 @@ void Quadraple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 			*m_stat2 = player;
 			*m_stat3 = player;
 			*m_stat4 = player;
-			Zone(arr);
+			Zone(arr, m_x1, m_y1);
+			Zone(arr, m_x2, m_y2);
+			Zone(arr, m_x3, m_y3);
+			Zone(arr, m_x4, m_y4);
 			return;
 		}
 	} while (true);
-}
-
-void Quadraple_Ship::Zone(char(&arr)[ROW][COL])
-{
-	if (*m_x1 == *m_x3)   //вертикальный блять
-	{
-		if (*m_x1 != 9)
-		{
-			arr[*m_y1][*m_x1 + 1] = MISS;
-			arr[*m_y2][*m_x2 + 1] = MISS;
-			arr[*m_y3][*m_x3 + 1] = MISS;
-			arr[*m_y4][*m_x4 + 1] = MISS;
-		}
-		if (*m_x1 != 0)
-		{
-			arr[*m_y1][*m_x1 - 1] = MISS;
-			arr[*m_y2][*m_x2 - 1] = MISS;
-			arr[*m_y3][*m_x3 - 1] = MISS;
-			arr[*m_y4][*m_x4 - 1] = MISS;
-		}
-		if (*m_y4 != 9)
-		{
-			arr[*m_y4 + 1][*m_x4] = MISS;
-			if (*m_x4 != 9)
-				arr[*m_y4 + 1][*m_x4 + 1] = MISS;
-			if (*m_x4 != 0)
-				arr[*m_y4 + 1][*m_x4 - 1] = MISS;
-		}
-		if (*m_y1 != 0)
-		{
-			arr[*m_y1 - 1][*m_x1] = MISS;
-			if (*m_x1 != 9)
-				arr[*m_y1 - 1][*m_x1 + 1] = MISS;
-			if (*m_x1 != 0)
-				arr[*m_y1 - 1][*m_x1 - 1] = MISS;
-		}
-	}
-	if (*m_y1 == *m_y4)   //горизонтальный ебать
-	{
-		if (*m_y1 != 0)
-		{
-			arr[*m_y1 - 1][*m_x1] = MISS;
-			arr[*m_y2 - 1][*m_x2] = MISS;
-			arr[*m_y3 - 1][*m_x3] = MISS;
-			arr[*m_y4 - 1][*m_x4] = MISS;
-		}
-		if (*m_y1 != 9)
-		{
-			arr[*m_y1 + 1][*m_x1] = MISS;
-			arr[*m_y2 + 1][*m_x2] = MISS;
-			arr[*m_y3 + 1][*m_x3] = MISS;
-			arr[*m_y4 + 1][*m_x4] = MISS;
-		}
-		if (*m_x1 != 9)
-		{
-			arr[*m_y1][*m_x1 + 1] = MISS;
-			if (*m_y1 != 9)
-				arr[*m_y1 + 1][*m_x1 + 1] = MISS;
-			if (*m_y1 != 0)
-				arr[*m_y1 - 1][*m_x1 + 1] = MISS;
-		}
-		if (*m_x4 != 0)
-		{
-			arr[*m_y4][*m_x4 - 1] = MISS;
-			if (*m_y4 != 9)
-				arr[*m_y4 + 1][*m_x4 - 1] = MISS;
-			if (*m_y4 != 0)
-				arr[*m_y4 - 1][*m_x4 - 1] = MISS;
-		}
-	}
 }
 
 bool Quadraple_Ship::Kill(char(&arr)[ROW][COL])
 {
 	if (*m_stat1 == DEAD && *m_stat2 == DEAD && *m_stat3 == DEAD && *m_stat4 == DEAD)
 	{
-		Zone(arr);
+		Zone(arr, m_x1, m_y1);
+		Zone(arr, m_x2, m_y2);
+		Zone(arr, m_x3, m_y3);
+		Zone(arr, m_x4, m_y4);
 		return true;
 	}
 	return false;
