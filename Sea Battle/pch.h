@@ -7,10 +7,10 @@
 #include <random>
 #include <chrono>
 #include <memory>
-#include <list>
 #include "Ships.h"
 #include "Point.h"
 #include "Players.h"
 #include "Game.h"
+#include <SFML/Graphics.hpp>
 
 #endif // !PCH_H

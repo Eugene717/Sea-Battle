@@ -1,5 +1,13 @@
 #include "Game.h"
+#include "Constants.h"
+#include "Ships.h"
+
 using namespace std;
+
+Game::Game()
+{
+	m_font.loadFromFile("arial.ttf");
+}
 
 void Game::Draw()
 {
@@ -70,15 +78,101 @@ void Game::AskDisposition()
 	}
 }
 
-int Game::Menu()
+int Game::Menu(sf::RenderWindow& window)
 {
-	cout << "Выберите из списка что хотите сделать\n"
+	/*cout << "Выберите из списка что хотите сделать\n"
 		<< "1.Одиночная игра\n"
 		<< "2.Cетевая игра\n"
 		<< "3.Локальная игра\n"
 		<< "4.Настройки\n"
-		<< "5.Выйти\n";
-	while (true)
+		<< "5.Выйти\n";*/
+	float centerPos = window.getSize().x / 2;
+
+	sf::Text header("Sea Battle", m_font);
+	header.setCharacterSize(72);
+	header.setStyle(sf::Text::Bold);
+	header.setPosition(centerPos - header.getGlobalBounds().width / 2, 0);
+
+	sf::Text singleplayer("Singlelayer", m_font);
+	singleplayer.setPosition(centerPos - singleplayer.getGlobalBounds().width / 2, header.getPosition().y + 150);
+
+	sf::Text multiplayer("Multiplayer", m_font);
+	multiplayer.setPosition(centerPos - multiplayer.getGlobalBounds().width / 2, singleplayer.getPosition().y + 70);
+
+	sf::Text LANgame("LAN game", m_font);
+	LANgame.setPosition(centerPos - LANgame.getGlobalBounds().width / 2, multiplayer.getPosition().y + 70);
+
+	sf::Text settings("Settings", m_font);
+	settings.setPosition(centerPos - settings.getGlobalBounds().width / 2, LANgame.getPosition().y + 70);
+
+	sf::Text exit("Exit", m_font);
+	exit.setPosition(centerPos - exit.getGlobalBounds().width / 2, settings.getPosition().y + 70);
+
+	int menuNum;
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
+			}
+		}
+		menuNum = 0;
+
+		header.setFillColor(sf::Color::Black);
+		singleplayer.setFillColor(sf::Color::Black);
+		multiplayer.setFillColor(sf::Color::Black);
+		LANgame.setFillColor(sf::Color::Black);
+		settings.setFillColor(sf::Color::Black);
+		exit.setFillColor(sf::Color::Black);
+
+		if (sf::IntRect(singleplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(window)))
+		{
+			singleplayer.setFillColor(sf::Color::Blue);
+			menuNum = 1;
+		}
+		if (sf::IntRect(multiplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(window)))
+		{
+			multiplayer.setFillColor(sf::Color::Blue);
+			menuNum = 2;
+		}
+		if (sf::IntRect(LANgame.getGlobalBounds()).contains(sf::Mouse::getPosition(window)))
+		{
+			LANgame.setFillColor(sf::Color::Blue);
+			menuNum = 3;
+		}
+		if (sf::IntRect(settings.getGlobalBounds()).contains(sf::Mouse::getPosition(window)))
+		{
+			settings.setFillColor(sf::Color::Blue);
+			menuNum = 4;
+		}
+		if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(window)))
+		{
+			exit.setFillColor(sf::Color::Blue);
+			menuNum = 5;
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menuNum > 0)
+		{
+			return menuNum;
+		}
+
+		window.clear(sf::Color::White);
+		window.draw(header);
+		window.draw(singleplayer);
+		window.draw(multiplayer);
+		window.draw(LANgame);
+		window.draw(settings);
+		window.draw(exit);
+		window.display();
+	}
+	/*while (true)
 	{
 		switch (_getch())
 		{
@@ -96,7 +190,7 @@ int Game::Menu()
 			"Неправильная команда\nВведите заново: ";
 			break;
 		}
-	}
+	}*/
 }
 
 void Game::SinglePlayer()

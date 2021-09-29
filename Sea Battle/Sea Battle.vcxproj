@@ -18,6 +18,34 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AI.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Human.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Quadraple_Ship.cpp" />
+    <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Triple_Ship.cpp" />
+    <ClCompile Include="Twin_Ship.cpp" />
+    <ClCompile Include="Unit_ship.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AI.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Human.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Players.h" />
+    <ClInclude Include="Quadraple_Ship.h" />
+    <ClInclude Include="Ship.h" />
+    <ClInclude Include="Ships.h" />
+    <ClInclude Include="Triple_Ship.h" />
+    <ClInclude Include="Twin_Ship.h" />
+    <ClInclude Include="Unit_ship.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -89,13 +117,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Projects\C++\point\Point\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Projects\SFML-2.5.1\include;D:\Projects\C++\point\Point\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Projects\C++\point\Point\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Point.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Projects\SFML-2.5.1\lib;D:\Projects\C++\point\Point\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Point.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,15 +135,15 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Projects\C++\point\Point\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Projects\SFML-2.5.1\include;D:\Projects\C++\point\Point\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Projects\C++\point\Point\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Point.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Projects\SFML-2.5.1\lib;D:\Projects\C++\point\Point\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Point.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -146,34 +174,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\AI.cpp" />
-    <ClCompile Include="..\Game.cpp" />
-    <ClCompile Include="..\Human.cpp" />
-    <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\pch.cpp" />
-    <ClCompile Include="..\Player.cpp" />
-    <ClCompile Include="..\Quadraple_Ship.cpp" />
-    <ClCompile Include="..\Ship.cpp" />
-    <ClCompile Include="..\Triple_Ship.cpp" />
-    <ClCompile Include="..\Twin_Ship.cpp" />
-    <ClCompile Include="..\Unit_ship.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\AI.h" />
-    <ClInclude Include="..\Constants.h" />
-    <ClInclude Include="..\Game.h" />
-    <ClInclude Include="..\Human.h" />
-    <ClInclude Include="..\pch.h" />
-    <ClInclude Include="..\Player.h" />
-    <ClInclude Include="..\Players.h" />
-    <ClInclude Include="..\Quadraple_Ship.h" />
-    <ClInclude Include="..\Ship.h" />
-    <ClInclude Include="..\Ships.h" />
-    <ClInclude Include="..\Triple_Ship.h" />
-    <ClInclude Include="..\Twin_Ship.h" />
-    <ClInclude Include="..\Unit_ship.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -10,9 +10,25 @@ int main()
 
 	Game game;
 
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Sea Battle"/*,sf::Style::Titlebar*/);
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+		game.Menu(window);
+
+		window.clear();
+		window.display();
+	}
+
 	do
 	{		
-		switch (game.Menu())
+		switch (game.Menu(window))
 		{
 		case 1:
 			game.SinglePlayer();
