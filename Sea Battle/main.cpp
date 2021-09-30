@@ -19,14 +19,46 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
+			}
 		}
-		game.Menu(window);
 
-		window.clear();
-		window.display();
+		switch (game.Menu(window))
+		{
+		case 1:
+			window.clear(sf::Color::White);
+			game.SinglePlayer(window);
+			break;
+		case 2:
+			cout << "Не работает блять, хули клацаешь?\n";
+			system("pause");
+			system("cls");
+			break;
+		case 3:
+			cout << "Не работает блять, хули клацаешь?\n";
+			system("pause");
+			system("cls");
+			break;
+		case 4:
+			cout << "Не работает блять, хули клацаешь?\n";
+			system("pause");
+			system("cls");
+			break;
+		case 5:
+			cout << "Goodbye!\n";
+			system("pause");
+			return 0;
+		default:
+			break;
+		}
 	}
 
-	do
+	return 0;
+
+	/*do
 	{		
 		switch (game.Menu(window))
 		{
@@ -57,5 +89,5 @@ int main()
 		default:
 			break;
 		}
-	} while (true);
+	} while (true);*/
 }

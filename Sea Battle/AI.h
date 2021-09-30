@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Game.h"
+#include <SFML/Graphics.hpp>
 
 class Game;
 
@@ -21,6 +22,6 @@ class AI :public Player
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);
 public:
 	AI(const char& player);
-	void AIlogic(char(&enemy)[ROW][COL], Game& game);
+	void AIlogic(char(&enemy)[ROW][COL], Game& game, sf::RenderWindow& window);
 };
 

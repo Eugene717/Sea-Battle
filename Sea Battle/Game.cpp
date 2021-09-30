@@ -9,9 +9,91 @@ Game::Game()
 	m_font.loadFromFile("arial.ttf");
 }
 
-void Game::Draw()
+void Game::Draw(sf::RenderWindow& window)
 {
-	system("cls");
+	window.clear(sf::Color::White);
+	
+	sf::Text abc("\t\t\tA B C D E F G H I J          A B C D E F G H I J", m_font);
+	abc.setFillColor(sf::Color::Black);
+
+	window.draw(abc);
+
+	sf::RectangleShape boardFrame;
+	boardFrame.setOutlineThickness(4);
+	boardFrame.setOutlineColor(sf::Color::Black);
+	boardFrame.setSize(sf::Vector2f(300, 300));
+	boardFrame.setPosition(50, 80);
+
+	window.draw(boardFrame);   //my board
+
+	boardFrame.setPosition(450, 80);
+
+	window.draw(boardFrame);   //enemyboard
+
+	sf::VertexArray line(sf::Lines, 2);
+	line[0].color = sf::Color::Black;
+	line[1].color = sf::Color::Black;
+
+	for (int i = 1; i < 10; i++)  //my board
+	{
+		line[0].position = sf::Vector2f(50 + i * 30, 80);
+		line[1].position = sf::Vector2f(50 + i * 30, 380);
+		window.draw(line);
+
+		line[0].position = sf::Vector2f(50, 80 + 30 * i);
+		line[1].position = sf::Vector2f(350, 80 + 30 * i);
+		window.draw(line);
+	}
+	for (int i = 1; i < 10; i++)  //enemy board
+	{
+		line[0].position = sf::Vector2f(450 + i * 30, 80);
+		line[1].position = sf::Vector2f(450 + i * 30, 380);
+		window.draw(line);
+
+		line[0].position = sf::Vector2f(450, 80 + 30 * i);
+		line[1].position = sf::Vector2f(750, 80 + 30 * i);
+		window.draw(line);
+	}
+
+	sf::RectangleShape status;
+	status.setSize(sf::Vector2f(25, 25));
+
+	for (int y = 0; y < 10; y++)
+	{
+		for (int x = 0; x < 10; x++)
+		{
+			if (m_first->m_Board[y][x] == ALIVE)
+			{
+				status.setFillColor(sf::Color::Blue);
+				status.setPosition((50 + y * 30) + 3, (80 + x * 30) + 2);
+				window.draw(status);
+			}
+			else if (m_first->m_Board[y][x] == MISS)
+			{
+				status.setFillColor(sf::Color::Color(858585));
+				status.setPosition((50 + y * 30) + 3, (80 + x * 30) + 2);
+				window.draw(status);
+			}
+
+			if (m_second->m_Board[y][x] == DEAD)
+			{
+				status.setFillColor(sf::Color::Red);
+				status.setPosition((450 + y * 30) + 3, (380 + x * 30) + 2);
+				window.draw(status);
+			}
+			if (m_second->m_Board[y][x] == MISS)
+			{
+				status.setFillColor(sf::Color::Color(858585));
+				status.setPosition((450 + y * 30) + 3, (80 + x * 30) + 2);
+				window.draw(status);
+			}
+		}
+	}
+
+	window.display();
+	
+
+	/*system("cls");
 	cout << "\t\t\t  Ваше поле" << "\t\t\t\t\t\t" << "\bПоле противника" << endl << endl;
 	cout << '\t' << "    A   B   C   D   E   F   G   H   I   J\t\t    A   B   C   D   E   F   G   H   I   J" << endl;
 	cout << "\t  #########################################\t\t  #########################################" << endl;
@@ -40,7 +122,7 @@ void Game::Draw()
 			cout << "\n\t  |---------------------------------------|\t\t  |---------------------------------------|" << endl;
 		else
 			cout << "\n\t  #########################################\t\t  #########################################" << endl << endl;
-	}
+	}*/
 }
 
 char Yes_or_No()
@@ -69,7 +151,7 @@ void Game::AskDisposition()
 	while (true)
 	{
 		m_first->RandomShipsArrangement();
-		Draw();
+		//Draw();
 		cout << "Подходит такое расположение кораблей(y/n)? ";
 		if (Yes_or_No() == 'y')
 		{
@@ -80,12 +162,6 @@ void Game::AskDisposition()
 
 int Game::Menu(sf::RenderWindow& window)
 {
-	/*cout << "Выберите из списка что хотите сделать\n"
-		<< "1.Одиночная игра\n"
-		<< "2.Cетевая игра\n"
-		<< "3.Локальная игра\n"
-		<< "4.Настройки\n"
-		<< "5.Выйти\n";*/
 	float centerPos = window.getSize().x / 2;
 
 	sf::Text header("Sea Battle", m_font);
@@ -123,6 +199,7 @@ int Game::Menu(sf::RenderWindow& window)
 					window.close();
 			}
 		}
+
 		menuNum = 0;
 
 		header.setFillColor(sf::Color::Black);
@@ -172,35 +249,35 @@ int Game::Menu(sf::RenderWindow& window)
 		window.draw(exit);
 		window.display();
 	}
-	/*while (true)
-	{
-		switch (_getch())
-		{
-		case '1':
-			return 1;
-		case '2':
-			return 2;
-		case '3':
-			return 3;
-		case '4':
-			return 4;
-		case '5':
-			return 5;
-		default:
-			"Неправильная команда\nВведите заново: ";
-			break;
-		}
-	}*/
+	return -1;
 }
 
-void Game::SinglePlayer()
+void Game::SinglePlayer(sf::RenderWindow& window)
 {
 	m_first = new Human(ALIVE);
 	m_second = new AI(ENEMY_ALIVE);
 
+	m_first->RandomShipsArrangement();
+
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
+			}
+		}
+		Draw(window);
+	}
+
 	AskDisposition();
 	m_second->RandomShipsArrangement();
-	Draw();
+	Draw(window);
 
 	if (FirstTurn() == 'F')
 	{
@@ -212,7 +289,7 @@ void Game::SinglePlayer()
 				if (m_first->Shoot(m_second->m_Board))
 				{
 					m_second->SearchDead();
-					Draw();
+					Draw(window);
 					if (m_second->Loss())
 					{
 						AnnounceWinner(0);
@@ -225,13 +302,13 @@ void Game::SinglePlayer()
 				}
 				else
 				{
-					Draw();
+					Draw(window);
 					break;
 				}
 			}
 			while (true)  //ИИ
 			{
-				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this, window);
 				if (m_first->Loss())
 				{
 					AnnounceWinner(1);
@@ -252,7 +329,7 @@ void Game::SinglePlayer()
 		{
 			while (true)  //ИИ
 			{
-				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this, window);
 				if (m_first->Loss())
 				{
 					AnnounceWinner(1);
@@ -271,7 +348,7 @@ void Game::SinglePlayer()
 				if (m_first->Shoot(m_second->m_Board))
 				{
 					m_second->SearchDead();
-					Draw();
+					Draw(window);
 					if (m_second->Loss())
 					{
 						AnnounceWinner(0);
@@ -284,7 +361,7 @@ void Game::SinglePlayer()
 				}
 				else
 				{
-					Draw();
+					Draw(window);
 					break;
 				}
 			}

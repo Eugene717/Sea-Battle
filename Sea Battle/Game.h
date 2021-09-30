@@ -20,9 +20,9 @@ class Game
 	friend class AI;	
 public:
 	Game();
-	void Draw();
+	void Draw(sf::RenderWindow& window);
 	int Menu(sf::RenderWindow& window);
-	void SinglePlayer();
+	void SinglePlayer(sf::RenderWindow& window);
 	//void LanGame();
 	//void OnlineGame();
 };

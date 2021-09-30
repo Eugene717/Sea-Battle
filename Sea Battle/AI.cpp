@@ -5,7 +5,7 @@ using namespace std;
 AI::AI(const char& player) :Player(ENEMY_ALIVE)
 { }
 
-void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
+void AI::AIlogic(char(&enemy)[ROW][COL], Game& game, sf::RenderWindow& window)
 {
 	do
 	{
@@ -14,7 +14,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			if (Shoot4Deck(enemy))
 			{
 				game.m_first->SearchDead();
-				game.Draw();
+				game.Draw(window);
 				m_FourthDeck = false;
 				delete m_four;
 				delete m_three;
@@ -31,7 +31,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else
 			{
-				game.Draw();
+				game.Draw(window);
 				return;
 			}
 		}
@@ -40,7 +40,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			if (Shoot3Deck(enemy))
 			{
 				game.m_first->SearchDead();
-				game.Draw();
+				game.Draw(window);
 				if (SankShip(enemy))
 				{
 					m_ThirdDeck = false;
@@ -63,7 +63,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else
 			{
-				game.Draw();
+				game.Draw(window);
 				return;
 			}
 		}
@@ -72,7 +72,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			if (Shoot2Deck(enemy))  //попал
 			{
 				game.m_first->SearchDead();
-				game.Draw();
+				game.Draw(window);
 				if (SankShip(enemy))  //убил
 				{
 					m_SecondDeck = false;
@@ -93,7 +93,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else  //мимо
 			{
-				game.Draw();
+				game.Draw(window);
 				return;
 			}
 		}
@@ -102,7 +102,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			if (Shoot(enemy))   //попал
 			{
 				game.m_first->SearchDead();
-				game.Draw();
+				game.Draw(window);
 				if (SankShip(enemy))  //убил
 				{		
 					delete m_one;
@@ -119,7 +119,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else   //мимо
 			{
-				game.Draw();
+				game.Draw(window);
 				return;
 			}
 		}
