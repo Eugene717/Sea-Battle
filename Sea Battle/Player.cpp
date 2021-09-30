@@ -1,17 +1,19 @@
 #include "Player.h"
+#include "Constants.h"
+#include "Point.h"
 
 Player::Player(const char& player) :m_player(player)
 {
-	m_Ships.emplace_back(std::make_unique<Quadraple_Ship>());
-	m_Ships.emplace_back(std::make_unique<Triple_Ship>());
-	m_Ships.emplace_back(std::make_unique<Triple_Ship>());
-	m_Ships.emplace_back(std::make_unique<Twin_Ship>());
-	m_Ships.emplace_back(std::make_unique<Twin_Ship>());
-	m_Ships.emplace_back(std::make_unique<Twin_Ship>());
-	m_Ships.emplace_back(std::make_unique<Unit_Ship>());
-	m_Ships.emplace_back(std::make_unique<Unit_Ship>());
-	m_Ships.emplace_back(std::make_unique<Unit_Ship>());
-	m_Ships.emplace_back(std::make_unique<Unit_Ship>());
+	m_Ships.push_back(std::make_unique<Quadraple_Ship>());
+	m_Ships.push_back(std::make_unique<Triple_Ship>());
+	m_Ships.push_back(std::make_unique<Triple_Ship>());
+	m_Ships.push_back(std::make_unique<Twin_Ship>());
+	m_Ships.push_back(std::make_unique<Twin_Ship>());
+	m_Ships.push_back(std::make_unique<Twin_Ship>());
+	m_Ships.push_back(std::make_unique<Unit_Ship>());
+	m_Ships.push_back(std::make_unique<Unit_Ship>());
+	m_Ships.push_back(std::make_unique<Unit_Ship>());
+	m_Ships.push_back(std::make_unique<Unit_Ship>());
 }
 
 Player::~Player()

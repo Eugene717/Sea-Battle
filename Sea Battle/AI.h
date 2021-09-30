@@ -1,6 +1,7 @@
 #pragma once
 #include "Player.h"
 #include "Game.h"
+#include "Point.h"
 #include <SFML/Graphics.hpp>
 
 class Game;

@@ -1,4 +1,5 @@
 #include "Human.h"
+#include "Point.h"
 
 Human::Human(const char& player) :Player(player)
 { }

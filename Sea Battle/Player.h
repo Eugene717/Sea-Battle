@@ -2,16 +2,15 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Constants.h"
 #include "Ships.h"
-#include "Point.h"
-#include <deque>
+#include <vector>
+#include <memory>
 
 class Player
 {
 	const char& m_player;
 protected:
-	std::deque<std::unique_ptr<Ship>> m_Ships;
+	std::vector<std::unique_ptr<Ship>> m_Ships;
 public:
 	char m_Board[ROW][COL]{ };
 	Player(const char& player);
