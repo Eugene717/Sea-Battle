@@ -1,6 +1,4 @@
-﻿/*23.10.2020 доделал наконец морской бой, делал две недели, так как Дима постоянно отсутствовал, а потом сказал делать самому*/
-/*05.04.2021 переделал почти полностью программу*/
-#include "pch.h"
+﻿#include "pch.h"
 
 using namespace std;
 
@@ -10,7 +8,7 @@ int main()
 
 	Game game;
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Sea Battle"/*,sf::Style::Titlebar*/);
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Sea Battle");
 
 	while (window.isOpen())
 	{
