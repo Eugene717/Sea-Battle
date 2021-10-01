@@ -15,14 +15,16 @@ class Game
 	sf::Font m_font;
 
 	char FirstTurn();
-	void AskDisposition();
+	void SetDisposition();
 	void AnnounceWinner(int player);
 	friend class AI;	
 public:
+	sf::RenderWindow m_window;
 	Game();
-	void Draw(sf::RenderWindow& window);
-	int Menu(sf::RenderWindow& window);
-	void SinglePlayer(sf::RenderWindow& window);
+	void Exit();
+	void Draw();
+	int Menu();
+	void SinglePlayer();
 	//void LanGame();
 	//void OnlineGame();
 };
