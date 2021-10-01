@@ -8,27 +8,27 @@ int main()
 
 	Game game;
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Sea Battle");
+	
 
-	while (window.isOpen())
+	while (game.m_window.isOpen())
 	{
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (game.m_window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				window.close();
+				game.m_window.close();
 			if (event.type == sf::Event::KeyPressed)
 			{
 				if (event.key.code == sf::Keyboard::Escape)
-					window.close();
+					game.m_window.close();
 			}
 		}
 
-		switch (game.Menu(window))
+		switch (game.Menu())
 		{
 		case 1:
-			window.clear(sf::Color::White);
-			game.SinglePlayer(window);
+			game.m_window.clear(sf::Color::White);
+			game.SinglePlayer();
 			break;
 		case 2:
 			cout << "Не работает блять, хули клацаешь?\n";
@@ -46,6 +46,7 @@ int main()
 			system("cls");
 			break;
 		case 5:
+			
 			cout << "Goodbye!\n";
 			system("pause");
 			return 0;
@@ -58,7 +59,7 @@ int main()
 
 	/*do
 	{		
-		switch (game.Menu(window))
+		switch (game.Menu(m_window))
 		{
 		case 1:
 			game.SinglePlayer();

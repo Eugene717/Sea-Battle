@@ -23,6 +23,6 @@ class AI :public Player
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);
 public:
 	AI(const char& player);
-	void AIlogic(char(&enemy)[ROW][COL], Game& game, sf::RenderWindow& window);
+	void AIlogic(char(&enemy)[ROW][COL], Game& game);
 };
 
