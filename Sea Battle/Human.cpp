@@ -29,11 +29,19 @@ bool Human::Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window)
 					if (enemy[shot.GetY()][shot.GetX()] == ENEMY_ALIVE)
 					{
 						enemy[shot.GetY()][shot.GetX()] = DEAD;
+
+						sf::Vector2f middleCell(MIN_S_BOARD_X + shot.GetY() * SQUARE_SIDE_SIZE, MIN_Y + shot.GetX() * SQUARE_SIDE_SIZE);
+						DrawShot(window, middleCell, sf::Color::Red);
+
 						return true;
 					}
 					else if (enemy[shot.GetY()][shot.GetX()] == EMPTY)
 					{
 						enemy[shot.GetY()][shot.GetX()] = MISS;
+
+						sf::Vector2f middleCell(MIN_S_BOARD_X + shot.GetY() * SQUARE_SIDE_SIZE, MIN_Y + shot.GetX() * SQUARE_SIDE_SIZE);
+						DrawShot(window, middleCell, sf::Color::Color(858585));
+
 						return false;
 					}
 				}

@@ -60,3 +60,38 @@ void Player::SearchDead()
 		}
 	}
 }
+
+void Player::DrawShot(sf::RenderWindow& window, sf::Vector2f place, const sf::Color& color)
+{
+	sf::RectangleShape temp;
+	window.draw(temp);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					window.close();
+			}
+		}
+
+		sf::RectangleShape shot;
+		shot.setFillColor(color);
+		shot.setPosition(place.x + 15, place.y + 15);
+
+		for (size_t i = 1; i < 30; i++)
+		{
+			shot.setSize(sf::Vector2f(i + 1, i + 1));
+			shot.setOrigin(shot.getSize().x / 2, shot.getSize().y / 2);
+
+			window.draw(shot);
+			window.display();
+			sf::sleep(sf::milliseconds(15));
+		}
+		break;
+	}
+}
