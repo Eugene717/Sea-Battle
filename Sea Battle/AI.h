@@ -17,7 +17,7 @@ class AI :public Player
 	bool m_FourthDeck;
 
 	bool SankShip(const char(&enemy)[ROW][COL]);
-	bool Shoot(char(&enemy)[ROW][COL]) override;
+	bool Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window) override;
 	bool Shoot2Deck(char(&enemy)[ROW][COL]);
 	bool Shoot3Deck(char(&enemy)[ROW][COL]);
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);

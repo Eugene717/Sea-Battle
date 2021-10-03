@@ -99,7 +99,7 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 		}
 		else   //первая палуба
 		{
-			if (Shoot(enemy))   //попал
+			if (AI::Shoot(enemy, game.m_window))   //попал
 			{
 				game.m_first->SearchDead();
 				game.Draw();
@@ -182,7 +182,7 @@ bool AI::SankShip(const char(&enemy)[ROW][COL])
 		return false;
 }
 
-bool AI::Shoot(char(&enemy)[ROW][COL])
+bool AI::Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window)
 {
 	m_one = new Point;
 	do

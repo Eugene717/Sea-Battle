@@ -5,6 +5,7 @@
 #include "Ships.h"
 #include <vector>
 #include <memory>
+#include <SFML/Graphics.hpp>
 
 class Player
 {
@@ -18,7 +19,7 @@ public:
 	bool Loss() const;
 	void RandomShipsArrangement();
 	void SearchDead();
-	virtual bool Shoot(char(&enemy)[ROW][COL]) = 0;	
+	virtual bool Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window) = 0;	
 };
 
 #endif // !PLAYER_H
