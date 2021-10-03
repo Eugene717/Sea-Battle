@@ -12,16 +12,24 @@ Game::Game()
 
 void Game::Draw()
 {
+	sf::Texture t_menu;
+	t_menu.loadFromFile("images/menu.png");
+	sf::Sprite s_menu(t_menu);
+
+	m_window.clear(sf::Color::White);
+
+	m_window.draw(s_menu);
+
 	{
 		sf::RectangleShape boardFrame;
 		boardFrame.setOutlineThickness(4);
 		boardFrame.setOutlineColor(sf::Color::Black);
 		boardFrame.setSize(sf::Vector2f(300, 300));
-		boardFrame.setPosition(50, 80);
+		boardFrame.setPosition(MIN_F_BOARD_X, MIN_Y);
 
 		m_window.draw(boardFrame);   //my board
 
-		boardFrame.setPosition(450, 80);
+		boardFrame.setPosition(MIN_S_BOARD_X, MIN_Y);
 
 		m_window.draw(boardFrame);   //enemyboard
 	}
@@ -32,22 +40,22 @@ void Game::Draw()
 
 	for (int i = 1; i < 10; i++)  //my board
 	{
-		line[0].position = sf::Vector2f(50 + i * 30, 80);
-		line[1].position = sf::Vector2f(50 + i * 30, 380);
+		line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
+		line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
 		m_window.draw(line);
 
-		line[0].position = sf::Vector2f(50, 80 + 30 * i);
-		line[1].position = sf::Vector2f(350, 80 + 30 * i);
+		line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
+		line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
 		m_window.draw(line);
 	}
 	for (int i = 1; i < 10; i++)  //enemy board
 	{
-		line[0].position = sf::Vector2f(450 + i * 30, 80);
-		line[1].position = sf::Vector2f(450 + i * 30, 380);
+		line[0].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 80);
+		line[1].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 380);
 		m_window.draw(line);
 
-		line[0].position = sf::Vector2f(450, 80 + 30 * i);
-		line[1].position = sf::Vector2f(750, 80 + 30 * i);
+		line[0].position = sf::Vector2f(450, 80 + SQUARE_SIDE_SIZE * i);
+		line[1].position = sf::Vector2f(750, 80 + SQUARE_SIDE_SIZE * i);
 		m_window.draw(line);
 	}
 
@@ -61,91 +69,38 @@ void Game::Draw()
 			if (m_first->m_Board[y][x] == ALIVE)
 			{
 				status.setFillColor(sf::Color::Blue);
-				status.setPosition(50 + y * 30, (80 + x * 30));
+				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 			else if (m_first->m_Board[y][x] == MISS)
 			{
 				status.setFillColor(sf::Color::Color(858585));
-				status.setPosition(50 + y * 30, (80 + x * 30) + 2);
+				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 			else if (m_first->m_Board[y][x] == DEAD)
 			{
 				status.setFillColor(sf::Color::Red);
-				status.setPosition(450 + y * 30, 380 + x * 30);
+				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 
 			if (m_second->m_Board[y][x] == DEAD)
 			{
 				status.setFillColor(sf::Color::Red);
-				status.setPosition(450 + y * 30, 380 + x * 30);
+				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 			if (m_second->m_Board[y][x] == MISS)
 			{
 				status.setFillColor(sf::Color::Color(858585));
-				status.setPosition(450 + y * 30, 80 + x * 30);
+				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 		}
 	}
 
 	m_window.display();
-	
-
-	/*system("cls");
-	cout << "\t\t\t  Ваше поле" << "\t\t\t\t\t\t" << "\bПоле противника" << endl << endl;
-	cout << '\t' << "    A   B   C   D   E   F   G   H   I   J\t\t    A   B   C   D   E   F   G   H   I   J" << endl;
-	cout << "\t  #########################################\t\t  #########################################" << endl;
-	for (int y = 0; y < ROW; y++)
-	{
-		cout << "\t" << y << " | ";
-		for (int x = 0; x < COL; x++)
-		{
-			if (m_first->m_Board[y][x] == EMPTY)
-				cout << ' ';
-			else
-				cout << m_first->m_Board[y][x];
-			cout << " | ";
-		}
-		cout << "\t\t";
-		cout << y << " | ";
-		for (int x = 0; x < COL; x++)
-		{
-			if (m_second->m_Board[y][x] == EMPTY)
-				cout << ' ';
-			else
-				cout << m_second->m_Board[y][x];
-			cout << " | ";
-		}
-		if (y != 9)
-			cout << "\n\t  |---------------------------------------|\t\t  |---------------------------------------|" << endl;
-		else
-			cout << "\n\t  #########################################\t\t  #########################################" << endl << endl;
-	}*/
-}
-
-char Yes_or_No()
-{
-	char let;
-	while (true)
-	{
-		switch (cin >> let; let)
-		{
-		case 'y': case 'Y':
-			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			return 'y';
-		case 'n': case 'N':
-			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			return 'n';
-		default:
-			cin.clear();
-			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			break;
-		}
-	}
 }
 
 void Game::SetDisposition()
@@ -233,10 +188,9 @@ void Game::SetDisposition()
 				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
 					if (placedShipsNum == 10)
-						return;
-					else
 					{
-
+						m_window.clear(sf::Color::White);
+						return;
 					}
 				}
 			}
@@ -255,17 +209,17 @@ void Game::SetDisposition()
 
 		for (int i = 1; i < 10; i++)  //my board
 		{
-			line[0].position = sf::Vector2f(50 + i * 30, 80);
-			line[1].position = sf::Vector2f(50 + i * 30, 380);
+			line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
+			line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
 			m_window.draw(line);
 
-			line[0].position = sf::Vector2f(50, 80 + 30 * i);
-			line[1].position = sf::Vector2f(350, 80 + 30 * i);
+			line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
+			line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
 			m_window.draw(line);
 		}
 
 		sf::RectangleShape status;
-		status.setSize(sf::Vector2f(30, 30));
+		status.setSize(sf::Vector2f(SQUARE_SIDE_SIZE, SQUARE_SIDE_SIZE));
 
 		for (int y = 0; y < 10; y++)
 		{
@@ -274,13 +228,13 @@ void Game::SetDisposition()
 				if (m_first->m_Board[y][x] == ALIVE)
 				{
 					status.setFillColor(sf::Color::Blue);
-					status.setPosition(50 + y * 30, 80 + x * 30);
+					status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 					m_window.draw(status);
 				}
 				else if (m_first->m_Board[y][x] == MISS)
 				{
 					status.setFillColor(sf::Color::Color(858585));
-					status.setPosition(50 + y * 30, 80 + x * 30);
+					status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 					m_window.draw(status);
 				}
 			}
@@ -299,18 +253,6 @@ void Game::SetDisposition()
 
 		m_window.display();
 	}
-
-	/*
-	while (true)
-	{
-		m_first->RandomShipsArrangement();
-		//Draw();
-		cout << "Подходит такое расположение кораблей(y/n)? ";
-		if (Yes_or_No() == 'y')
-		{
-			return;
-		}
-	}*/
 }
 
 int Game::Menu()
@@ -390,6 +332,7 @@ int Game::Menu()
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menuNum > 0)
 		{
+			m_window.clear(sf::Color::White);
 			return menuNum;
 		}
 
@@ -409,11 +352,6 @@ void Game::SinglePlayer()
 {
 	m_first = new Human(ALIVE);
 	m_second = new AI(ENEMY_ALIVE);
-		
-	sf::Texture t_menu;
-	t_menu.loadFromFile("images/menu.png");
-	sf::Sprite s_menu;
-	s_menu.setTexture(t_menu);
 
 	SetDisposition();
 	m_second->RandomShipsArrangement();
@@ -432,99 +370,95 @@ void Game::SinglePlayer()
 			}
 		}
 
-		m_window.clear(sf::Color::White);
-		m_window.draw(s_menu);
 		Draw();
-	}
 
-	/*if (FirstTurn() == 'F')
-	{
-		do
+		if (FirstTurn() == 'F')
 		{
-			while (true)  //игрок
+			do
 			{
-				cout << "Ваш выстрел: ";
-				if (m_first->Shoot(m_second->m_Board))
+				while (true)  //игрок
 				{
-					m_second->SearchDead();
-					Draw(m_window);
-					if (m_second->Loss())
+					if (m_first->Shoot(m_second->m_Board, m_window))
 					{
-						AnnounceWinner(0);
+						m_second->SearchDead();
+						Draw();
+						if (m_second->Loss())
+						{
+							AnnounceWinner(0);
+							delete m_first;
+							delete m_second;
+							m_first = nullptr;
+							m_second = nullptr;
+							return;
+						}
+					}
+					else
+					{
+						Draw();
+						break;
+					}
+				}
+				while (true)  //ИИ
+				{
+					((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+					if (m_first->Loss())
+					{
+						AnnounceWinner(1);
 						delete m_first;
 						delete m_second;
 						m_first = nullptr;
 						m_second = nullptr;
 						return;
 					}
+					else
+						break;
 				}
-				else
-				{
-					Draw(m_window);
-					break;
-				}
-			}
-			while (true)  //ИИ
+			} while (true);
+		}
+		else
+		{
+			do
 			{
-				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this, m_window);
-				if (m_first->Loss())
+				while (true)  //ИИ
 				{
-					AnnounceWinner(1);
-					delete m_first;
-					delete m_second;
-					m_first = nullptr;
-					m_second = nullptr;
-					return;
+					((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+					if (m_first->Loss())
+					{
+						AnnounceWinner(1);
+						delete m_first;
+						delete m_second;
+						m_first = nullptr;
+						m_second = nullptr;
+						return;
+					}
+					else
+						break;
 				}
-				else
-					break;
-			}
-		} while (true);
+				while (true)  //игрок
+				{
+					if (m_first->Shoot(m_second->m_Board, m_window))
+					{
+						m_second->SearchDead();
+						Draw();
+						if (m_second->Loss())
+						{
+							AnnounceWinner(0);
+							delete m_first;
+							delete m_second;
+							m_first = nullptr;
+							m_second = nullptr;
+							return;
+						}
+					}
+					else
+					{
+						Draw();
+						break;
+					}
+				}
+			} while (true);
+		}
 	}
-	else
-	{
-		do
-		{
-			while (true)  //ИИ
-			{
-				((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this, m_window);
-				if (m_first->Loss())
-				{
-					AnnounceWinner(1);
-					delete m_first;
-					delete m_second;
-					m_first = nullptr;
-					m_second = nullptr;
-					return;
-				}
-				else
-					break;
-			}
-			while (true)  //игрок
-			{
-				cout << "Ваш выстрел: ";
-				if (m_first->Shoot(m_second->m_Board))
-				{
-					m_second->SearchDead();
-					Draw(m_window);
-					if (m_second->Loss())
-					{
-						AnnounceWinner(0);
-						delete m_first;
-						delete m_second;
-						m_first = nullptr;
-						m_second = nullptr;
-						return;
-					}
-				}
-				else
-				{
-					Draw(m_window);
-					break;
-				}
-			}
-		} while (true);
-	}*/
 }
 
 char Game::FirstTurn()
@@ -539,17 +473,77 @@ void Game::AnnounceWinner(int player)
 {
 	if (player == 0)
 	{
-		cout << "\t\t\t\t\t\t    Вы победили!\n";
+		//cout << "\t\t\t\t\t\t    Вы победили!\n";
+		sf::Text announce("YOU WIN!", m_font);
+		
+
+		m_window.clear(sf::Color::White);
+
 	}
 	else
 	{
-		cout << "\t\t\t\t\t\t    Вы проиграли!\n";
+		//cout << "\t\t\t\t\t\t    Вы проиграли!\n";
+		m_window.clear(sf::Color::White);
 	}
 }
 
-void Game::Exit()
+bool Game::Exit()
 {
-	sf::Text goodbye;
-	m_window.clear(sf::Color::White);
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 100);
+
+	sf::Text exit("Are you sure about that?", m_font);
+	exit.setFillColor(sf::Color::Black);
+	exit.setCharacterSize(30);
+	exit.setStyle(sf::Text::Style::Bold);
+	exit.setPosition(centerPos.x - exit.getGlobalBounds().width / 2, centerPos.y - exit.getGlobalBounds().height);
+
+	sf::Text yes("Yes", m_font);
+	sf::Text no("No", m_font);
 	
+	yes.setPosition(centerPos.x - yes.getGlobalBounds().width / 2 - 50, centerPos.y - yes.getGlobalBounds().height / 2 + 50);
+	no.setPosition(centerPos.x - no.getGlobalBounds().width / 2 + 50, centerPos.y - no.getGlobalBounds().height / 2 + 50);
+
+	while (m_window.isOpen())
+	{
+		sf::Event event;
+		while (m_window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				m_window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+					m_window.close();
+			}
+			if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			{
+				if (sf::IntRect(yes.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+					return true;
+				if (sf::IntRect(no.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					m_window.clear(sf::Color::White);
+					return false;
+				}
+			}
+		}
+		 
+		yes.setFillColor(sf::Color::Black);
+		no.setFillColor(sf::Color::Black);
+
+		if (sf::IntRect(yes.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			yes.setFillColor(sf::Color::Blue);
+		}
+		if (sf::IntRect(no.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			no.setFillColor(sf::Color::Blue);
+		}
+
+		m_window.clear(sf::Color::White);
+		m_window.draw(exit);
+		m_window.draw(yes);
+		m_window.draw(no);
+		m_window.display();
+	}
+	return true;
 }

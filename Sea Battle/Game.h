@@ -3,6 +3,8 @@
 #define GAME_H
 #include <iostream>
 #include <conio.h>
+#include <vector>
+#include <list>
 #include "Players.h"
 #include <SFML/Graphics.hpp>
 
@@ -21,7 +23,7 @@ class Game
 public:
 	sf::RenderWindow m_window;
 	Game();
-	void Exit();
+	bool Exit();
 	void Draw();
 	int Menu();
 	void SinglePlayer();

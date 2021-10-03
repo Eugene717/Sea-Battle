@@ -8,8 +8,6 @@ int main()
 
 	Game game;
 
-	
-
 	while (game.m_window.isOpen())
 	{
 		sf::Event event;
@@ -46,47 +44,12 @@ int main()
 			system("cls");
 			break;
 		case 5:
-			
-			cout << "Goodbye!\n";
-			system("pause");
-			return 0;
+			if (game.Exit())
+				return 0;
 		default:
 			break;
 		}
 	}
 
 	return 0;
-
-	/*do
-	{		
-		switch (game.Menu(m_window))
-		{
-		case 1:
-			game.SinglePlayer();
-			system("pause");
-			system("cls");
-			break;
-		case 2:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
-			break;
-		case 3:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
-			break;
-		case 4:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
-			break;
-		case 5:
-			cout << "Goodbye!\n";
-			system("pause");
-			return 0;
-		default:
-			break;
-		}
-	} while (true);*/
 }
