@@ -1,6 +1,5 @@
 #pragma once
 #include "Player.h"
-#include "Game.h"
 #include "Point.h"
 #include <SFML/Graphics.hpp>
 
@@ -17,12 +16,12 @@ class AI :public Player
 	bool m_FourthDeck;
 
 	bool SankShip(const char(&enemy)[ROW][COL]);
-	bool Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window) override;
+	bool Shoot1Deck(char(&enemy)[ROW][COL]);
 	bool Shoot2Deck(char(&enemy)[ROW][COL]);
 	bool Shoot3Deck(char(&enemy)[ROW][COL]);
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);
 public:
 	AI(const char& player);
-	void AIlogic(char(&enemy)[ROW][COL], Game& game);
+	bool Shoot(char(&enemy)[ROW][COL]) override;
 };
 

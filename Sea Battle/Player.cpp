@@ -62,35 +62,38 @@ void Player::SearchDead()
 	}
 }
 
-void Player::DrawShot(sf::RenderWindow& window, sf::Vector2f place, const sf::Color& color)
+void Player::DrawShot(sf::Vector2f place, const sf::Color& color)
 {
 	Game* game = Game::GetInstance();
 
-	while (window.isOpen())
+	while (game->m_window.isOpen())
 	{
-		while (window.pollEvent(game->m_event))
+		while (game->m_window.pollEvent(game->m_event))
 		{
 			if (game->m_event.type == sf::Event::Closed)
-				window.close();
+				game->m_window.close();
 			if (game->m_event.type == sf::Event::KeyPressed)
 			{
 				if (game->m_event.key.code == sf::Keyboard::Escape)
-					window.close();
+					game->m_window.close();
 			}
 		}
 
 		sf::RectangleShape shot;
 		shot.setFillColor(color);
-		shot.setPosition(place.x + 15, place.y + 15);
+		shot.setPosition(place.x, place.y);
+
+		game->m_window.clear();
+		game->Draw();
 
 		for (size_t i = 1; i < 30; i++)
 		{
 			shot.setSize(sf::Vector2f(i + 1, i + 1));
 			shot.setOrigin(shot.getSize().x / 2, shot.getSize().y / 2);
 
-			window.draw(shot);
-			window.display();
-			sf::sleep(sf::milliseconds(15));
+			game->m_window.draw(shot);
+			game->m_window.display();
+			sf::sleep(sf::milliseconds(20));
 		}
 		break;
 	}

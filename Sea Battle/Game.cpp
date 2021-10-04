@@ -384,17 +384,13 @@ void Game::SinglePlayer()
 			{
 				while (true)  //игрок
 				{
-					if (m_first->Shoot(m_second->m_Board, m_window))
+					if (m_first->Shoot(m_second->m_Board))
 					{
 						m_second->SearchDead();
 						Draw();
 						if (m_second->Loss())
 						{
 							AnnounceWinner(0);
-							delete m_first;
-							delete m_second;
-							m_first = nullptr;
-							m_second = nullptr;
 							return;
 						}
 					}
@@ -406,14 +402,10 @@ void Game::SinglePlayer()
 				}
 				while (true)  //ИИ
 				{
-					((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+					m_second->Shoot(m_first->m_Board);
 					if (m_first->Loss())
 					{
 						AnnounceWinner(1);
-						delete m_first;
-						delete m_second;
-						m_first = nullptr;
-						m_second = nullptr;
 						return;
 					}
 					else
@@ -427,14 +419,10 @@ void Game::SinglePlayer()
 			{
 				while (true)  //ИИ
 				{
-					((AI*)m_second)->AI::AIlogic(m_first->m_Board, *this);
+					m_second->Shoot(m_first->m_Board);
 					if (m_first->Loss())
 					{
 						AnnounceWinner(1);
-						delete m_first;
-						delete m_second;
-						m_first = nullptr;
-						m_second = nullptr;
 						return;
 					}
 					else
@@ -442,17 +430,13 @@ void Game::SinglePlayer()
 				}
 				while (true)  //игрок
 				{
-					if (m_first->Shoot(m_second->m_Board, m_window))
+					if (m_first->Shoot(m_second->m_Board))
 					{
 						m_second->SearchDead();
 						Draw();
 						if (m_second->Loss())
 						{
 							AnnounceWinner(0);
-							delete m_first;
-							delete m_second;
-							m_first = nullptr;
-							m_second = nullptr;
 							return;
 						}
 					}
@@ -477,6 +461,11 @@ char Game::FirstTurn()
 
 void Game::AnnounceWinner(int player)
 {
+	delete m_first;
+	delete m_second;
+	m_first = nullptr;
+	m_second = nullptr;
+
 	if (player == 0)
 	{
 		//cout << "\t\t\t\t\t\t    Вы победили!\n";

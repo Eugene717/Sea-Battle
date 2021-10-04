@@ -1,11 +1,14 @@
 #include "AI.h"
+#include "Game.h"
 
 using namespace std;
+
+Game* game = Game::GetInstance();
 
 AI::AI(const char& player) :Player(ENEMY_ALIVE)
 { }
 
-void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
+bool AI::Shoot(char(&enemy)[ROW][COL])
 {
 	do
 	{
@@ -13,8 +16,8 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 		{
 			if (Shoot4Deck(enemy))
 			{
-				game.m_first->SearchDead();
-				game.Draw();
+				game->m_first->SearchDead();
+				game->Draw();
 				m_FourthDeck = false;
 				delete m_four;
 				delete m_three;
@@ -24,23 +27,23 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 				m_three = nullptr;
 				m_two = nullptr;
 				m_one = nullptr;
-				if (game.m_first->Loss())
+				if (game->m_first->Loss())
 				{
-					return;
+					return true;
 				}
 			}
 			else
 			{
-				game.Draw();
-				return;
+				game->Draw();
+				return true;
 			}
 		}
 		else if (m_ThirdDeck)   //третья палуба
 		{
 			if (Shoot3Deck(enemy))
 			{
-				game.m_first->SearchDead();
-				game.Draw();
+				game->m_first->SearchDead();
+				game->Draw();
 				if (SankShip(enemy))
 				{
 					m_ThirdDeck = false;
@@ -50,9 +53,9 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 					m_three = nullptr;
 					m_two = nullptr;
 					m_one = nullptr;
-					if (game.m_first->Loss())
+					if (game->m_first->Loss())
 					{
-						return;
+						return true;
 					}
 				}
 				else
@@ -63,16 +66,16 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else
 			{
-				game.Draw();
-				return;
+				game->Draw();
+				return true;
 			}
 		}
 		else if (m_SecondDeck)   //вторая палуба
 		{			
 			if (Shoot2Deck(enemy))  //попал
 			{
-				game.m_first->SearchDead();
-				game.Draw();
+				game->m_first->SearchDead();
+				game->Draw();
 				if (SankShip(enemy))  //убил
 				{
 					m_SecondDeck = false;
@@ -80,9 +83,9 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 					delete m_one;
 					m_two = nullptr;
 					m_one = nullptr;
-					if (game.m_first->Loss())
+					if (game->m_first->Loss())
 					{
-						return;
+						return true;
 					}
 				}
 				else   //ранил
@@ -93,23 +96,23 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else  //мимо
 			{
-				game.Draw();
-				return;
+				game->Draw();
+				return true;
 			}
 		}
 		else   //первая палуба
 		{
-			if (AI::Shoot(enemy, game.m_window))   //попал
+			if (AI::Shoot1Deck(enemy))   //попал
 			{
-				game.m_first->SearchDead();
-				game.Draw();
+				game->m_first->SearchDead();
+				game->Draw();
 				if (SankShip(enemy))  //убил
 				{		
 					delete m_one;
 					m_one = nullptr;
-					if (game.m_first->Loss())
+					if (game->m_first->Loss())
 					{
-						return;
+						return true;
 					}
 				}
 				else  //ранил
@@ -119,8 +122,8 @@ void AI::AIlogic(char(&enemy)[ROW][COL], Game& game)
 			}
 			else   //мимо
 			{
-				game.Draw();
-				return;
+				game->Draw();
+				return true;
 			}
 		}
 	} while (true);
@@ -182,7 +185,7 @@ bool AI::SankShip(const char(&enemy)[ROW][COL])
 		return false;
 }
 
-bool AI::Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window)
+bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 {
 	m_one = new Point;
 	do
@@ -190,13 +193,17 @@ bool AI::Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window)
 		m_one->SetValues(RD() % 10, RD() % 10);
 		if (enemy[m_one->GetY()][m_one->GetX()] != MISS && enemy[m_one->GetY()][m_one->GetX()] != DEAD)
 		{
+			sf::Vector2f middleCell(MIN_F_BOARD_X + m_one->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_one->GetX() * SQUARE_SIDE_SIZE + 15);
+
 			if (enemy[m_one->GetY()][m_one->GetX()] == ALIVE)
 			{
+				DrawShot(middleCell, sf::Color::Red);
 				enemy[m_one->GetY()][m_one->GetX()] = DEAD;
 				return true;
 			}
 			else
 			{
+				DrawShot(middleCell, sf::Color::Color(858585));
 				enemy[m_one->GetY()][m_one->GetX()] = MISS;
 				delete m_one;
 				return false;
@@ -247,16 +254,23 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 		{
 			if (enemy[m_two->GetY()][m_two->GetX()] == MISS)
 				isFree = false;
-			else if (enemy[m_two->GetY()][m_two->GetX()] == ALIVE)
-			{
-				enemy[m_two->GetY()][m_two->GetX()] = DEAD;
-				return true;
-			}
 			else
 			{
-				enemy[m_two->GetY()][m_two->GetX()] = MISS;
-				delete m_two;
-				return false;
+				sf::Vector2f middleCell(MIN_F_BOARD_X + m_two->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_two->GetX() * SQUARE_SIDE_SIZE + 15);
+
+				if (enemy[m_two->GetY()][m_two->GetX()] == ALIVE)
+				{
+					DrawShot(middleCell, sf::Color::Red);
+					enemy[m_two->GetY()][m_two->GetX()] = DEAD;
+					return true;
+				}
+				else
+				{
+					DrawShot(middleCell, sf::Color::Color(858585));
+					enemy[m_two->GetY()][m_two->GetX()] = MISS;
+					delete m_two;
+					return false;
+				}
 			}
 		}
 	} while (true);
@@ -274,7 +288,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 	do
 	{
-		if (m_one->GetX() == m_two->GetX())  //вертикальный блять
+		if (m_one->GetX() == m_two->GetX())  //вертикальный 
 		{
 			if (n == 0) //выстрел вверх
 			{
@@ -283,8 +297,11 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 					m_three->SetValues(m_one->GetX(), m_one->GetY() + UP);
 					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							swap(m_one, m_two);    //one всегда должен быть выше
@@ -294,12 +311,13 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+
 							delete m_three;
 							return false;
 						}
-					}
-					
+					}					
 				}
 				n = 1;
 			}
@@ -310,14 +328,20 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 					m_three->SetValues(m_two->GetX(), m_two->GetY() + DOWN);
 					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+
 							return true;
 						}
 						else  //промах
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+
 							delete m_three;
 							return false;
 						}
@@ -326,7 +350,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 				n = 0;
 			}
 		}
-		if (m_one->GetY() == m_two->GetY())  //горизонтальный ебать
+		if (m_one->GetY() == m_two->GetY())  //горизонтальный 
 		{
 			if (n == 0)   //выстрел влево
 			{
@@ -335,14 +359,20 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 					m_three->SetValues(m_two->GetX() + LEFT, m_two->GetY());
 					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+
 							return true;
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+
 							return false;
 						}
 					}
@@ -356,8 +386,11 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 					m_three->SetValues(m_one->GetX() + RIGHT, m_one->GetY());
 					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							swap(m_one, m_two);   //one всегда должен быть справа
@@ -367,7 +400,9 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+
 							delete m_three;
 							return false;
 						}
@@ -386,7 +421,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 	do
 	{
-		if (m_one->GetX() == m_three->GetX())  //вертикальный блять
+		if (m_one->GetX() == m_three->GetX())  //вертикальный 
 		{
 			if (n == 0)  //выстрел вверх
 			{
@@ -395,14 +430,20 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 					m_four->SetValues(m_one->GetX(), m_one->GetY() + UP);
 					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+
 							return true;
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+
 							delete m_four;
 							return false;
 						}
@@ -433,7 +474,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 				n = 0;
 			}
 		}
-		if (m_one->GetY() == m_three->GetY())  //горизонтальный ебать
+		if (m_one->GetY() == m_three->GetY())  //горизонтальный 
 		{
 			if (n == 0)   //выстрел влево
 			{
@@ -442,14 +483,20 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 					m_four->SetValues(m_three->GetX() + LEFT, m_three->GetY());
 					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+
 							return true;
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+
 							delete m_four;
 							return false;
 						}
@@ -464,14 +511,20 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 					m_four->SetValues(m_one->GetX() + RIGHT, m_one->GetY());
 					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
+							DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+
 							return true;
 						}
 						else
 						{
+							DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+
 							delete m_four;
 							return false;
 						}

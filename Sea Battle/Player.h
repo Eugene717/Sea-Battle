@@ -20,8 +20,8 @@ public:
 	bool Loss() const;
 	void RandomShipsArrangement();
 	void SearchDead();
-	virtual bool Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window) = 0;	
-	void DrawShot(sf::RenderWindow& window, sf::Vector2f place, const sf::Color& color);
+	virtual bool Shoot(char(&enemy)[ROW][COL]) = 0;	
+	void DrawShot(sf::Vector2f place, const sf::Color& color);
 };
 
 #endif // !PLAYER_H
