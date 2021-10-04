@@ -32,7 +32,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 
 					if (enemy[shot.GetY()][shot.GetX()] == ENEMY_ALIVE)
 					{
-						DrawShot(middleCell, sf::Color::Red);
+						game->DrawShot(middleCell, sf::Color::Red);
 
 						enemy[shot.GetY()][shot.GetX()] = DEAD;
 
@@ -40,7 +40,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 					}
 					else if (enemy[shot.GetY()][shot.GetX()] == EMPTY)
 					{
-						DrawShot(middleCell, sf::Color::Color(858585));
+						game->DrawShot(middleCell, sf::Color::Color(858585));
 
 						enemy[shot.GetY()][shot.GetX()] = MISS;
 						return false;

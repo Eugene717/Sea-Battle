@@ -197,13 +197,13 @@ bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 
 			if (enemy[m_one->GetY()][m_one->GetX()] == ALIVE)
 			{
-				DrawShot(middleCell, sf::Color::Red);
+				game->DrawShot(middleCell, sf::Color::Red);
 				enemy[m_one->GetY()][m_one->GetX()] = DEAD;
 				return true;
 			}
 			else
 			{
-				DrawShot(middleCell, sf::Color::Color(858585));
+				game->DrawShot(middleCell, sf::Color::Color(858585));
 				enemy[m_one->GetY()][m_one->GetX()] = MISS;
 				delete m_one;
 				return false;
@@ -260,13 +260,13 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 
 				if (enemy[m_two->GetY()][m_two->GetX()] == ALIVE)
 				{
-					DrawShot(middleCell, sf::Color::Red);
+					game->DrawShot(middleCell, sf::Color::Red);
 					enemy[m_two->GetY()][m_two->GetX()] = DEAD;
 					return true;
 				}
 				else
 				{
-					DrawShot(middleCell, sf::Color::Color(858585));
+					game->DrawShot(middleCell, sf::Color::Color(858585));
 					enemy[m_two->GetY()][m_two->GetX()] = MISS;
 					delete m_two;
 					return false;
@@ -301,7 +301,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							swap(m_one, m_two);    //one всегда должен быть выше
@@ -311,7 +311,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
 
 							delete m_three;
@@ -332,14 +332,14 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							return true;
 						}
 						else  //промах
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
 
 							delete m_three;
@@ -363,14 +363,14 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							return true;
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
 
 							return false;
@@ -390,7 +390,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
 
 							swap(m_one, m_two);   //one всегда должен быть справа
@@ -400,7 +400,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_three->GetY()][m_three->GetX()] = MISS;
 
 							delete m_three;
@@ -434,14 +434,14 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
 
 							return true;
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
 
 							delete m_four;
@@ -458,14 +458,20 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 					m_four->SetValues(m_three->GetX(), m_three->GetY() + DOWN);
 					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
 					{
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+
 							return true;
 						}
 						else
 						{
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+
 							delete m_four;
 							return false;
 						}
@@ -487,14 +493,14 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
 
 							return true;
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
 
 							delete m_four;
@@ -515,14 +521,14 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
 						{
-							DrawShot(middleCell, sf::Color::Red);
+							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
 
 							return true;
 						}
 						else
 						{
-							DrawShot(middleCell, sf::Color(858585));
+							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_four->GetY()][m_four->GetX()] = MISS;
 
 							delete m_four;

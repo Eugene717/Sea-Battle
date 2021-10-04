@@ -21,7 +21,6 @@ public:
 	void RandomShipsArrangement();
 	void SearchDead();
 	virtual bool Shoot(char(&enemy)[ROW][COL]) = 0;	
-	void DrawShot(sf::Vector2f place, const sf::Color& color);
 };
 
 #endif // !PLAYER_H
