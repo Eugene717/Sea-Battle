@@ -16,13 +16,20 @@ class Game
 	Player* m_second; 
 	sf::Font m_font;
 
+	static Game* m_game;
+
 	char FirstTurn();
 	void SetDisposition();
 	void AnnounceWinner(int player);
-	friend class AI;	
+	friend class AI;
+	Game();
+	Game(const Game&) = delete;
+	Game& operator=(const Game&) = delete;
 public:
 	sf::RenderWindow m_window;
-	Game();
+	sf::Event m_event;
+
+	static Game* GetInstance();
 	bool Exit();
 	void Draw();
 	int Menu();

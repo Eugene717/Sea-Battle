@@ -4,10 +4,19 @@
 
 using namespace std;
 
+Game* Game::m_game = nullptr;
+
 Game::Game()
 {
 	m_font.loadFromFile("arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
+}
+
+Game* Game::GetInstance()
+{
+	if (m_game == nullptr)
+		m_game = new Game();
+	return m_game;
 }
 
 void Game::Draw()
@@ -165,21 +174,20 @@ void Game::SetDisposition()
 	
 	while (m_window.isOpen())
 	{
-		sf::Event event;
-		while (m_window.pollEvent(event))
+		while (m_window.pollEvent(m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (m_event.type == sf::Event::Closed)
 				m_window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
-			if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
 			{
 				if (sf::IntRect(s_random.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
-					if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+					if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
 					{
 						placedShipsNum = 10;
 						m_first->RandomShipsArrangement();
@@ -283,14 +291,13 @@ int Game::Menu()
 
 	while (m_window.isOpen())
 	{
-		sf::Event event;
-		while (m_window.pollEvent(event))
+		while (m_window.pollEvent(m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (m_event.type == sf::Event::Closed)
 				m_window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
 		}
@@ -358,14 +365,13 @@ void Game::SinglePlayer()
 
 	while (m_window.isOpen())
 	{
-		sf::Event event;
-		while (m_window.pollEvent(event))
+		while (m_window.pollEvent(m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (m_event.type == sf::Event::Closed)
 				m_window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
 		}
@@ -505,17 +511,16 @@ bool Game::Exit()
 
 	while (m_window.isOpen())
 	{
-		sf::Event event;
-		while (m_window.pollEvent(event))
+		while (m_window.pollEvent(m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (m_event.type == sf::Event::Closed)
 				m_window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
-			if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
 			{
 				if (sf::IntRect(yes.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 					return true;

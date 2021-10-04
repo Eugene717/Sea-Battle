@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Constants.h"
 #include "Point.h"
+#include "Game.h"
 
 Player::Player(const char& player) :m_player(player)
 {
@@ -63,18 +64,17 @@ void Player::SearchDead()
 
 void Player::DrawShot(sf::RenderWindow& window, sf::Vector2f place, const sf::Color& color)
 {
-	sf::RectangleShape temp;
-	window.draw(temp);
+	Game* game = Game::GetInstance();
+
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
+		while (window.pollEvent(game->m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (game->m_event.type == sf::Event::Closed)
 				window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (game->m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (game->m_event.key.code == sf::Keyboard::Escape)
 					window.close();
 			}
 		}

@@ -1,25 +1,27 @@
 #include "Human.h"
 #include "Point.h"
+#include "Game.h"
 
 Human::Human(const char& player) :Player(player)
 { }
 
 bool Human::Shoot(char(&enemy)[ROW][COL], sf::RenderWindow& window)
 {
+	Game* game = Game::GetInstance();
+
 	Point shot;
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
+		while (window.pollEvent(game->m_event))
 		{
-			if (event.type == sf::Event::Closed)
+			if (game->m_event.type == sf::Event::Closed)
 				window.close();
-			if (event.type == sf::Event::KeyPressed)
+			if (game->m_event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::Escape)
+				if (game->m_event.key.code == sf::Keyboard::Escape)
 					window.close();
 			}
-			if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
 			{
 				if (sf::IntRect(MIN_S_BOARD_X, MIN_Y, SQUARE_SIDE_SIZE * 10, SQUARE_SIDE_SIZE * 10).contains(sf::Mouse::getPosition(window)))
 				{
