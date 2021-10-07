@@ -112,20 +112,18 @@ void Game::Draw()
 	m_window.display();
 }
 
-void Game::DrawShot(sf::Vector2f place, const sf::Color& color)
+void Game::DrawShot(const sf::Vector2f& place, const sf::Color& color)
 {
-	Game* game = Game::GetInstance();
-
-	while (game->m_window.isOpen())
+	while (m_window.isOpen())
 	{
-		while (game->m_window.pollEvent(game->m_event))
+		while (m_window.pollEvent(m_event))
 		{
-			if (game->m_event.type == sf::Event::Closed)
-				game->m_window.close();
-			if (game->m_event.type == sf::Event::KeyPressed)
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::KeyPressed)
 			{
-				if (game->m_event.key.code == sf::Keyboard::Escape)
-					game->m_window.close();
+				if (m_event.key.code == sf::Keyboard::Escape)
+					m_window.close();
 			}
 		}
 
@@ -133,18 +131,61 @@ void Game::DrawShot(sf::Vector2f place, const sf::Color& color)
 		shot.setFillColor(color);
 		shot.setPosition(place.x, place.y);
 
-		game->m_window.clear();
-		game->Draw();
+		m_window.clear();
+		Draw();
 
 		for (size_t i = 1; i < 30; i++)
 		{
 			shot.setSize(sf::Vector2f(i + 1, i + 1));
 			shot.setOrigin(shot.getSize().x / 2, shot.getSize().y / 2);
 
-			game->m_window.draw(shot);
-			game->m_window.display();
+			m_window.draw(shot);
+			m_window.display();
 			sf::sleep(sf::milliseconds(20));
 		}
+		break;
+	}
+}
+
+void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color)
+{
+	while (m_window.isOpen())
+	{
+		while (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::KeyPressed)
+			{
+				if (m_event.key.code == sf::Keyboard::Escape)
+					m_window.close();
+			}
+		}
+
+		m_window.clear();
+		Draw();
+
+		vector<sf::RectangleShape> shots;
+		shots.resize(places.size());
+
+		for (size_t i = 0; i < places.size(); i++)
+		{
+			shots[i].setFillColor(color);
+			shots[i].setPosition(places[i].x, places[i].y);
+		}
+		for (size_t i = 1; i < 30; i++)
+		{
+			for (size_t j = 0; j < shots.size(); j++)
+			{
+				shots[j].setSize(sf::Vector2f(i + 1, i + 1));
+				shots[j].setOrigin(shots[j].getSize().x / 2, shots[j].getSize().y / 2);
+
+				m_window.draw(shots[j]);
+			}
+			m_window.display();
+			sf::sleep(sf::milliseconds(20));
+		}
+
 		break;
 	}
 }
@@ -394,8 +435,8 @@ int Game::Menu()
 
 void Game::SinglePlayer()
 {
-	m_first = new Human(ALIVE);
-	m_second = new AI(ENEMY_ALIVE);
+	m_first = new Human(ALIVE, 1);
+	m_second = new AI;
 
 	SetDisposition();
 	m_second->RandomShipsArrangement();

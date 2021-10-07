@@ -32,7 +32,8 @@ public:
 	static Game* GetInstance();
 	bool Exit();
 	void Draw();
-	void DrawShot(sf::Vector2f place, const sf::Color& color);
+	void DrawShot(const sf::Vector2f& place, const sf::Color& color);
+	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
 	int Menu();
 	void SinglePlayer();
 	//void LanGame();

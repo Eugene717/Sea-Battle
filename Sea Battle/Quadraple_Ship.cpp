@@ -1,4 +1,5 @@
 #include "Quadraple_Ship.h"
+#include "Game.h"
 
 using namespace std;
 
@@ -149,23 +150,50 @@ void Quadraple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 			*m_stat2 = player;
 			*m_stat3 = player;
 			*m_stat4 = player;
-			Zone(arr, m_x1, m_y1);
-			Zone(arr, m_x2, m_y2);
-			Zone(arr, m_x3, m_y3);
-			Zone(arr, m_x4, m_y4);
+			Zone(arr);
 			return;
 		}
 	} while (true);
 }
 
-bool Quadraple_Ship::Kill(char(&arr)[ROW][COL])
+std::vector<sf::Vector2f> Quadraple_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
+{
+	std::vector<sf::Vector2f> places;
+	auto places1 = Ship::Zone(arr, m_x1, m_y1, draw);
+	auto places2 = Ship::Zone(arr, m_x2, m_y2, draw);
+	auto places3 = Ship::Zone(arr, m_x3, m_y3, draw);
+	auto places4 = Ship::Zone(arr, m_x4, m_y4, draw);
+
+	places.insert(places.end(), std::make_move_iterator(places1.begin()), std::make_move_iterator(places1.end()));
+	places.insert(places.end(), std::make_move_iterator(places2.begin()), std::make_move_iterator(places2.end()));
+	places.insert(places.end(), std::make_move_iterator(places3.begin()), std::make_move_iterator(places3.end()));
+	places.insert(places.end(), std::make_move_iterator(places4.begin()), std::make_move_iterator(places4.end()));
+
+	return places;
+}
+
+bool Quadraple_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 {
 	if (*m_stat1 == DEAD && *m_stat2 == DEAD && *m_stat3 == DEAD && *m_stat4 == DEAD)
 	{
-		Zone(arr, m_x1, m_y1);
-		Zone(arr, m_x2, m_y2);
-		Zone(arr, m_x3, m_y3);
-		Zone(arr, m_x4, m_y4);
+		Game* game = Game::GetInstance();
+		int min_board_x;
+		if (board == 1)
+			min_board_x = MIN_F_BOARD_X;
+		else if (board == 2)
+			min_board_x = MIN_S_BOARD_X;
+
+		std::vector<sf::Vector2f> places = Zone(arr, true);
+
+		for (size_t i = 0; i < places.size(); i++)
+		{
+			places[i].x = min_board_x + places[i].x * SQUARE_SIDE_SIZE + 15;
+			places[i].y = MIN_Y + places[i].y * SQUARE_SIDE_SIZE + 15;
+		}
+
+		game->DrawShots(places, sf::Color(858585));
+		Zone(arr);
+
 		return true;
 	}
 	return false;

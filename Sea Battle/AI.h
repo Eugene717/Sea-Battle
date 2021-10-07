@@ -21,7 +21,7 @@ class AI :public Player
 	bool Shoot3Deck(char(&enemy)[ROW][COL]);
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);
 public:
-	AI(const char& player);
+	AI(const char& player = ENEMY_ALIVE);
 	bool Shoot(char(&enemy)[ROW][COL]) override;
 };
 

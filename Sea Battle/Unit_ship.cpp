@@ -1,4 +1,5 @@
 #include "Unit_ship.h"
+#include "Game.h"
 
 using namespace std;
 
@@ -24,17 +25,41 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 		{
 			m_stat1 = &arr[*m_y1][*m_x1];
 			*m_stat1 = player;
-			Zone(arr, m_x1, m_y1);
+			Zone(arr);
 			return;
 		}
 	} while (true);
 }
 
-bool Unit_Ship::Kill(char(&arr)[ROW][COL])
+std::vector<sf::Vector2f> Unit_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
+{ 
+	std::vector<sf::Vector2f> places = Ship::Zone(arr, m_x1, m_y1, draw);
+
+	return places;
+}
+
+bool Unit_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 {
 	if (*m_stat1 == DEAD)
 	{
-		Zone(arr, m_x1, m_y1);
+		Game* game = Game::GetInstance();
+		int min_board_x;
+		if (board == 1)
+			min_board_x = MIN_F_BOARD_X;
+		else if (board == 2)
+			min_board_x = MIN_S_BOARD_X;
+
+		std::vector<sf::Vector2f> places = Zone(arr, true);
+
+		for (size_t i = 0; i < places.size(); i++)
+		{
+			places[i].x = min_board_x + places[i].x * SQUARE_SIDE_SIZE + 15;
+			places[i].y = MIN_Y + places[i].y * SQUARE_SIDE_SIZE + 15;
+		}
+
+		game->DrawShots(places, sf::Color(858585));
+		Zone(arr);
+
 		return true;
 	}
 	return false;

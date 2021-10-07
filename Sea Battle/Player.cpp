@@ -3,7 +3,7 @@
 #include "Point.h"
 #include "Game.h"
 
-Player::Player(const char& player) :m_player(player)
+Player::Player(const char& player, const int& board_number) :m_player(player), m_board_number(board_number)
 {
 	m_Ships.push_back(std::make_unique<Quadraple_Ship>());
 	m_Ships.push_back(std::make_unique<Triple_Ship>());
@@ -54,7 +54,7 @@ void Player::SearchDead()
 {
 	for (size_t i = 0; i < m_Ships.size(); i++)
 	{
-		if ((*m_Ships[i]).Kill(m_Board))
+		if ((*m_Ships[i]).Kill(m_Board, m_board_number))
 		{
 			m_Ships.erase(remove(m_Ships.begin(), m_Ships.end(), m_Ships[i]), m_Ships.end());
 			return;

@@ -1,4 +1,5 @@
 #include "Twin_Ship.h"
+#include "Game.h"
 
 using namespace std;
 
@@ -72,8 +73,7 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 					m_stat2 = &arr[*m_y2][*m_x2];
 					*m_stat1 = player;
 					*m_stat2 = player;
-					Zone(arr, m_x1, m_y1);
-					Zone(arr, m_x2, m_y2);
+					Zone(arr);
 					return;
 				}
 			}
@@ -81,12 +81,40 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 	} while (true);
 }
 
-bool Twin_Ship::Kill(char(&arr)[ROW][COL])
+std::vector<sf::Vector2f> Twin_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
+{
+	std::vector<sf::Vector2f> places;
+	auto places1 = Ship::Zone(arr, m_x1, m_y1, draw);
+	auto places2 = Ship::Zone(arr, m_x2, m_y2, draw);
+
+	places.insert(places.end(), std::make_move_iterator(places1.begin()), std::make_move_iterator(places1.end()));
+	places.insert(places.end(), std::make_move_iterator(places2.begin()), std::make_move_iterator(places2.end()));
+	
+	return places;
+}
+
+bool Twin_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 {
 	if (*m_stat1 == DEAD && *m_stat2 == DEAD)
 	{
-		Zone(arr, m_x1, m_y1);
-		Zone(arr, m_x2, m_y2);
+		Game* game = Game::GetInstance();
+		int min_board_x;
+		if (board == 1)
+			min_board_x = MIN_F_BOARD_X;
+		else if (board == 2)
+			min_board_x = MIN_S_BOARD_X;
+
+		std::vector<sf::Vector2f> places = Zone(arr, true);
+
+		for (size_t i = 0; i < places.size(); i++)
+		{
+			places[i].x = min_board_x + places[i].x * SQUARE_SIDE_SIZE + 15;
+			places[i].y = MIN_Y + places[i].y * SQUARE_SIDE_SIZE + 15;
+		}
+
+		game->DrawShots(places, sf::Color(858585));
+		Zone(arr);
+
 		return true;
 	}
 	return false;

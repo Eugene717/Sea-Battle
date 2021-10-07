@@ -10,12 +10,13 @@
 
 class Player
 {
+	const int m_board_number;
 	const char& m_player;
 protected:
 	std::vector<std::unique_ptr<Ship>> m_Ships;
 public:
 	char m_Board[ROW][COL]{ };
-	Player(const char& player);
+	Player(const char& player, const int& board_number);
 	~Player();
 	bool Loss() const;
 	void RandomShipsArrangement();

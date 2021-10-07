@@ -5,7 +5,7 @@ using namespace std;
 
 Game* game = Game::GetInstance();
 
-AI::AI(const char& player) :Player(ENEMY_ALIVE)
+AI::AI(const char& player) :Player(ENEMY_ALIVE, 2)
 { }
 
 bool AI::Shoot(char(&enemy)[ROW][COL])

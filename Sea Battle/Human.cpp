@@ -2,7 +2,7 @@
 #include "Point.h"
 #include "Game.h"
 
-Human::Human(const char& player) :Player(player)
+Human::Human(const char& player, const int& board_number) :Player(player, board_number)
 { }
 
 bool Human::Shoot(char(&enemy)[ROW][COL])
@@ -49,4 +49,5 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 			}
 		}
 	}
+	return false;
 }
