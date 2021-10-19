@@ -21,14 +21,6 @@ Game* Game::GetInstance()
 
 void Game::Draw()
 {
-	sf::Texture t_menu;
-	t_menu.loadFromFile("images/menu.png");
-	sf::Sprite s_menu(t_menu);
-
-	m_window.clear(sf::Color::White);
-
-	m_window.draw(s_menu);
-
 	{
 		sf::RectangleShape boardFrame;
 		boardFrame.setOutlineThickness(4);
@@ -212,7 +204,7 @@ public:
 	bool Horiz() const;
 };
 
-void Game::SetDisposition()
+bool Game::SetDisposition()
 {	
 	sf::Texture t_random;
 	t_random.loadFromFile("images/random.png");
@@ -261,9 +253,19 @@ void Game::SetDisposition()
 		shipsBody[i].m_body.setPosition(sf::Vector2f(startingPositions[i].GetX(), startingPositions[i].GetY()));
 
 	int placedShipsNum = 0;
-	bool isMove = false;
+	bool isMove = false, menuOpen = false;
 	float dX = 0, dY = 0;
-	int nShip = -1;
+	int nShip = -1; 
+	sf::RectangleShape menu;
+	menu.setOutlineColor(sf::Color::Black);
+	menu.setOutlineThickness(2);
+	menu.setPosition(50, 20);
+	menu.setSize(sf::Vector2f(200, 50));
+	sf::Text txt("Return to menu", m_font);
+	txt.setFillColor(sf::Color::Black);
+	txt.setPosition(57, 27);
+	txt.setCharacterSize(26);
+
 	sf::Vector2f pos;
 	
 	while (m_window.isOpen())
@@ -280,35 +282,47 @@ void Game::SetDisposition()
 			}
 			if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (sf::IntRect(s_random.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (menuOpen)   //для закрытия меню при нажатии на что-то кроме текста
+					menuOpen = false;
+
+				if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))
 				{
 					m_first->CleardBoard();
 					placedShipsNum = 10;
 					m_first->RandomShipsArrangement();
 				}
-				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
 				{
 					if (placedShipsNum == 10)
 					{
 						m_first->CleardBoard();
 						m_window.clear(sf::Color::White);
-						return;
+						return true;
 					}
 				}
+				if (sf::IntRect(s_menu.getGlobalBounds()).contains(pos.x, pos.y))
+					menuOpen = true;
+				if (sf::IntRect(txt.getGlobalBounds()).contains(pos.x, pos.y))
+					return false;
 			}
 
 			if (m_event.type == sf::Event::MouseButtonPressed)
 			{
 				if (m_event.key.code == sf::Mouse::Left)
 				{
-					for (int i = 0; i < 10; i++)
+					if (menuOpen)
+						menuOpen = false;
+					else
 					{
-						if (shipsBody[i].m_body.getGlobalBounds().contains(pos.x, pos.y))
+						for (int i = 0; i < 10; i++)
 						{
-							dX = pos.x - shipsBody[i].m_body.getPosition().x;
-							dY = pos.y - shipsBody[i].m_body.getPosition().y;
-							isMove = true;
-							nShip = i;
+							if (shipsBody[i].m_body.getGlobalBounds().contains(pos.x, pos.y))
+							{
+								dX = pos.x - shipsBody[i].m_body.getPosition().x;
+								dY = pos.y - shipsBody[i].m_body.getPosition().y;
+								isMove = true;
+								nShip = i;
+							}
 						}
 					}
 				}
@@ -419,19 +433,30 @@ void Game::SetDisposition()
 			m_window.draw(shipsBody[i].m_body);
 		}
 
-		if (sf::IntRect(s_random.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))
 		{
 			s_random.setColor(sf::Color::Black);
 			m_window.draw(s_random);
 		}
-		if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
 		{
 			s_check.setColor(sf::Color::Black);
 			m_window.draw(s_check);
 		}
+		if (sf::IntRect(s_menu.getGlobalBounds()).contains(pos.x, pos.y))
+		{
+			s_menu.setColor(sf::Color::Black);
+			m_window.draw(s_menu);
+		}
 
+		if (menuOpen)
+		{
+			m_window.draw(menu);
+			m_window.draw(txt);
+		}
 		m_window.display();
 	}
+	return false;
 }
 
 int Game::Menu()
@@ -529,11 +554,16 @@ int Game::Menu()
 void Game::SinglePlayer()
 {
 	m_first = new Human(ALIVE, 1);
-	m_second = new AI;
-
-	SetDisposition();
+	m_second = new AI; 
+	
+	if (!SetDisposition())
+	{
+		delete m_first;
+		delete m_second;
+		return;
+	}
 	m_second->RandomShipsArrangement();
-	//m_second->CleardBoard();
+	m_second->CleardBoard();
 
 	Draw();
 

@@ -21,7 +21,7 @@ class Game
 
 	char FirstTurn();
 	void DragAndDrop(sf::RectangleShape& shape);
-	void SetDisposition();
+	bool SetDisposition();
 	void ShowRemainingShips(Player* player, const int& board);
 	void AnnounceWinner(const int& player);
 	friend class AI;
