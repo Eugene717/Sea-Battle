@@ -8,23 +8,23 @@
 #include "Players.h"
 #include <SFML/Graphics.hpp>
 
-char Yes_or_No();
-
 class Game
 {
 	Player* m_first;   
 	Player* m_second; 
 	sf::Font m_font;
-
 	static Game* m_game;
 
-	char FirstTurn();
-	void SetDisposition();
-	void AnnounceWinner(int player);
-	friend class AI;
 	Game();
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
+
+	char FirstTurn();
+	void DragAndDrop(sf::RectangleShape& shape);
+	void SetDisposition();
+	void ShowRemainingShips(Player* player, const int& board);
+	void AnnounceWinner(const int& player);
+	friend class AI;
 public:
 	sf::RenderWindow m_window;
 	sf::Event m_event;
@@ -36,8 +36,8 @@ public:
 	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
 	int Menu();
 	void SinglePlayer();
+	void OnlineGame();
 	//void LanGame();
-	//void OnlineGame();
 };
 
 #endif // !GAME_H

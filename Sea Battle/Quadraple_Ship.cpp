@@ -27,6 +27,30 @@ Quadraple_Ship::~Quadraple_Ship()
 	delete m_y4;
 }
 
+void Quadraple_Ship::SetPos(const int& x, const int& y, const bool& horiz)
+{
+	*m_x1 = x;
+	*m_y1 = y;
+	if (horiz)
+	{
+		*m_x2 = x + 1;
+		*m_x3 = x + 2;
+		*m_x4 = x + 3;
+		*m_y2 = y;
+		*m_y3 = y;
+		*m_y4 = y;
+	}
+	else
+	{
+		*m_x2 = x;
+		*m_x3 = x;
+		*m_x4 = x;
+		*m_y2 = y + 1;
+		*m_y3 = y + 2;
+		*m_y3 = y + 3;
+	}
+}
+
 void Quadraple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
 	int dir;

@@ -20,6 +20,8 @@ public:
 	~Player();
 	bool Loss() const;
 	void RandomShipsArrangement();
+	void SetShipPos(const int& i, const int& x, const int& y, const bool& horiz);
+	void CleardBoard();
 	void SearchDead();
 	virtual bool Shoot(char(&enemy)[ROW][COL]) = 0;	
 };

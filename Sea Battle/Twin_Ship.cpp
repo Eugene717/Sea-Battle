@@ -19,6 +19,22 @@ Twin_Ship::~Twin_Ship()
 	delete m_y2;
 }
 
+void Twin_Ship::SetPos(const int& x, const int& y, const bool& horiz)
+{
+	*m_x1 = x;
+	*m_y1 = y;
+	if (horiz)
+	{
+		*m_x2 = x + 1;
+		*m_y2 = y;
+	}
+	else
+	{
+		*m_x2 = x;
+		*m_y2 = y + 1;
+	}
+}
+
 void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
 	bool isFree = false;

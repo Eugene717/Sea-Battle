@@ -35,6 +35,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 						game->DrawShot(middleCell, sf::Color::Red);
 
 						enemy[shot.GetY()][shot.GetX()] = DEAD;
+						game->Draw();
 
 						return true;
 					}
@@ -43,6 +44,8 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 						game->DrawShot(middleCell, sf::Color::Color(858585));
 
 						enemy[shot.GetY()][shot.GetX()] = MISS;
+						game->Draw();
+
 						return false;
 					}
 				}

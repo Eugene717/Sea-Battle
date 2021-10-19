@@ -15,6 +15,12 @@ Unit_Ship::~Unit_Ship()
 	delete m_y1;
 }
 
+void Unit_Ship::SetPos(const int& x, const int& y, const bool& horiz)
+{
+	*m_x1 = x;
+	*m_y1 = y;
+}
+
 void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
 	do

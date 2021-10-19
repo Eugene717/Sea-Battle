@@ -7,8 +7,9 @@
 class Ship
 {
 public:
-	Ship() { };
+	Ship() {};
 	virtual ~Ship() = 0;
+	virtual void SetPos(const int& x, const int& y, const bool& horiz) = 0;
 	virtual void RandomlyArrange(char(&arr)[ROW][COL], char player) = 0;
 	virtual bool Kill(char(&arr)[ROW][COL], const int& board) = 0;
 protected:

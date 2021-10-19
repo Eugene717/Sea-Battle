@@ -43,31 +43,6 @@ void Game::Draw()
 		m_window.draw(boardFrame);   //enemyboard
 	}
 
-	sf::VertexArray line(sf::Lines, 2);
-	line[0].color = sf::Color::Black;
-	line[1].color = sf::Color::Black;
-
-	for (int i = 1; i < 10; i++)  //my board
-	{
-		line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
-		line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
-		m_window.draw(line);
-
-		line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
-		line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
-		m_window.draw(line);
-	}
-	for (int i = 1; i < 10; i++)  //enemy board
-	{
-		line[0].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 80);
-		line[1].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 380);
-		m_window.draw(line);
-
-		line[0].position = sf::Vector2f(450, 80 + SQUARE_SIDE_SIZE * i);
-		line[1].position = sf::Vector2f(750, 80 + SQUARE_SIDE_SIZE * i);
-		m_window.draw(line);
-	}
-
 	sf::RectangleShape status;
 	status.setSize(sf::Vector2f(30, 30));
 
@@ -93,6 +68,12 @@ void Game::Draw()
 				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
+			else if (m_first->m_Board[y][x] == SURVIVING_SHIP)
+			{
+				status.setFillColor(sf::Color::Color(sf::Color::Green));
+				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
+				m_window.draw(status);
+			}
 
 			if (m_second->m_Board[y][x] == DEAD)
 			{
@@ -100,13 +81,44 @@ void Game::Draw()
 				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			if (m_second->m_Board[y][x] == MISS)
+			else if (m_second->m_Board[y][x] == MISS)
 			{
 				status.setFillColor(sf::Color::Color(858585));
 				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
+			else if (m_second->m_Board[y][x] == SURVIVING_SHIP)
+			{
+				status.setFillColor(sf::Color::Color(sf::Color::Green));
+				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
+				m_window.draw(status);
+			}
 		}
+	}
+
+	sf::VertexArray line(sf::Lines, 2);
+	line[0].color = sf::Color::Black;
+	line[1].color = sf::Color::Black;
+
+	for (int i = 1; i < 10; i++)  //my board
+	{
+		line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
+		line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
+		m_window.draw(line);
+
+		line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
+		line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
+		m_window.draw(line);
+	}
+	for (int i = 1; i < 10; i++)  //enemy board
+	{
+		line[0].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 80);
+		line[1].position = sf::Vector2f(450 + i * SQUARE_SIDE_SIZE, 380);
+		m_window.draw(line);
+
+		line[0].position = sf::Vector2f(450, 80 + SQUARE_SIDE_SIZE * i);
+		line[1].position = sf::Vector2f(750, 80 + SQUARE_SIDE_SIZE * i);
+		m_window.draw(line);
 	}
 
 	m_window.display();
@@ -131,10 +143,10 @@ void Game::DrawShot(const sf::Vector2f& place, const sf::Color& color)
 		shot.setFillColor(color);
 		shot.setPosition(place.x, place.y);
 
-		m_window.clear();
+		m_window.clear(sf::Color::White);
 		Draw();
 
-		for (size_t i = 1; i < 30; i++)
+		for (size_t i = 1; i < 29; i++)
 		{
 			shot.setSize(sf::Vector2f(i + 1, i + 1));
 			shot.setOrigin(shot.getSize().x / 2, shot.getSize().y / 2);
@@ -162,7 +174,7 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 			}
 		}
 
-		m_window.clear();
+		m_window.clear(sf::Color::White);
 		Draw();
 
 		vector<sf::RectangleShape> shots;
@@ -189,6 +201,16 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 		break;
 	}
 }
+
+class ShipBody
+{
+	bool horiz;
+public:
+	sf::RectangleShape m_body;
+	ShipBody(const int& decksNumber);
+	void Rotate();
+	bool Horiz() const;
+};
 
 void Game::SetDisposition()
 {	
@@ -219,39 +241,34 @@ void Game::SetDisposition()
 	line[0].color = sf::Color::Black;
 	line[1].color = sf::Color::Black;
 
-	/*sf::RectangleShape shipsBody[10];
+	ShipBody shipsBody[10]{ ShipBody(4),ShipBody(3),ShipBody(3),ShipBody(2),ShipBody(2),ShipBody(2),ShipBody(1),ShipBody(1),ShipBody(1),ShipBody(1) };
 
-	shipsBody[0].setSize(sf::Vector2f(30 * 4, 30));
-	shipsBody[1].setSize(sf::Vector2f(30 * 3, 30));
-	shipsBody[2].setSize(sf::Vector2f(30 * 3, 30));
-	shipsBody[3].setSize(sf::Vector2f(30 * 2, 30));
-	shipsBody[4].setSize(sf::Vector2f(30 * 2, 30));
-	shipsBody[5].setSize(sf::Vector2f(30 * 2, 30));
-	shipsBody[6].setSize(sf::Vector2f(30, 30));
-	shipsBody[7].setSize(sf::Vector2f(30, 30));
-	shipsBody[8].setSize(sf::Vector2f(30, 30));
-	shipsBody[9].setSize(sf::Vector2f(30, 30));
+	Point startingPositions[10]
+	{ 
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 5, MIN_Y + SQUARE_SIDE_SIZE * 1),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4, MIN_Y + SQUARE_SIDE_SIZE * 3),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 8, MIN_Y + SQUARE_SIDE_SIZE * 3),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 3, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 6, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 9, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 2, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 6, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 8, MIN_Y + SQUARE_SIDE_SIZE * 7)
+	};
 
-	shipsBody[0].setPosition(750 - 30 * 5, 80 + 30 * 1);
-	shipsBody[1].setPosition(750 - 30 * 4, 80 + 30 * 3);
-	shipsBody[2].setPosition(750 - 30 * 8, 80 + 30 * 3);
-	shipsBody[3].setPosition(750 - 30 * 3, 80 + 30 * 5);
-	shipsBody[4].setPosition(750 - 30 * 6, 80 + 30 * 5);
-	shipsBody[5].setPosition(750 - 30 * 9, 80 + 30 * 5);
-	shipsBody[6].setPosition(750 - 30 * 2, 80 + 30 * 7);
-	shipsBody[7].setPosition(750 - 30 * 4, 80 + 30 * 7);
-	shipsBody[8].setPosition(750 - 30 * 6, 80 + 30 * 7);
-	shipsBody[9].setPosition(750 - 30 * 8, 80 + 30 * 7);
-
-	for (auto& i : shipsBody)
-	{
-		i.setFillColor(sf::Color::Blue);
-	}*/
+	for (size_t i = 0; i < 10; i++)
+		shipsBody[i].m_body.setPosition(sf::Vector2f(startingPositions[i].GetX(), startingPositions[i].GetY()));
 
 	int placedShipsNum = 0;
+	bool isMove = false;
+	float dX = 0, dY = 0;
+	int nShip = -1;
+	sf::Vector2f pos;
 	
 	while (m_window.isOpen())
 	{
+		pos = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window));
 		while (m_window.pollEvent(m_event))
 		{
 			if (m_event.type == sf::Event::Closed)
@@ -265,21 +282,92 @@ void Game::SetDisposition()
 			{
 				if (sf::IntRect(s_random.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
-					if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
-					{
-						placedShipsNum = 10;
-						m_first->RandomShipsArrangement();
-					}
+					m_first->CleardBoard();
+					placedShipsNum = 10;
+					m_first->RandomShipsArrangement();
 				}
 				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
 					if (placedShipsNum == 10)
 					{
+						m_first->CleardBoard();
 						m_window.clear(sf::Color::White);
 						return;
 					}
 				}
 			}
+
+			if (m_event.type == sf::Event::MouseButtonPressed)
+			{
+				if (m_event.key.code == sf::Mouse::Left)
+				{
+					for (int i = 0; i < 10; i++)
+					{
+						if (shipsBody[i].m_body.getGlobalBounds().contains(pos.x, pos.y))
+						{
+							dX = pos.x - shipsBody[i].m_body.getPosition().x;
+							dY = pos.y - shipsBody[i].m_body.getPosition().y;
+							isMove = true;
+							nShip = i;
+						}
+					}
+				}
+			}
+			if (m_event.type == sf::Event::MouseButtonReleased)
+			{
+				if (m_event.key.code == sf::Mouse::Left)
+				{
+					if (nShip >= 0 && nShip < 10)
+					{
+						shipsBody[nShip].m_body.setFillColor(sf::Color::Blue);
+						sf::Vector2f firstPos, lastPos;
+						if (shipsBody[nShip].Horiz())
+						{
+							firstPos.x = shipsBody[nShip].m_body.getPosition().x + 15;
+							firstPos.y = shipsBody[nShip].m_body.getPosition().y + 15;
+							lastPos.x = shipsBody[nShip].m_body.getPosition().x + shipsBody[nShip].m_body.getSize().x - 15;
+							lastPos.y = shipsBody[nShip].m_body.getPosition().y + shipsBody[nShip].m_body.getSize().y - 15;
+						}
+						else
+						{
+							/*firstPos.x = shipsBody[nShip].m_body.getPosition().y + 15;
+							firstPos.y = shipsBody[nShip].m_body.getPosition().x - 15;
+							lastPos.x = shipsBody[nShip].m_body.getPosition().x + shipsBody[nShip].m_body.getSize().y + 15;
+							lastPos.y = shipsBody[nShip].m_body.getPosition().y + shipsBody[nShip].m_body.getSize().x - 15;*/
+							sf::Vector2f pos(shipsBody[nShip].m_body.getSize().y, shipsBody[nShip].m_body.getSize().x);
+							firstPos.x = shipsBody[nShip].m_body.getPosition().x - 15;
+							firstPos.y = shipsBody[nShip].m_body.getPosition().y + 15;
+							lastPos.x = shipsBody[nShip].m_body.getPosition().x + pos.x + 15;
+							lastPos.y = shipsBody[nShip].m_body.getPosition().y + pos.y - 15;
+						}
+
+						if (boardFrame.getGlobalBounds().contains(firstPos) && boardFrame.getGlobalBounds().contains(lastPos))
+						{
+							
+						}
+						else
+						{
+							shipsBody[nShip].m_body.setPosition(startingPositions[nShip].GetX(), startingPositions[nShip].GetY());
+							if (!shipsBody[nShip].Horiz())
+								shipsBody[nShip].Rotate();
+						}
+						isMove = false;
+					}
+				}
+				if (m_event.key.code == sf::Mouse::Right)
+				{
+					if (isMove)
+					{
+						shipsBody[nShip].Rotate();
+					}
+				}
+			}
+			
+			
+		}
+		if (isMove)
+		{
+			shipsBody[nShip].m_body.setPosition(pos.x - dX, pos.y - dY);
 		}
 
 		m_window.clear(sf::Color::White);
@@ -287,22 +375,11 @@ void Game::SetDisposition()
 		m_window.draw(s_check);
 		m_window.draw(s_menu);
 
-		boardFrame.setPosition(50, 80);
-		m_window.draw(boardFrame);   //my board
-
 		boardFrame.setPosition(450, 80);
+		m_window.draw(boardFrame);   
+
+		boardFrame.setPosition(50, 80);  //my board
 		m_window.draw(boardFrame);
-
-		for (int i = 1; i < 10; i++)  //my board
-		{
-			line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
-			line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
-			m_window.draw(line);
-
-			line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
-			line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
-			m_window.draw(line);
-		}
 
 		sf::RectangleShape status;
 		status.setSize(sf::Vector2f(SQUARE_SIDE_SIZE, SQUARE_SIDE_SIZE));
@@ -324,6 +401,22 @@ void Game::SetDisposition()
 					m_window.draw(status);
 				}
 			}
+		}
+		
+		for (int i = 1; i < 10; i++)  //my board
+		{
+			line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
+			line[1].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 380);
+			m_window.draw(line);
+
+			line[0].position = sf::Vector2f(50, 80 + SQUARE_SIDE_SIZE * i);
+			line[1].position = sf::Vector2f(350, 80 + SQUARE_SIDE_SIZE * i);
+			m_window.draw(line);
+		}
+
+		for (size_t i = 0; i < 10; i++)
+		{
+			m_window.draw(shipsBody[i].m_body);
 		}
 
 		if (sf::IntRect(s_random.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
@@ -440,6 +533,9 @@ void Game::SinglePlayer()
 
 	SetDisposition();
 	m_second->RandomShipsArrangement();
+	//m_second->CleardBoard();
+
+	Draw();
 
 	while (m_window.isOpen())
 	{
@@ -452,9 +548,7 @@ void Game::SinglePlayer()
 				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
-		}
-
-		Draw();
+		}		
 
 		if (FirstTurn() == 'F')
 		{
@@ -529,6 +623,11 @@ void Game::SinglePlayer()
 	}
 }
 
+void Game::OnlineGame()
+{
+
+}
+
 char Game::FirstTurn()
 {
 	if (RD() % 2 == 0)
@@ -537,27 +636,82 @@ char Game::FirstTurn()
 		return 'S';
 }
 
-void Game::AnnounceWinner(int player)
+void Game::ShowRemainingShips(Player* player, const int& board)
 {
+	int min_board_x;
+
+	if (board == 0)
+		min_board_x = MIN_F_BOARD_X;
+	else
+		min_board_x = MIN_S_BOARD_X;
+
+	std::vector<sf::Vector2f> places;
+	places.reserve(sizeof(sf::Vector2f) * 20);
+
+	for (int y = 0; y < ROW; y++)
+	{
+		for (int x = 0; x < COL; x++)
+		{
+			if (player->m_Board[y][x] == ALIVE || player->m_Board[y][x] == ENEMY_ALIVE)
+			{
+				places.push_back(sf::Vector2f(y, x));
+				(--places.end())->x = min_board_x + y * SQUARE_SIDE_SIZE + 15;
+				(--places.end())->y = MIN_Y + x * SQUARE_SIDE_SIZE + 15;
+			}
+		}
+	}
+	places.shrink_to_fit();
+
+	m_window.clear(sf::Color::White);
+	DrawShots(places, sf::Color::Green);
+
+	for (size_t y = 0; y < ROW; y++)
+	{
+		for (size_t x = 0; x < COL; x++)
+		{
+			if (player->m_Board[y][x] == ALIVE || player->m_Board[y][x] == ENEMY_ALIVE)
+				player->m_Board[y][x] = SURVIVING_SHIP;
+		}
+	}
+
+	Draw();
+}
+
+void Game::AnnounceWinner(const int& player)
+{
+	sf::sleep(sf::seconds(1));
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2);
+
+	sf::Text announce("", m_font);
+	announce.setFillColor(sf::Color::Black);
+	announce.setCharacterSize(30);
+	announce.setStyle(sf::Text::Style::Bold);
+
+	if (player == 0)
+	{
+		ShowRemainingShips(m_first, player);
+		 
+		announce.setString("YOU WIN!");
+		announce.setPosition(centerPos.x - announce.getGlobalBounds().width / 2, centerPos.y - announce.getGlobalBounds().height / 2 - 100);
+	}
+	else
+	{
+		ShowRemainingShips(m_second, player);
+
+		announce.setString("YOU LOSE!");
+		announce.setPosition(centerPos.x - announce.getGlobalBounds().width / 2, centerPos.y - announce.getGlobalBounds().height / 2 - 100);
+	}
+
+	sf::sleep(sf::seconds(2));
+	m_window.clear(sf::Color::White);
+	m_window.draw(announce);
+	m_window.display();
+	sf::sleep(sf::seconds(3));
+
 	delete m_first;
 	delete m_second;
 	m_first = nullptr;
 	m_second = nullptr;
-
-	if (player == 0)
-	{
-		//cout << "\t\t\t\t\t\t    Вы победили!\n";
-		sf::Text announce("YOU WIN!", m_font);
-		
-
-		m_window.clear(sf::Color::White);
-
-	}
-	else
-	{
-		//cout << "\t\t\t\t\t\t    Вы проиграли!\n";
-		m_window.clear(sf::Color::White);
-	}
 }
 
 bool Game::Exit()
@@ -618,4 +772,30 @@ bool Game::Exit()
 		m_window.display();
 	}
 	return true;
+}
+
+ShipBody::ShipBody(const int& decksNumber)
+{
+	horiz = true;
+	m_body.setFillColor(sf::Color::Blue);
+	m_body.setSize(sf::Vector2f(30 * decksNumber, 30));
+}
+
+void ShipBody::Rotate()
+{
+	if (horiz)
+	{
+		m_body.rotate(90);
+		horiz = false;
+	}
+	else
+	{
+		m_body.rotate(-90);
+		horiz = true;
+	}
+}
+
+bool ShipBody::Horiz() const
+{
+	return horiz;
 }
