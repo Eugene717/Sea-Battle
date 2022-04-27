@@ -45,16 +45,18 @@ void Triple_Ship::SetPos(const int& x, const int& y, const bool& horiz)
 
 void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
+	Game* game = Game::GetInstance();
+
 	int dir;
 	bool isFree = false;
 	do
 	{
-		*m_x1 = RD() % 10;
-		*m_y1 = RD() % 10;
+		*m_x1 = game->m_gen() % 10;
+		*m_y1 = game->m_gen() % 10;
 		//вторая палуба
 		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
 		{
-			dir = RD() % 4;
+			dir = game->m_gen() % 4;
 			switch (dir)
 			{
 			case 0:

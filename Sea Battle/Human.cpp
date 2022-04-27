@@ -1,6 +1,7 @@
 #include "Human.h"
-#include "Point.h"
 #include "Game.h"
+
+using Point = std::pair<int, int>;
 
 Human::Human(const char& player, const int& board_number) :Player(player, board_number)
 { }
@@ -26,24 +27,24 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 				if (sf::IntRect(MIN_S_BOARD_X, MIN_Y, SQUARE_SIDE_SIZE * 10, SQUARE_SIDE_SIZE * 10).contains(sf::Mouse::getPosition(game->m_window)))
 				{
 					sf::Vector2i mousePos = sf::Mouse::getPosition(game->m_window);
-					shot.SetValues((mousePos.y - MIN_Y) / 30, (mousePos.x - MIN_S_BOARD_X) / 30);
+					shot.first = (mousePos.x - MIN_S_BOARD_X) / 30; shot.second = (mousePos.y - MIN_Y) / 30;
 
-					sf::Vector2f middleCell(MIN_S_BOARD_X + shot.GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.GetX() * SQUARE_SIDE_SIZE + 15);
+					sf::Vector2f middleCell(MIN_S_BOARD_X + shot.first * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.second * SQUARE_SIDE_SIZE + 15);
 
-					if (enemy[shot.GetY()][shot.GetX()] == ENEMY_ALIVE)
+					if (enemy[shot.first][shot.second] == ENEMY_ALIVE)
 					{
 						game->DrawShot(middleCell, sf::Color::Red);
 
-						enemy[shot.GetY()][shot.GetX()] = DEAD;
+						enemy[shot.first][shot.second] = DEAD;
 						game->Draw();
 
 						return true;
 					}
-					else if (enemy[shot.GetY()][shot.GetX()] == EMPTY)
+					else if (enemy[shot.first][shot.second] == EMPTY)
 					{
 						game->DrawShot(middleCell, sf::Color::Color(858585));
 
-						enemy[shot.GetY()][shot.GetX()] = MISS;
+						enemy[shot.first][shot.second] = MISS;
 						game->Draw();
 
 						return false;

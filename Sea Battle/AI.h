@@ -1,9 +1,6 @@
 #pragma once
 #include "Player.h"
 #include "Point.h"
-#include <SFML/Graphics.hpp>
-
-class Game;
 
 class AI :public Player
 {
@@ -15,13 +12,14 @@ class AI :public Player
 	bool m_ThirdDeck;
 	bool m_FourthDeck;
 
-	bool SankShip(const char(&enemy)[ROW][COL]);
 	bool Shoot1Deck(char(&enemy)[ROW][COL]);
 	bool Shoot2Deck(char(&enemy)[ROW][COL]);
 	bool Shoot3Deck(char(&enemy)[ROW][COL]);
 	bool Shoot4Deck(char(&enemy)[ROW][COL]);
 public:
 	AI(const char& player = ENEMY_ALIVE);
+	~AI();
+	void SankShip(const char(&enemy)[ROW][COL]);
 	bool Shoot(char(&enemy)[ROW][COL]) override;
 };
 

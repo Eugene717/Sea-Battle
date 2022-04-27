@@ -1,7 +1,5 @@
 #include "Player.h"
-#include "Constants.h"
-#include "Point.h"
-#include "Game.h"
+#include "Ships.h"
 
 Player::Player(const char& player, const int& board_number) :m_player(player), m_board_number(board_number)
 {

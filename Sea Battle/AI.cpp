@@ -2,11 +2,22 @@
 #include "Game.h"
 
 using namespace std;
-
 Game* game = Game::GetInstance();
 
 AI::AI(const char& player) :Player(ENEMY_ALIVE, 2)
 { }
+
+AI::~AI()
+{
+	if (m_one != nullptr)
+		delete m_one;
+	if (m_two != nullptr)
+		delete m_two;
+	if (m_three != nullptr)
+		delete m_three;
+	if (m_four != nullptr)
+		delete m_four;
+}
 
 bool AI::Shoot(char(&enemy)[ROW][COL])
 {
@@ -16,120 +27,52 @@ bool AI::Shoot(char(&enemy)[ROW][COL])
 		{
 			if (Shoot4Deck(enemy))
 			{
-				game->m_first->SearchDead();
-				game->Draw();
 				m_FourthDeck = false;
-				delete m_four;
-				delete m_three;
-				delete m_two;
-				delete m_one;
-				m_four = nullptr;
-				m_three = nullptr;
-				m_two = nullptr;
-				m_one = nullptr;
-				if (game->m_first->Loss())
-				{
-					return true;
-				}
-			}
-			else
-			{
-				game->Draw();
+
 				return true;
 			}
+			else
+				return false;
 		}
 		else if (m_ThirdDeck)   //третья палуба
 		{
 			if (Shoot3Deck(enemy))
 			{
-				game->m_first->SearchDead();
-				game->Draw();
-				if (SankShip(enemy))
-				{
-					m_ThirdDeck = false;
-					delete m_three;
-					delete m_two;
-					delete m_one;
-					m_three = nullptr;
-					m_two = nullptr;
-					m_one = nullptr;
-					if (game->m_first->Loss())
-					{
-						return true;
-					}
-				}
-				else
-				{
-					m_ThirdDeck = false;
-					m_FourthDeck = true;
-				}
-			}
-			else
-			{
-				game->Draw();
+				m_FourthDeck = true;
+				m_ThirdDeck = false;
+
 				return true;
 			}
+			else
+				return false;
 		}
 		else if (m_SecondDeck)   //вторая палуба
 		{			
 			if (Shoot2Deck(enemy))  //попал
 			{
-				game->m_first->SearchDead();
-				game->Draw();
-				if (SankShip(enemy))  //убил
-				{
-					m_SecondDeck = false;
-					delete m_two;
-					delete m_one;
-					m_two = nullptr;
-					m_one = nullptr;
-					if (game->m_first->Loss())
-					{
-						return true;
-					}
-				}
-				else   //ранил
-				{
-					m_SecondDeck = false;
-					m_ThirdDeck = true;
-				}
-			}
-			else  //мимо
-			{
-				game->Draw();
+				m_ThirdDeck = true;
+				m_SecondDeck = false;
+
 				return true;
 			}
+			else  //мимо
+				return false;
 		}
 		else   //первая палуба
 		{
 			if (AI::Shoot1Deck(enemy))   //попал
 			{
-				game->m_first->SearchDead();
-				game->Draw();
-				if (SankShip(enemy))  //убил
-				{		
-					delete m_one;
-					m_one = nullptr;
-					if (game->m_first->Loss())
-					{
-						return true;
-					}
-				}
-				else  //ранил
-				{
-					m_SecondDeck = true;
-				}
-			}
-			else   //мимо
-			{
-				game->Draw();
+				m_SecondDeck = true;
+
 				return true;
 			}
+			else   //мимо
+				return false;
 		}
 	} while (true);
 }
 
-bool AI::SankShip(const char(&enemy)[ROW][COL])
+void AI::SankShip(const char(&enemy)[ROW][COL])
 {
 	int n = 0;
 
@@ -180,9 +123,19 @@ bool AI::SankShip(const char(&enemy)[ROW][COL])
 	}
 
 	if (n == 0)
-		return true;
-	else
-		return false;
+	{
+		m_SecondDeck = false;
+		m_ThirdDeck = false;
+		m_FourthDeck = false;
+		if (m_one != nullptr) delete m_one;
+		m_one = nullptr;
+		if (m_two != nullptr) delete m_two;
+		m_two = nullptr;
+		if (m_three != nullptr) delete m_three;
+		m_three = nullptr;
+		if (m_four != nullptr) delete m_four;
+		m_four = nullptr;
+	}
 }
 
 bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
@@ -190,7 +143,7 @@ bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 	m_one = new Point;
 	do
 	{
-		m_one->SetValues(RD() % 10, RD() % 10);
+		m_one->SetValues(game->m_gen() % 10, game->m_gen() % 10);
 		if (enemy[m_one->GetY()][m_one->GetX()] != MISS && enemy[m_one->GetY()][m_one->GetX()] != DEAD)
 		{
 			sf::Vector2f middleCell(MIN_F_BOARD_X + m_one->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_one->GetX() * SQUARE_SIDE_SIZE + 15);
@@ -219,7 +172,7 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 
 	do
 	{
-		switch (int n(RD() % 4); n)
+		switch (int n(game->m_gen() % 4); n)
 		{
 		case 0:
 			if (m_one->GetY() != 0)
@@ -279,7 +232,7 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 {
 	m_three = new Point;
-	int n(RD() % 2);
+	int n(game->m_gen() % 2);
 
 	if (m_one->GetX() < m_two->GetX() || m_one->GetY() > m_two->GetY())
 	{
@@ -417,7 +370,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 {
 	m_four = new Point;
-	int n = RD() % 2;
+	int n = game->m_gen() % 2;
 
 	do
 	{

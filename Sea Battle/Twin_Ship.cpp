@@ -37,14 +37,16 @@ void Twin_Ship::SetPos(const int& x, const int& y, const bool& horiz)
 
 void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
+	Game* game = Game::GetInstance();
+
 	bool isFree = false;
 	do
 	{
-		*m_x1 = RD() % 10;
-		*m_y1 = RD() % 10;
+		*m_x1 = game->m_gen() % 10;
+		*m_y1 = game->m_gen() % 10;
 		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
 		{
-			switch (int dir(RD() % 4); dir)
+			switch (int dir(game->m_gen() % 4); dir)
 			{
 			case 0:
 				if (*m_y1 != 0)

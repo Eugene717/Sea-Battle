@@ -1,18 +1,16 @@
 #pragma once
 #ifndef GAME_H
 #define GAME_H
-#include <iostream>
+#include <random>
 #include <conio.h>
-#include <vector>
-#include <list>
-#include "Players.h"
 #include <SFML/Graphics.hpp>
+
+struct GameIMPL;
+class Player;
 
 class Game
 {
-	Player* m_first;   
-	Player* m_second; 
-	sf::Font m_font;
+	GameIMPL* m_pImpl;
 	static Game* m_game;
 
 	Game();
@@ -24,10 +22,10 @@ class Game
 	bool SetDisposition();
 	void ShowRemainingShips(Player* player, const int& board);
 	void AnnounceWinner(const int& player);
-	friend class AI;
 public:
 	sf::RenderWindow m_window;
 	sf::Event m_event;
+	std::default_random_engine m_gen;
 
 	static Game* GetInstance();
 	bool Exit();

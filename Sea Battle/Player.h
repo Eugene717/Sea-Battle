@@ -2,11 +2,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Ships.h"
 #include <vector>
 #include <memory>
-#include <SFML/Graphics.hpp>
 #include "Constants.h"
+
+class Ship;
 
 class Player
 {

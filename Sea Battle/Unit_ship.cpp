@@ -23,10 +23,12 @@ void Unit_Ship::SetPos(const int& x, const int& y, const bool& horiz)
 
 void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 {
+	Game* game = Game::GetInstance();
+
 	do
 	{
-		*m_y1 = RD() % 10;
-	    *m_x1 = RD() % 10;
+		*m_y1 = game->m_gen() % 10;
+	    *m_x1 = game->m_gen() % 10;
 		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
 		{
 			m_stat1 = &arr[*m_y1][*m_x1];

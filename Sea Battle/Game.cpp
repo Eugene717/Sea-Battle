@@ -1,14 +1,26 @@
 #include "Game.h"
 #include "Constants.h"
 #include "Ships.h"
+#include "Players.h"
 
 using namespace std;
 
 Game* Game::m_game = nullptr;
 
+struct GameIMPL
+{
+	Player* m_first;
+	Player* m_second;
+	sf::Font m_font;
+};
+
 Game::Game()
 {
-	m_font.loadFromFile("arial.ttf");
+	m_pImpl = new GameIMPL();
+	std::random_device rd;
+	m_gen.seed(rd());
+
+	m_pImpl->m_font.loadFromFile("arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
 }
 
@@ -42,44 +54,50 @@ void Game::Draw()
 	{
 		for (int x = 0; x < 10; x++)
 		{
-			if (m_first->m_Board[y][x] == ALIVE)
+			if (m_pImpl->m_first->m_Board[y][x] == ALIVE)
 			{
 				status.setFillColor(sf::Color::Blue);
 				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			else if (m_first->m_Board[y][x] == MISS)
+			else if (m_pImpl->m_first->m_Board[y][x] == MISS)
 			{
 				status.setFillColor(sf::Color::Color(858585));
 				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			else if (m_first->m_Board[y][x] == DEAD)
+			else if (m_pImpl->m_first->m_Board[y][x] == DEAD)
 			{
 				status.setFillColor(sf::Color::Red);
 				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			else if (m_first->m_Board[y][x] == SURVIVING_SHIP)
+			else if (m_pImpl->m_first->m_Board[y][x] == SURVIVING_SHIP)
 			{
 				status.setFillColor(sf::Color::Color(sf::Color::Green));
 				status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
 
-			if (m_second->m_Board[y][x] == DEAD)
+			if (m_pImpl->m_second->m_Board[y][x] == DEAD)
 			{
 				status.setFillColor(sf::Color::Red);
 				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			else if (m_second->m_Board[y][x] == MISS)
+			else if (m_pImpl->m_second->m_Board[y][x] == MISS)
 			{
 				status.setFillColor(sf::Color::Color(858585));
 				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 				m_window.draw(status);
 			}
-			else if (m_second->m_Board[y][x] == SURVIVING_SHIP)
+			else if (m_pImpl->m_second->m_Board[y][x] == SURVIVING_SHIP)
+			{
+				status.setFillColor(sf::Color::Color(sf::Color::Green));
+				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
+				m_window.draw(status);
+			}
+			else if (m_pImpl->m_second->m_Board[y][x] == ENEMY_ALIVE)
 			{
 				status.setFillColor(sf::Color::Color(sf::Color::Green));
 				status.setPosition(450 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
@@ -261,7 +279,7 @@ bool Game::SetDisposition()
 	menu.setOutlineThickness(2);
 	menu.setPosition(50, 20);
 	menu.setSize(sf::Vector2f(200, 50));
-	sf::Text txt("Return to menu", m_font);
+	sf::Text txt("Return to menu", m_pImpl->m_font);
 	txt.setFillColor(sf::Color::Black);
 	txt.setPosition(57, 27);
 	txt.setCharacterSize(26);
@@ -287,15 +305,15 @@ bool Game::SetDisposition()
 
 				if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))
 				{
-					m_first->CleardBoard();
+					m_pImpl->m_first->CleardBoard();
 					placedShipsNum = 10;
-					m_first->RandomShipsArrangement();
+					m_pImpl->m_first->RandomShipsArrangement();
 				}
 				if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
 				{
 					if (placedShipsNum == 10)
 					{
-						m_first->CleardBoard();
+						m_pImpl->m_first->CleardBoard();
 						m_window.clear(sf::Color::White);
 						return true;
 					}
@@ -331,7 +349,7 @@ bool Game::SetDisposition()
 			{
 				if (m_event.key.code == sf::Mouse::Left)
 				{
-					if (nShip >= 0 && nShip < 10)
+					if (isMove)
 					{
 						shipsBody[nShip].m_body.setFillColor(sf::Color::Blue);
 						sf::Vector2f firstPos, lastPos;
@@ -366,6 +384,7 @@ bool Game::SetDisposition()
 								shipsBody[nShip].Rotate();
 						}
 						isMove = false;
+						nShip = -1;
 					}
 				}
 				if (m_event.key.code == sf::Mouse::Right)
@@ -402,13 +421,13 @@ bool Game::SetDisposition()
 		{
 			for (int x = 0; x < 10; x++)
 			{
-				if (m_first->m_Board[y][x] == ALIVE)
+				if (m_pImpl->m_first->m_Board[y][x] == ALIVE)
 				{
 					status.setFillColor(sf::Color::Blue);
 					status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
 					m_window.draw(status);
 				}
-				else if (m_first->m_Board[y][x] == MISS)
+				else if (m_pImpl->m_first->m_Board[y][x] == MISS)
 				{
 					status.setFillColor(sf::Color::Color(858585));
 					status.setPosition(50 + y * SQUARE_SIDE_SIZE, 80 + x * SQUARE_SIDE_SIZE);
@@ -463,24 +482,24 @@ int Game::Menu()
 {
 	float centerPos = m_window.getSize().x / 2;
 
-	sf::Text header("Sea Battle", m_font);
+	sf::Text header("Sea Battle", m_pImpl->m_font);
 	header.setCharacterSize(72);
 	header.setStyle(sf::Text::Bold);
 	header.setPosition(centerPos - header.getGlobalBounds().width / 2, 0);
 
-	sf::Text singleplayer("Singlelayer", m_font);
+	sf::Text singleplayer("Singlelayer", m_pImpl->m_font);
 	singleplayer.setPosition(centerPos - singleplayer.getGlobalBounds().width / 2, header.getPosition().y + 150);
 
-	sf::Text multiplayer("Multiplayer", m_font);
+	sf::Text multiplayer("One PC", m_pImpl->m_font);
 	multiplayer.setPosition(centerPos - multiplayer.getGlobalBounds().width / 2, singleplayer.getPosition().y + 70);
 
-	sf::Text LANgame("LAN game", m_font);
+	sf::Text LANgame("Multiplayer", m_pImpl->m_font);
 	LANgame.setPosition(centerPos - LANgame.getGlobalBounds().width / 2, multiplayer.getPosition().y + 70);
 
-	sf::Text settings("Settings", m_font);
+	sf::Text settings("Settings", m_pImpl->m_font);
 	settings.setPosition(centerPos - settings.getGlobalBounds().width / 2, LANgame.getPosition().y + 70);
 
-	sf::Text exit("Exit", m_font);
+	sf::Text exit("Exit", m_pImpl->m_font);
 	exit.setPosition(centerPos - exit.getGlobalBounds().width / 2, settings.getPosition().y + 70);
 
 	int menuNum;
@@ -553,17 +572,17 @@ int Game::Menu()
 
 void Game::SinglePlayer()
 {
-	m_first = new Human(ALIVE, 1);
-	m_second = new AI; 
+	m_pImpl->m_first = new Human(ALIVE, 1);
 	
 	if (!SetDisposition())
 	{
-		delete m_first;
-		delete m_second;
+		delete m_pImpl->m_first;
 		return;
 	}
-	m_second->RandomShipsArrangement();
-	m_second->CleardBoard();
+
+	m_pImpl->m_second = new AI;
+	m_pImpl->m_second->RandomShipsArrangement();
+	m_pImpl->m_second->CleardBoard();
 
 	Draw();
 
@@ -586,11 +605,11 @@ void Game::SinglePlayer()
 			{
 				while (true)  //игрок
 				{
-					if (m_first->Shoot(m_second->m_Board))
+					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 					{
-						m_second->SearchDead();
+						m_pImpl->m_second->SearchDead();
 						Draw();
-						if (m_second->Loss())
+						if (m_pImpl->m_second->Loss())
 						{
 							AnnounceWinner(0);
 							return;
@@ -604,14 +623,23 @@ void Game::SinglePlayer()
 				}
 				while (true)  //ИИ
 				{
-					m_second->Shoot(m_first->m_Board);
-					if (m_first->Loss())
+					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
-						AnnounceWinner(1);
-						return;
+						m_pImpl->m_first->SearchDead();
+						dynamic_cast<AI*>(m_pImpl->m_second)->SankShip(m_pImpl->m_first->m_Board);
+
+						Draw();
+						if (m_pImpl->m_first->Loss())
+						{
+							AnnounceWinner(1);
+							return;
+						}
 					}
 					else
+					{
+						Draw();
 						break;
+					}
 				}
 			} while (true);
 		}
@@ -621,22 +649,31 @@ void Game::SinglePlayer()
 			{
 				while (true)  //ИИ
 				{
-					m_second->Shoot(m_first->m_Board);
-					if (m_first->Loss())
+					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
-						AnnounceWinner(1);
-						return;
+						m_pImpl->m_first->SearchDead();
+						dynamic_cast<AI*>(m_pImpl->m_second)->SankShip(m_pImpl->m_first->m_Board);
+
+						Draw();
+						if (m_pImpl->m_first->Loss())
+						{
+							AnnounceWinner(1);
+							return;
+						}
 					}
 					else
+					{
+						Draw();
 						break;
+					}
 				}
 				while (true)  //игрок
 				{
-					if (m_first->Shoot(m_second->m_Board))
+					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 					{
-						m_second->SearchDead();
+						m_pImpl->m_second->SearchDead();
 						Draw();
-						if (m_second->Loss())
+						if (m_pImpl->m_second->Loss())
 						{
 							AnnounceWinner(0);
 							return;
@@ -660,7 +697,7 @@ void Game::OnlineGame()
 
 char Game::FirstTurn()
 {
-	if (RD() % 2 == 0)
+	if (m_gen() % 2 == 0)
 		return 'F';
 	else
 		return 'S';
@@ -712,21 +749,21 @@ void Game::AnnounceWinner(const int& player)
 	sf::sleep(sf::seconds(1));
 	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2);
 
-	sf::Text announce("", m_font);
+	sf::Text announce("", m_pImpl->m_font);
 	announce.setFillColor(sf::Color::Black);
 	announce.setCharacterSize(30);
 	announce.setStyle(sf::Text::Style::Bold);
 
 	if (player == 0)
 	{
-		ShowRemainingShips(m_first, player);
+		ShowRemainingShips(m_pImpl->m_first, player);
 		 
 		announce.setString("YOU WIN!");
 		announce.setPosition(centerPos.x - announce.getGlobalBounds().width / 2, centerPos.y - announce.getGlobalBounds().height / 2 - 100);
 	}
 	else
 	{
-		ShowRemainingShips(m_second, player);
+		ShowRemainingShips(m_pImpl->m_second, player);
 
 		announce.setString("YOU LOSE!");
 		announce.setPosition(centerPos.x - announce.getGlobalBounds().width / 2, centerPos.y - announce.getGlobalBounds().height / 2 - 100);
@@ -738,24 +775,24 @@ void Game::AnnounceWinner(const int& player)
 	m_window.display();
 	sf::sleep(sf::seconds(3));
 
-	delete m_first;
-	delete m_second;
-	m_first = nullptr;
-	m_second = nullptr;
+	delete m_pImpl->m_first;
+	delete m_pImpl->m_second;
+	m_pImpl->m_first = nullptr;
+	m_pImpl->m_second = nullptr;
 }
 
 bool Game::Exit()
 {
 	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 100);
 
-	sf::Text exit("Are you sure about that?", m_font);
+	sf::Text exit("Are you sure about that?", m_pImpl->m_font);
 	exit.setFillColor(sf::Color::Black);
 	exit.setCharacterSize(30);
 	exit.setStyle(sf::Text::Style::Bold);
 	exit.setPosition(centerPos.x - exit.getGlobalBounds().width / 2, centerPos.y - exit.getGlobalBounds().height);
 
-	sf::Text yes("Yes", m_font);
-	sf::Text no("No", m_font);
+	sf::Text yes("Yes", m_pImpl->m_font);
+	sf::Text no("No", m_pImpl->m_font);
 	
 	yes.setPosition(centerPos.x - yes.getGlobalBounds().width / 2 - 50, centerPos.y - yes.getGlobalBounds().height / 2 + 50);
 	no.setPosition(centerPos.x - no.getGlobalBounds().width / 2 + 50, centerPos.y - no.getGlobalBounds().height / 2 + 50);
