@@ -3,55 +3,74 @@
 
 using namespace std;
 Game* game = Game::GetInstance();
+using Point = std::pair<int, int>;
+
+struct AI_IMPL
+{
+	Point* m_one;
+	Point* m_two;
+	Point* m_three;
+	Point* m_four;
+	bool m_SecondDeck = false;
+	bool m_ThirdDeck = false;
+	bool m_FourthDeck = false;
+};
 
 AI::AI(const char& player) :Player(ENEMY_ALIVE, 2)
-{ }
+{
+	m_pImpl = new AI_IMPL;
+	m_pImpl->m_one = nullptr;
+	m_pImpl->m_two = nullptr;
+	m_pImpl->m_three = nullptr;
+	m_pImpl->m_four = nullptr;
+}
 
 AI::~AI()
 {
-	if (m_one != nullptr)
-		delete m_one;
-	if (m_two != nullptr)
-		delete m_two;
-	if (m_three != nullptr)
-		delete m_three;
-	if (m_four != nullptr)
-		delete m_four;
+	if (m_pImpl->m_one != nullptr)
+		delete m_pImpl->m_one;
+	if (m_pImpl->m_two != nullptr)
+		delete m_pImpl->m_two;
+	if (m_pImpl->m_three != nullptr)
+		delete m_pImpl->m_three;
+	if (m_pImpl->m_four != nullptr)
+		delete m_pImpl->m_four;
+	delete m_pImpl;
 }
 
 bool AI::Shoot(char(&enemy)[ROW][COL])
 {
 	do
 	{
-		if (m_FourthDeck)        //четвертая палуба
+		if (m_pImpl->m_FourthDeck)        //четвертая палуба
 		{
 			if (Shoot4Deck(enemy))
 			{
-				m_FourthDeck = false;
+				m_pImpl->m_FourthDeck = false;
 
 				return true;
 			}
 			else
 				return false;
 		}
-		else if (m_ThirdDeck)   //третья палуба
+		else if (m_pImpl->m_ThirdDeck)   //третья палуба
 		{
 			if (Shoot3Deck(enemy))
 			{
-				m_FourthDeck = true;
-				m_ThirdDeck = false;
+				m_pImpl->m_FourthDeck = true;
+				m_pImpl->m_ThirdDeck = false;
 
 				return true;
 			}
 			else
 				return false;
 		}
-		else if (m_SecondDeck)   //вторая палуба
+		else if (m_pImpl->m_SecondDeck)   //вторая палуба
 		{			
 			if (Shoot2Deck(enemy))  //попал
 			{
-				m_ThirdDeck = true;
-				m_SecondDeck = false;
+				m_pImpl->m_ThirdDeck = true;
+				m_pImpl->m_SecondDeck = false;
 
 				return true;
 			}
@@ -62,7 +81,7 @@ bool AI::Shoot(char(&enemy)[ROW][COL])
 		{
 			if (AI::Shoot1Deck(enemy))   //попал
 			{
-				m_SecondDeck = true;
+				m_pImpl->m_SecondDeck = true;
 
 				return true;
 			}
@@ -76,89 +95,89 @@ void AI::SankShip(const char(&enemy)[ROW][COL])
 {
 	int n = 0;
 
-	if (m_one != nullptr)
+	if (m_pImpl->m_one != nullptr)
 	{
-		if (m_one->GetY() != 0)
-			if (enemy[m_one->GetY() + LEFT][m_one->GetX()] == ALIVE)
+		if (m_pImpl->m_one->second != 0)
+			if (enemy[m_pImpl->m_one->second - 1][m_pImpl->m_one->first] == ALIVE)
 				n++;
-		if (m_one->GetY() != 9)
-			if (enemy[m_one->GetY() + RIGHT][m_one->GetX()] == ALIVE)
+		if (m_pImpl->m_one->second != 9)
+			if (enemy[m_pImpl->m_one->second + 1][m_pImpl->m_one->first] == ALIVE)
 				n++;
-		if (m_one->GetX() != 0)
-			if (enemy[m_one->GetY()][m_one->GetX() + UP] == ALIVE)
+		if (m_pImpl->m_one->first != 0)
+			if (enemy[m_pImpl->m_one->second][m_pImpl->m_one->first - 1] == ALIVE)
 				n++;
-		if (m_one->GetX() != 9)
-			if (enemy[m_one->GetY()][m_one->GetX() + DOWN] == ALIVE)
+		if (m_pImpl->m_one->first != 9)
+			if (enemy[m_pImpl->m_one->second][m_pImpl->m_one->first + 1] == ALIVE)
 				n++;
 	}
-	if (m_two != nullptr)
+	if (m_pImpl->m_two != nullptr)
 	{
-		if (m_two->GetY() != 0)
-			if (enemy[m_two->GetY() + LEFT][m_two->GetX()] == ALIVE)
+		if (m_pImpl->m_two->second != 0)
+			if (enemy[m_pImpl->m_two->second - 1][m_pImpl->m_two->first] == ALIVE)
 				n++;
-		if (m_two->GetY() != 9)
-			if (enemy[m_two->GetY() + RIGHT][m_two->GetX()] == ALIVE)
+		if (m_pImpl->m_two->second != 9)
+			if (enemy[m_pImpl->m_two->second + 1][m_pImpl->m_two->first] == ALIVE)
 				n++;
-		if (m_two->GetX() != 0)
-			if (enemy[m_two->GetY()][m_two->GetX() + UP] == ALIVE)
+		if (m_pImpl->m_two->first != 0)
+			if (enemy[m_pImpl->m_two->second][m_pImpl->m_two->first - 1] == ALIVE)
 				n++;
-		if (m_two->GetX() != 9)
-			if (enemy[m_two->GetY()][m_two->GetX() + DOWN] == ALIVE)
+		if (m_pImpl->m_two->first != 9)
+			if (enemy[m_pImpl->m_two->second][m_pImpl->m_two->first + 1] == ALIVE)
 				n++;
 	}
-	if (m_three != nullptr)
+	if (m_pImpl->m_three != nullptr)
 	{
-		if (m_three->GetY() != 0)
-			if (enemy[m_three->GetY() + LEFT][m_three->GetX()] == ALIVE)
+		if (m_pImpl->m_three->second != 0)
+			if (enemy[m_pImpl->m_three->second - 1][m_pImpl->m_three->first] == ALIVE)
 				n++;
-		if (m_three->GetY() != 9)
-			if (enemy[m_three->GetY() + RIGHT][m_three->GetX()] == ALIVE)
+		if (m_pImpl->m_three->second != 9)
+			if (enemy[m_pImpl->m_three->second + 1][m_pImpl->m_three->first] == ALIVE)
 				n++;
-		if (m_three->GetX() != 0)
-			if (enemy[m_three->GetY()][m_three->GetX() + UP] == ALIVE)
+		if (m_pImpl->m_three->first != 0)
+			if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first - 1] == ALIVE)
 				n++;
-		if (m_three->GetX() != 9)
-			if (enemy[m_three->GetY()][m_three->GetX() + DOWN] == ALIVE)
+		if (m_pImpl->m_three->first != 9)
+			if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first + 1] == ALIVE)
 				n++;
 	}
 
 	if (n == 0)
 	{
-		m_SecondDeck = false;
-		m_ThirdDeck = false;
-		m_FourthDeck = false;
-		if (m_one != nullptr) delete m_one;
-		m_one = nullptr;
-		if (m_two != nullptr) delete m_two;
-		m_two = nullptr;
-		if (m_three != nullptr) delete m_three;
-		m_three = nullptr;
-		if (m_four != nullptr) delete m_four;
-		m_four = nullptr;
+		m_pImpl->m_SecondDeck = false;
+		m_pImpl->m_ThirdDeck = false;
+		m_pImpl->m_FourthDeck = false;
+		if (m_pImpl->m_one != nullptr) delete m_pImpl->m_one;
+		m_pImpl->m_one = nullptr;
+		if (m_pImpl->m_two != nullptr) delete m_pImpl->m_two;
+		m_pImpl->m_two = nullptr;
+		if (m_pImpl->m_three != nullptr) delete m_pImpl->m_three;
+		m_pImpl->m_three = nullptr;
+		if (m_pImpl->m_four != nullptr) delete m_pImpl->m_four;
+		m_pImpl->m_four = nullptr;
 	}
 }
 
 bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 {
-	m_one = new Point;
+	m_pImpl->m_one = new Point;
 	do
 	{
-		m_one->SetValues(game->m_gen() % 10, game->m_gen() % 10);
-		if (enemy[m_one->GetY()][m_one->GetX()] != MISS && enemy[m_one->GetY()][m_one->GetX()] != DEAD)
+		m_pImpl->m_one->first = game->m_gen() % 10; m_pImpl->m_one->second = game->m_gen() % 10;
+		if (enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] != MISS && enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] != DEAD)
 		{
-			sf::Vector2f middleCell(MIN_F_BOARD_X + m_one->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_one->GetX() * SQUARE_SIDE_SIZE + 15);
+			sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_one->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_one->first * SQUARE_SIDE_SIZE + 15);
 
-			if (enemy[m_one->GetY()][m_one->GetX()] == ALIVE)
+			if (enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] == ALIVE)
 			{
 				game->DrawShot(middleCell, sf::Color::Red);
-				enemy[m_one->GetY()][m_one->GetX()] = DEAD;
+				enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] = DEAD;
 				return true;
 			}
 			else
 			{
 				game->DrawShot(middleCell, sf::Color::Color(858585));
-				enemy[m_one->GetY()][m_one->GetX()] = MISS;
-				delete m_one;
+				enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] = MISS;
+				delete m_pImpl->m_one;
 				return false;
 			}
 		}
@@ -167,7 +186,7 @@ bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 
 bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 {
-	m_two = new Point;
+	m_pImpl->m_two = new Point;
 	bool isFree = false;
 
 	do
@@ -175,53 +194,53 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 		switch (int n(game->m_gen() % 4); n)
 		{
 		case 0:
-			if (m_one->GetY() != 0)
+			if (m_pImpl->m_one->second != 0)
 			{
-				m_two->SetValues(m_one->GetX(), m_one->GetY() + UP);
+				m_pImpl->m_two->first = m_pImpl->m_one->first; m_pImpl->m_two->second = m_pImpl->m_one->second - 1;
 				isFree = true;
 			}
 			break;
 		case 1:
-			if (m_one->GetX() != 9)
+			if (m_pImpl->m_one->first != 9)
 			{
-				m_two->SetValues(m_one->GetX() + RIGHT, m_one->GetY());
+				m_pImpl->m_two->first = m_pImpl->m_one->first + 1; m_pImpl->m_two->second = m_pImpl->m_one->second;
 				isFree = true;
 			}
 			break;
 		case 2:
-			if (m_one->GetY() != 9)
+			if (m_pImpl->m_one->second != 9)
 			{
-				m_two->SetValues(m_one->GetX(), m_one->GetY() + DOWN);
+				m_pImpl->m_two->first = m_pImpl->m_one->first; m_pImpl->m_two->second = m_pImpl->m_one->second + 1;
 				isFree = true;
 			}
 			break;
 		case 3:
-			if (m_one->GetX() != 0)
+			if (m_pImpl->m_one->first != 0)
 			{
-				m_two->SetValues(m_one->GetX() + LEFT, m_one->GetY());
+				m_pImpl->m_two->first = m_pImpl->m_one->first - 1; m_pImpl->m_two->second = m_pImpl->m_one->second;
 				isFree = true;
 			}
 			break;
 		}
 		if (isFree)
 		{
-			if (enemy[m_two->GetY()][m_two->GetX()] == MISS)
+			if (enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] == MISS)
 				isFree = false;
 			else
 			{
-				sf::Vector2f middleCell(MIN_F_BOARD_X + m_two->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_two->GetX() * SQUARE_SIDE_SIZE + 15);
+				sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_two->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_two->first * SQUARE_SIDE_SIZE + 15);
 
-				if (enemy[m_two->GetY()][m_two->GetX()] == ALIVE)
+				if (enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] == ALIVE)
 				{
 					game->DrawShot(middleCell, sf::Color::Red);
-					enemy[m_two->GetY()][m_two->GetX()] = DEAD;
+					enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] = DEAD;
 					return true;
 				}
 				else
 				{
 					game->DrawShot(middleCell, sf::Color::Color(858585));
-					enemy[m_two->GetY()][m_two->GetX()] = MISS;
-					delete m_two;
+					enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] = MISS;
+					delete m_pImpl->m_two;
 					return false;
 				}
 			}
@@ -231,43 +250,43 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 
 bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 {
-	m_three = new Point;
+	m_pImpl->m_three = new Point;
 	int n(game->m_gen() % 2);
 
-	if (m_one->GetX() < m_two->GetX() || m_one->GetY() > m_two->GetY())
+	if (m_pImpl->m_one->first < m_pImpl->m_two->first || m_pImpl->m_one->second > m_pImpl->m_two->second)
 	{
-		swap(m_one, m_two);
+		swap(m_pImpl->m_one, m_pImpl->m_two);
 	}
 
 	do
 	{
-		if (m_one->GetX() == m_two->GetX())  //вертикальный 
+		if (m_pImpl->m_one->first == m_pImpl->m_two->first)  //вертикальный 
 		{
 			if (n == 0) //выстрел вверх
 			{
-				if (m_one->GetY() != 0)
+				if (m_pImpl->m_one->second != 0)
 				{
-					m_three->SetValues(m_one->GetX(), m_one->GetY() + UP);
-					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
+					m_pImpl->m_three->first = m_pImpl->m_one->first; m_pImpl->m_three->second = m_pImpl->m_one->second - 1;
+					if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_three->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_three->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
-							swap(m_one, m_two);    //one всегда должен быть выше
-							swap(m_one, m_three);
+							swap(m_pImpl->m_one, m_pImpl->m_two);    //one всегда должен быть выше
+							swap(m_pImpl->m_one, m_pImpl->m_three);
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
-							delete m_three;
+							delete m_pImpl->m_three;
 							return false;
 						}
 					}					
@@ -276,26 +295,26 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 			}
 			else   //выстрел вниз
 			{
-				if (m_two->GetY() != 9)
+				if (m_pImpl->m_two->second != 9)
 				{
-					m_three->SetValues(m_two->GetX(), m_two->GetY() + DOWN);
-					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
+					m_pImpl->m_three->first = m_pImpl->m_two->first; m_pImpl->m_three->second = m_pImpl->m_two->second + 1;
+					if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_three->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_three->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
 							return true;
 						}
 						else  //промах
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
-							delete m_three;
+							delete m_pImpl->m_three;
 							return false;
 						}
 					}
@@ -303,28 +322,28 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 				n = 0;
 			}
 		}
-		if (m_one->GetY() == m_two->GetY())  //горизонтальный 
+		if (m_pImpl->m_one->second == m_pImpl->m_two->second)  //горизонтальный 
 		{
 			if (n == 0)   //выстрел влево
 			{
-				if (m_two->GetX() != 0)
+				if (m_pImpl->m_two->first != 0)
 				{
-					m_three->SetValues(m_two->GetX() + LEFT, m_two->GetY());
-					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
+					m_pImpl->m_three->first = m_pImpl->m_two->first - 1; m_pImpl->m_three->second = m_pImpl->m_two->second;
+					if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_three->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_three->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
 							return false;
 						}
@@ -334,29 +353,29 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 			}
 			if (n == 1)  //выстрел вправо
 			{
-				if (m_one->GetX() != 9)
+				if (m_pImpl->m_one->first != 9)
 				{
-					m_three->SetValues(m_one->GetX() + RIGHT, m_one->GetY());
-					if (enemy[m_three->GetY()][m_three->GetX()] != MISS)
+					m_pImpl->m_three->first = m_pImpl->m_one->first + 1; m_pImpl->m_three->second = m_pImpl->m_one->second;
+					if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_three->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_three->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_three->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_three->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_three->GetY()][m_three->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_three->GetY()][m_three->GetX()] = DEAD;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
-							swap(m_one, m_two);   //one всегда должен быть справа
-							swap(m_one, m_three);
+							swap(m_pImpl->m_one, m_pImpl->m_two);   //one всегда должен быть справа
+							swap(m_pImpl->m_one, m_pImpl->m_three);
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_three->GetY()][m_three->GetX()] = MISS;
+							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
-							delete m_three;
+							delete m_pImpl->m_three;
 							return false;
 						}
 					}
@@ -369,35 +388,35 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 {
-	m_four = new Point;
+	m_pImpl->m_four = new Point;
 	int n = game->m_gen() % 2;
 
 	do
 	{
-		if (m_one->GetX() == m_three->GetX())  //вертикальный 
+		if (m_pImpl->m_one->first == m_pImpl->m_three->first)  //вертикальный 
 		{
 			if (n == 0)  //выстрел вверх
 			{
-				if (m_one->GetY() != 0)
+				if (m_pImpl->m_one->second != 0)
 				{
-					m_four->SetValues(m_one->GetX(), m_one->GetY() + UP);
-					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
+					m_pImpl->m_four->first = m_pImpl->m_one->first; m_pImpl->m_four->second = m_pImpl->m_one->second - 1;
+					if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_four->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_four->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
-							delete m_four;
+							delete m_pImpl->m_four;
 							return false;
 						}
 					}
@@ -406,26 +425,26 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 			}
 			if (n == 1)   //выстрел вниз
 			{
-				if (m_three->GetY() != 9)
+				if (m_pImpl->m_three->second != 9)
 				{
-					m_four->SetValues(m_three->GetX(), m_three->GetY() + DOWN);
-					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
+					m_pImpl->m_four->first = m_pImpl->m_three->first; m_pImpl->m_four->second = m_pImpl->m_three->second + 1;
+					if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_four->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_four->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
-							delete m_four;
+							delete m_pImpl->m_four;
 							return false;
 						}
 					}
@@ -433,30 +452,30 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 				n = 0;
 			}
 		}
-		if (m_one->GetY() == m_three->GetY())  //горизонтальный 
+		if (m_pImpl->m_one->second == m_pImpl->m_three->second)  //горизонтальный 
 		{
 			if (n == 0)   //выстрел влево
 			{
-				if (m_three->GetX() != 0)
+				if (m_pImpl->m_three->first != 0)
 				{
-					m_four->SetValues(m_three->GetX() + LEFT, m_three->GetY());
-					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
+					m_pImpl->m_four->first = m_pImpl->m_three->first - 1; m_pImpl->m_four->second = m_pImpl->m_three->second;
+					if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_four->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_four->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
-							delete m_four;
+							delete m_pImpl->m_four;
 							return false;
 						}
 					}
@@ -465,26 +484,26 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 			}
 			if (n == 1)  //выстрел вправо
 			{
-				if (m_one->GetX() != 9)
+				if (m_pImpl->m_one->first != 9)
 				{
-					m_four->SetValues(m_one->GetX() + RIGHT, m_one->GetY());
-					if (enemy[m_four->GetY()][m_four->GetX()] != MISS)
+					m_pImpl->m_four->first = m_pImpl->m_one->first + 1; m_pImpl->m_four->second = m_pImpl->m_one->second;
+					if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] != MISS)
 					{
-						sf::Vector2f middleCell(MIN_F_BOARD_X + m_four->GetY() * SQUARE_SIDE_SIZE + 15, MIN_Y + m_four->GetX() * SQUARE_SIDE_SIZE + 15);
+						sf::Vector2f middleCell(MIN_F_BOARD_X + m_pImpl->m_four->second * SQUARE_SIDE_SIZE + 15, MIN_Y + m_pImpl->m_four->first * SQUARE_SIDE_SIZE + 15);
 
-						if (enemy[m_four->GetY()][m_four->GetX()] == ALIVE)
+						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
 							game->DrawShot(middleCell, sf::Color::Red);
-							enemy[m_four->GetY()][m_four->GetX()] = DEAD;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
 							return true;
 						}
 						else
 						{
 							game->DrawShot(middleCell, sf::Color(858585));
-							enemy[m_four->GetY()][m_four->GetX()] = MISS;
+							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
-							delete m_four;
+							delete m_pImpl->m_four;
 							return false;
 						}
 					}

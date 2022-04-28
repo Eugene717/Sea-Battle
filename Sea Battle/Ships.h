@@ -6,6 +6,5 @@
 #include "Twin_Ship.h"
 #include "Triple_Ship.h"
 #include "Quadraple_Ship.h"
-#include "Ship.h"
 
 #endif // !SHIPS_H

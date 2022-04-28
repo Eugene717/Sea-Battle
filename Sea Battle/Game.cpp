@@ -253,7 +253,7 @@ bool Game::SetDisposition()
 
 	ShipBody shipsBody[10]{ ShipBody(4),ShipBody(3),ShipBody(3),ShipBody(2),ShipBody(2),ShipBody(2),ShipBody(1),ShipBody(1),ShipBody(1),ShipBody(1) };
 
-	Point startingPositions[10]
+	/*Point startingPositions[10]
 	{ 
 		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 5, MIN_Y + SQUARE_SIDE_SIZE * 1),
 		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4, MIN_Y + SQUARE_SIDE_SIZE * 3),
@@ -268,7 +268,7 @@ bool Game::SetDisposition()
 	};
 
 	for (size_t i = 0; i < 10; i++)
-		shipsBody[i].m_body.setPosition(sf::Vector2f(startingPositions[i].GetX(), startingPositions[i].GetY()));
+		shipsBody[i].m_body.setPosition(sf::Vector2f(startingPositions[i].GetX(), startingPositions[i].GetY()));*/
 
 	int placedShipsNum = 0;
 	bool isMove = false, menuOpen = false;
@@ -379,7 +379,7 @@ bool Game::SetDisposition()
 						}
 						else
 						{
-							shipsBody[nShip].m_body.setPosition(startingPositions[nShip].GetX(), startingPositions[nShip].GetY());
+							//shipsBody[nShip].m_body.setPosition(startingPositions[nShip].GetX(), startingPositions[nShip].GetY());
 							if (!shipsBody[nShip].Horiz())
 								shipsBody[nShip].Rotate();
 						}

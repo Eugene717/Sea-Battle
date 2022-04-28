@@ -2,7 +2,6 @@
 #ifndef GAME_H
 #define GAME_H
 #include <random>
-#include <conio.h>
 #include <SFML/Graphics.hpp>
 
 struct GameIMPL;

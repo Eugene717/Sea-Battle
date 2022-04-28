@@ -1,16 +1,11 @@
 #pragma once
 #include "Player.h"
-#include "Point.h"
+
+struct AI_IMPL;
 
 class AI :public Player
 {
-	Point* m_one;
-	Point* m_two;
-	Point* m_three;
-	Point* m_four;
-	bool m_SecondDeck;
-	bool m_ThirdDeck;
-	bool m_FourthDeck;
+	AI_IMPL* m_pImpl;
 
 	bool Shoot1Deck(char(&enemy)[ROW][COL]);
 	bool Shoot2Deck(char(&enemy)[ROW][COL]);

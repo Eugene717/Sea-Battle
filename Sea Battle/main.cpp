@@ -28,19 +28,19 @@ int main()
 			game->SinglePlayer();
 			break;
 		case 2:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
+			//cout << "Не работает блять, хули клацаешь?\n";
+			//system("pause");
+			//system("cls");
 			break;
 		case 3:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
+			//cout << "Не работает блять, хули клацаешь?\n";
+			//system("pause");
+			//system("cls");
 			break;
 		case 4:
-			cout << "Не работает блять, хули клацаешь?\n";
-			system("pause");
-			system("cls");
+			//cout << "Не работает блять, хули клацаешь?\n";
+			//system("pause");
+			//system("cls");
 			break;
 		case 5:
 			if (game->Exit())
