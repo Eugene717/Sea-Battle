@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Quadraple_Ship::Quadraple_Ship()
+Quadraple_Ship::Quadraple_Ship() :Ship(4)
 {
 	m_x1 = new int;
 	m_y1 = new int;

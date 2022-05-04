@@ -17,8 +17,6 @@ class Game
 	Game& operator=(const Game&) = delete;
 
 	char FirstTurn();
-	void DragAndDrop(sf::RectangleShape& shape);
-	bool SetDisposition();
 	void ShowRemainingShips(Player* player, const int& board);
 	void AnnounceWinner(const int& player);
 public:
@@ -34,7 +32,7 @@ public:
 	int Menu();
 	void SinglePlayer();
 	void OnlineGame();
-	//void LanGame();
+	void OnePCGame();
 };
 
 #endif // !GAME_H

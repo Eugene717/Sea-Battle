@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Twin_Ship::Twin_Ship()
+Twin_Ship::Twin_Ship() :Ship(2)
 {
 	m_x1 = new int;
 	m_y1 = new int;
@@ -44,7 +44,7 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 	{
 		*m_x1 = game->m_gen() % 10;
 		*m_y1 = game->m_gen() % 10;
-		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
+		if (arr[*m_y1][*m_x1] == EMPTY)
 		{
 			switch (int dir(game->m_gen() % 4); dir)
 			{
@@ -53,7 +53,6 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 				{
 					*m_y2 = *m_y1 - 1;
 					*m_x2 = *m_x1;
-					swap(*m_y1, *m_y2);
 					isFree = true;
 				}
 				break;
@@ -62,7 +61,6 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 				{
 					*m_y2 = *m_y1;
 					*m_x2 = *m_x1 + 1;
-					swap(*m_x1, *m_x2);
 					isFree = true;
 				}
 				break;
@@ -85,7 +83,7 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 			}
 			if (isFree)
 			{
-				if (arr[*m_y1][*m_x1] != MISS && arr[*m_y2][*m_x2] != MISS)
+				if (arr[*m_y1][*m_x1] == EMPTY && arr[*m_y2][*m_x2] == EMPTY)
 				{
 					m_stat1 = &arr[*m_y1][*m_x1];
 					m_stat2 = &arr[*m_y2][*m_x2];

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Unit_Ship::Unit_Ship()
+Unit_Ship::Unit_Ship() :Ship(1)
 {
 	m_x1 = new int;
 	m_y1 = new int;
@@ -29,7 +29,7 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 	{
 		*m_y1 = game->m_gen() % 10;
 	    *m_x1 = game->m_gen() % 10;
-		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
+		if (arr[*m_y1][*m_x1] == EMPTY)
 		{
 			m_stat1 = &arr[*m_y1][*m_x1];
 			*m_stat1 = player;

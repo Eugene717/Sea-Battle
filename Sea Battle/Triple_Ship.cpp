@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Triple_Ship::Triple_Ship()
+Triple_Ship::Triple_Ship() :Ship(3)
 {
 	m_x1 = new int;
 	m_y1 = new int;
@@ -54,7 +54,7 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 		*m_x1 = game->m_gen() % 10;
 		*m_y1 = game->m_gen() % 10;
 		//вторая палуба
-		if (arr[*m_y1][*m_x1] != MISS && arr[*m_y1][*m_x1] != player)
+		if (arr[*m_y1][*m_x1] == EMPTY)
 		{
 			dir = game->m_gen() % 4;
 			switch (dir)
@@ -64,8 +64,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 				{
 					*m_y2 = *m_y1 - 1;
 					*m_x2 = *m_x1;
-					swap(*m_y1, *m_y2);
-					dir = 2;
+					//swap(*m_y1, *m_y2);
+					//dir = 2;
 					isFree = true;
 				}
 				break;
@@ -74,8 +74,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 				{
 					*m_y2 = *m_y1;
 					*m_x2 = *m_x1 + 1;
-					swap(*m_x1, *m_x2);
-					dir = 3;
+					//swap(*m_x1, *m_x2);
+					//dir = 3;
 					isFree = true;
 				}
 				break;
@@ -99,9 +99,35 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 			if (isFree)
 			{
 				//третья палуба
-				if (arr[*m_y2][*m_x2] != MISS && arr[*m_y1][*m_x1] != MISS)
+				if (arr[*m_y2][*m_x2] == EMPTY && arr[*m_y1][*m_x1] == EMPTY)
 				{
-					if (dir == 2)
+					if (dir == 0)
+					{
+						if (*m_y2 != 0)
+						{
+							*m_y3 = *m_y2 - 1;
+							*m_x3 = *m_x2;
+						}
+						else
+						{
+							*m_y3 = *m_y1 + 1;
+							*m_x3 = *m_x2;
+						}
+					}
+					else if (dir == 1)
+					{
+						if (*m_x2 != 9)
+						{
+							*m_x3 = *m_x2 + 1;
+							*m_y3 = *m_y2;
+						}
+						else
+						{
+							*m_x3 = *m_x1 - 1;
+							*m_y3 = *m_y2;
+						}
+					}
+					else if (dir == 2)
 					{
 						if (*m_y2 != 9)
 						{
@@ -110,13 +136,11 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 						}
 						else  //m_y2 == 9
 						{
-							*m_y3 = *m_y2;
+							*m_y3 = *m_y1 - 1;
 							*m_x3 = *m_x2;
-							*m_y2 = *m_y1;
-							*m_y1 = *m_y1 - 1;
 						}
 					}
-					else  // dir == 3
+					else if (dir == 3)
 					{
 						if (*m_x2 != 0)
 						{
@@ -125,13 +149,11 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 						}
 						else  //m_x2 == 0
 						{
-							*m_x3 = *m_x2;
+							*m_x3 = *m_x1 + 1;
 							*m_y3 = *m_y2;
-							*m_x2 = *m_x1;
-							*m_x1 = *m_x1 + 1;
 						}
 					}
-					if (arr[*m_y1][*m_x1] != MISS && arr[*m_y2][*m_x2] != MISS && arr[*m_y3][*m_x3] != MISS)
+					if (arr[*m_y1][*m_x1] == EMPTY && arr[*m_y2][*m_x2] == EMPTY && arr[*m_y3][*m_x3] == EMPTY)
 					{
 						m_stat1 = &arr[*m_y1][*m_x1];
 						m_stat2 = &arr[*m_y2][*m_x2];
