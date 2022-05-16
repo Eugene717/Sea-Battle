@@ -7,7 +7,7 @@ class Twin_Ship :public Ship
 public:
 	Twin_Ship();
 	~Twin_Ship();
-	void SetPos(const int& x, const int& y, const bool& horiz) override;
-	void RandomlyArrange(char(&arr)[ROW][COL], char player) override;
+	void SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player) override;
+	void RandomlyArrange(char(&arr)[ROW][COL], const char& player) override;
 	bool Kill(char(&arr)[ROW][COL], const int& board) override;
 };

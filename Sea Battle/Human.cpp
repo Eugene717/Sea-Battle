@@ -74,10 +74,11 @@ bool Human::SetDisposition()
 	s_check.setTexture(t_check);
 	s_check.setPosition(700, 390);
 
-	sf::Texture t_menu;
-	t_menu.loadFromFile("images/menu.png");
-	sf::Sprite s_menu;
-	s_menu.setTexture(t_menu);
+	sf::Texture t_back;
+	t_back.loadFromFile("images/back.png");
+	sf::Sprite s_back;
+	s_back.setTexture(t_back);
+	s_back.setPosition(2, 390);
 
 	sf::RectangleShape boardFrame;
 	boardFrame.setOutlineThickness(4);
@@ -90,34 +91,26 @@ bool Human::SetDisposition()
 
 	Point startingPositions[10]
 	{
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 5, MIN_Y + SQUARE_SIDE_SIZE * 1),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4, MIN_Y + SQUARE_SIDE_SIZE * 3),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 8, MIN_Y + SQUARE_SIDE_SIZE * 3),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 3, MIN_Y + SQUARE_SIDE_SIZE * 5),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 6, MIN_Y + SQUARE_SIDE_SIZE * 5),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 9, MIN_Y + SQUARE_SIDE_SIZE * 5),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 2, MIN_Y + SQUARE_SIDE_SIZE * 7),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4, MIN_Y + SQUARE_SIDE_SIZE * 7),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 6, MIN_Y + SQUARE_SIDE_SIZE * 7),
-		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 8, MIN_Y + SQUARE_SIDE_SIZE * 7)
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 2.5, MIN_Y + SQUARE_SIDE_SIZE * 1),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 2, MIN_Y + SQUARE_SIDE_SIZE * 3),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 6, MIN_Y + SQUARE_SIDE_SIZE * 3),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 1.5, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 4.5, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 7.5, MIN_Y + SQUARE_SIDE_SIZE * 5),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 1, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 3, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 5, MIN_Y + SQUARE_SIDE_SIZE * 7),
+		Point(MIN_S_BOARD_X + 300 - SQUARE_SIDE_SIZE * 7, MIN_Y + SQUARE_SIDE_SIZE * 7)
 	};
 
 	for (size_t i = 0; i < 10; i++)
+	{
 		m_Ships[i]->setPosition(startingPositions[i].first, startingPositions[i].second);
+		m_Ships[i]->replace();
+	}
 
-	int placedShipsNum = 0;
-	bool isMove = false, menuOpen = false;
-	float dX = 0, dY = 0;
+	bool isMove = false;
 	int nShip = -1;
-	sf::RectangleShape menu;
-	menu.setOutlineColor(sf::Color::Black);
-	menu.setOutlineThickness(2);
-	menu.setPosition(50, 20);
-	menu.setSize(sf::Vector2f(200, 50));
-	//sf::Text txt("Return to menu", m_pImpl->m_font);
-	//txt.setFillColor(sf::Color::Black);
-	//txt.setPosition(57, 27);
-	//txt.setCharacterSize(26);
 
 	sf::Vector2f pos;
 
@@ -133,50 +126,54 @@ bool Human::SetDisposition()
 				if (game->m_event.key.code == sf::Keyboard::Escape)
 					game->m_window.close();
 			}
-			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
+			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)  //обработка нажатия
 			{
-				if (menuOpen)   //для закрытия меню при нажатии на что-то кроме текста
-					menuOpen = false;
-
-				if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))
+				if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))  //рандом
 				{
 					CleardBoard();
-					placedShipsNum = 10;
 					RandomShipsArrangement();
 				}
-				if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
+				if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))  //конец расстановки
 				{
-					if (placedShipsNum == 10)
+					bool canStart = true;
+
+					for (int i = 0; i < 10; i++)
+						if (!m_Ships[i]->Disposition())
+						{
+							canStart = false;
+							break;
+						}
+
+					if (canStart)
 					{
 						CleardBoard();
 						game->m_window.clear(sf::Color::White);
+						for (int i = 0; i < 10; i++)
+							m_Ships[i]->EndArrange();
 						return true;
 					}
 				}
-				if (sf::IntRect(s_menu.getGlobalBounds()).contains(pos.x, pos.y))
-					menuOpen = true;
-				/*if (sf::IntRect(txt.getGlobalBounds()).contains(pos.x, pos.y))
-					return false;*/
+				if (sf::IntRect(s_back.getGlobalBounds()).contains(pos.x, pos.y))  //назад
+					return false;
 			}
 
-			if (game->m_event.type == sf::Event::MouseButtonPressed)
+			if (game->m_event.type == sf::Event::MouseButtonPressed)  //обработка нажатия по кораблю
 			{
 				if (game->m_event.key.code == sf::Mouse::Left)
 				{
-					if (menuOpen)
-						menuOpen = false;
-					else
+					for (int i = 0; i < 10; i++)
 					{
-						for (int i = 0; i < 10; i++)
+						if (m_Ships[i]->getGlobalBounds().contains(pos.x, pos.y))
 						{
-							/*if ([i].m_body.getGlobalBounds().contains(pos.x, pos.y))
-							{
-								dX = pos.x - shipsBody[i].m_body.getPosition().x;
-								dY = pos.y - shipsBody[i].m_body.getPosition().y;
-								isMove = true;
-								nShip = i;
-							}*/
+							isMove = true;
+							nShip = i;
+							m_Ships[i]->ClearZone(m_Board);
 						}
+					}
+					for (int i = 0; i < 10; i++)
+					{
+						if (i != nShip)
+							m_Ships[i]->DrawZone(m_Board);
 					}
 				}
 			}
@@ -186,37 +183,37 @@ bool Human::SetDisposition()
 				{
 					if (isMove)
 					{
-						//shipsBody[nShip].m_body.setFillColor(sf::Color::Blue);
 						sf::Vector2f firstPos, lastPos;
-						/*if (shipsBody[nShip].Horiz())
+						if (m_Ships[nShip]->Horiz())
 						{
-							firstPos.x = shipsBody[nShip].m_body.getPosition().x + 15;
-							firstPos.y = shipsBody[nShip].m_body.getPosition().y + 15;
-							lastPos.x = shipsBody[nShip].m_body.getPosition().x + shipsBody[nShip].m_body.getSize().x - 15;
-							lastPos.y = shipsBody[nShip].m_body.getPosition().y + shipsBody[nShip].m_body.getSize().y - 15;
-						}*/
-						//else
-						{
-							/*firstPos.x = shipsBody[nShip].m_body.getPosition().y + 15;
-							firstPos.y = shipsBody[nShip].m_body.getPosition().x - 15;
-							lastPos.x = shipsBody[nShip].m_body.getPosition().x + shipsBody[nShip].m_body.getSize().y + 15;
-							lastPos.y = shipsBody[nShip].m_body.getPosition().y + shipsBody[nShip].m_body.getSize().x - 15;
-							sf::Vector2f pos(shipsBody[nShip].m_body.getSize().y, shipsBody[nShip].m_body.getSize().x);
-							firstPos.x = shipsBody[nShip].m_body.getPosition().x - 15;
-							firstPos.y = shipsBody[nShip].m_body.getPosition().y + 15;
-							lastPos.x = shipsBody[nShip].m_body.getPosition().x + pos.x + 15;
-							lastPos.y = shipsBody[nShip].m_body.getPosition().y + pos.y - 15;*/
-						}
-
-						if (boardFrame.getGlobalBounds().contains(firstPos) && boardFrame.getGlobalBounds().contains(lastPos))
-						{
-
+							firstPos.x = m_Ships[nShip]->getGlobalBounds().left + 5;
+							lastPos.x = m_Ships[nShip]->getGlobalBounds().left + m_Ships[nShip]->getGlobalBounds().width - 5;
+							firstPos.y = m_Ships[nShip]->getGlobalBounds().top + 5;
+							lastPos.y = m_Ships[nShip]->getGlobalBounds().top + 25;
 						}
 						else
 						{
-							//shipsBody[nShip].m_body.setPosition(startingPositions[nShip].GetX(), startingPositions[nShip].GetY());
-							/*if (!shipsBody[nShip].Horiz())
-								shipsBody[nShip].Rotate();*/
+							firstPos.x = m_Ships[nShip]->getGlobalBounds().left + 5;
+							lastPos.x = m_Ships[nShip]->getGlobalBounds().left + 25;
+							firstPos.y = m_Ships[nShip]->getGlobalBounds().top + 5;
+							lastPos.y = m_Ships[nShip]->getGlobalBounds().top + m_Ships[nShip]->getGlobalBounds().height - 5;
+						}
+
+						if (boardFrame.getGlobalBounds().contains(firstPos) && boardFrame.getGlobalBounds().contains(lastPos))  //внутри доски
+						{
+							firstPos.x -= 40;  //центр первой палубы
+							firstPos.y -= 70;
+
+							int x = firstPos.x / 30, y = firstPos.y / 30;
+							m_Ships[nShip]->SetPos(y, x, m_Board, ALIVE);
+						}
+						else
+						{
+							m_Ships[nShip]->setPosition(startingPositions[nShip].first, startingPositions[nShip].second);
+							m_Ships[nShip]->replace();
+							m_Ships[nShip]->Desposited();
+							if (!m_Ships[nShip]->Horiz())
+								m_Ships[nShip]->Rotate();
 						}
 						isMove = false;
 						nShip = -1;
@@ -226,7 +223,7 @@ bool Human::SetDisposition()
 				{
 					if (isMove)
 					{
-						//	shipsBody[nShip].Rotate();
+						m_Ships[nShip]->Rotate();
 					}
 				}
 			}
@@ -235,13 +232,13 @@ bool Human::SetDisposition()
 		}
 		if (isMove)
 		{
-			//shipsBody[nShip].m_body.setPosition(pos.x - dX, pos.y - dY);
+			m_Ships[nShip]->setPosition(pos.x, pos.y);
 		}
 
 		game->m_window.clear(sf::Color::White);
 		game->m_window.draw(s_random);
 		game->m_window.draw(s_check);
-		game->m_window.draw(s_menu);
+		game->m_window.draw(s_back);
 
 		boardFrame.setPosition(450, 80);
 		game->m_window.draw(boardFrame);
@@ -271,6 +268,12 @@ bool Human::SetDisposition()
 			}
 		}
 
+		for (size_t i = 0; i < 10; i++)
+		{
+			if (nShip != i)
+				game->m_window.draw(*m_Ships[i]);
+		}
+
 		for (int i = 1; i < 10; i++)  //my board
 		{
 			line[0].position = sf::Vector2f(50 + i * SQUARE_SIDE_SIZE, 80);
@@ -282,10 +285,8 @@ bool Human::SetDisposition()
 			game->m_window.draw(line);
 		}
 
-		/*for (size_t i = 0; i < 10; i++)
-		{
-			m_window.draw(shipsBody[i].m_body);
-		}*/
+		if (nShip > -1)
+			game->m_window.draw(*m_Ships[nShip]);
 
 		if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))
 		{
@@ -297,17 +298,12 @@ bool Human::SetDisposition()
 			s_check.setColor(sf::Color::Black);
 			game->m_window.draw(s_check);
 		}
-		if (sf::IntRect(s_menu.getGlobalBounds()).contains(pos.x, pos.y))
+		if (sf::IntRect(s_back.getGlobalBounds()).contains(pos.x, pos.y))
 		{
-			s_menu.setColor(sf::Color::Black);
-			game->m_window.draw(s_menu);
+			s_back.setColor(sf::Color::Black);
+			game->m_window.draw(s_back);
 		}
 
-		if (menuOpen)
-		{
-			game->m_window.draw(menu);
-			//m_window.draw(txt);
-		}
 		game->m_window.display();
 	}
 	return false;

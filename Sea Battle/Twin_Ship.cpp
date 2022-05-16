@@ -5,10 +5,8 @@ using namespace std;
 
 Twin_Ship::Twin_Ship() :Ship(2)
 {
-	m_x1 = new int;
-	m_y1 = new int;
-	m_x2 = new int;
-	m_y2 = new int;
+	m_x1 = new int;	m_y1 = new int;
+	m_x2 = new int;	m_y2 = new int;
 }
 
 Twin_Ship::~Twin_Ship()
@@ -19,26 +17,57 @@ Twin_Ship::~Twin_Ship()
 	delete m_y2;
 }
 
-void Twin_Ship::SetPos(const int& x, const int& y, const bool& horiz)
-{
-	*m_x1 = x;
-	*m_y1 = y;
-	if (horiz)
+void Twin_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player)
+{	
+	int y2, x2;
+	if (Horiz())
+	{ x2 = x; y2 = y + 1; }
+	else
+	{ x2 = x + 1; y2 = y; }
+
+	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY)
 	{
-		*m_x2 = x + 1;
-		*m_y2 = y;
+		m_body->setPosition(*m_posGraphic);
+		if (!*m_disposited)
+			return;
+		if (*m_x1 == *m_x2)
+		{
+			if (!Horiz())
+				Rotate();
+		}
+		else
+			if (Horiz())
+				Rotate();			
 	}
 	else
 	{
-		*m_x2 = x;
-		*m_y2 = y + 1;
+		*m_disposited = true;
+		*m_x1 = x;
+		*m_y1 = y;
+		*m_x2 = x2;
+		*m_y2 = y2;
+		m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y2) / 2) + 15, 80 + 30 * (float(*m_x1 + *m_x2) / 2) + 15);
+		*m_posGraphic = m_body->getPosition();
 	}
+
+	std::vector<sf::Vector2f> zone = Zone(arr, true);
+	for (int i = 0; i < zone.size(); i++)
+	{
+		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
+	}
+	m_stat1 = &arr[*m_y1][*m_x1];
+	*m_stat1 = player;
+	m_stat2 = &arr[*m_y2][*m_x2];
+	*m_stat2 = player;
 }
 
-void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
+void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 {
 	Game* game = Game::GetInstance();
 
+	if (!Horiz())
+		Rotate();
+	*m_disposited = true;
 	bool isFree = false;
 	do
 	{
@@ -89,6 +118,10 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 					m_stat2 = &arr[*m_y2][*m_x2];
 					*m_stat1 = player;
 					*m_stat2 = player;
+					m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y2) / 2) + 15, 80 + 30 * (float(*m_x1 + *m_x2) / 2) + 15);
+					if (*m_y1 == *m_y2)
+						if (Horiz())
+							Rotate();
 					Zone(arr);
 					return;
 				}

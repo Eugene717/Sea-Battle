@@ -5,8 +5,7 @@ using namespace std;
 
 Unit_Ship::Unit_Ship() :Ship(1)
 {
-	m_x1 = new int;
-	m_y1 = new int;
+	m_x1 = new int;	m_y1 = new int;
 }
 
 Unit_Ship::~Unit_Ship()
@@ -15,16 +14,37 @@ Unit_Ship::~Unit_Ship()
 	delete m_y1;
 }
 
-void Unit_Ship::SetPos(const int& x, const int& y, const bool& horiz)
+void Unit_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player)
 {
-	*m_x1 = x;
-	*m_y1 = y;
+	if (arr[y][x] != EMPTY)
+	{
+		m_body->setPosition(*m_posGraphic);
+		if (!*m_disposited)
+			return;
+	}
+	else
+	{
+		*m_disposited = true;
+		*m_x1 = x;
+		*m_y1 = y;
+		m_body->setPosition(50 + 30 * *m_y1 + 15, 80 + 30 * *m_x1 + 15);
+		*m_posGraphic = m_body->getPosition();
+	}
+
+	std::vector<sf::Vector2f> zone = Zone(arr, true);
+	for (int i = 0; i < zone.size(); i++)
+	{
+		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
+	}
+	m_stat1 = &arr[*m_y1][*m_x1];
+	*m_stat1 = player;
 }
 
-void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
+void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 {
 	Game* game = Game::GetInstance();
 
+	*m_disposited = true;
 	do
 	{
 		*m_y1 = game->m_gen() % 10;
@@ -33,7 +53,8 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 		{
 			m_stat1 = &arr[*m_y1][*m_x1];
 			*m_stat1 = player;
-			Zone(arr);
+			m_body->setPosition(50 + 30 * *m_y1 + 15, 80 + 30 * *m_x1 + 15);
+			Zone(arr);		
 			return;
 		}
 	} while (true);

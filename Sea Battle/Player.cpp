@@ -39,11 +39,6 @@ void Player::RandomShipsArrangement()
 	}
 }
 
-void Player::SetShipPos(const int& i, const int& x, const int& y, const bool& horiz)
-{
-	m_Ships[i]->SetPos(x, y, horiz);
-}
-
 void Player::CleardBoard()
 {
 	for (int y = 0; y < ROW; y++)

@@ -5,12 +5,9 @@ using namespace std;
 
 Triple_Ship::Triple_Ship() :Ship(3)
 {
-	m_x1 = new int;
-	m_y1 = new int;
-	m_x2 = new int;
-	m_y2 = new int;
-	m_x3 = new int;
-	m_y3 = new int;
+	m_x1 = new int;	m_y1 = new int;
+	m_x2 = new int;	m_y2 = new int;
+	m_x3 = new int;	m_y3 = new int;
 }
 
 Triple_Ship::~Triple_Ship()
@@ -23,30 +20,67 @@ Triple_Ship::~Triple_Ship()
 	delete m_y3;
 }
 
-void Triple_Ship::SetPos(const int& x, const int& y, const bool& horiz)
+void Triple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player)
 {
-	*m_x1 = x;
-	*m_y1 = y;
-	if (horiz)
+	int y2, x2, y3, x3;
+	if (Horiz())
 	{
-		*m_x2 = x + 1;
-		*m_x3 = x + 2;
-		*m_y2 = y;
-		*m_y3 = y;
+		x2 = x; y2 = y + 1;
+		x3 = x; y3 = y2 + 1;
 	}
 	else
 	{
-		*m_x2 = x;
-		*m_x3 = x;
-		*m_y2 = y + 1;
-		*m_y3 = y + 2;
+		x2 = x + 1; y2 = y;
+		x3 = x2 + 1; y3 = y;
 	}
+	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY || arr[y3][x3] != EMPTY)
+	{
+		m_body->setPosition(*m_posGraphic);
+		if (!*m_disposited)
+			return;
+		if (*m_x1 == *m_x2)
+		{
+			if (!Horiz())
+				Rotate();
+		}
+		else
+			if (Horiz())
+				Rotate();
+	}
+	else
+	{
+		*m_disposited = true;
+
+		*m_x1 = x;
+		*m_y1 = y;
+		*m_x2 = x2;
+		*m_x3 = x3;
+		*m_y2 = y2;
+		*m_y3 = y3;
+		m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y3) / 2) + 15, 80 + 30 * (float(*m_x1 + *m_x3) / 2) + 15);
+		*m_posGraphic = m_body->getPosition();
+	}
+
+	std::vector<sf::Vector2f> zone = Zone(arr, true);
+	for (int i = 0; i < zone.size(); i++)
+	{
+		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
+	}
+	m_stat1 = &arr[*m_y1][*m_x1];
+	*m_stat1 = player;
+	m_stat2 = &arr[*m_y2][*m_x2];
+	*m_stat2 = player;
+	m_stat3 = &arr[*m_y3][*m_x3];
+	*m_stat3 = player;
 }
 
-void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
+void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 {
 	Game* game = Game::GetInstance();
 
+	if (!Horiz())
+		Rotate();
+	*m_disposited = true;
 	int dir;
 	bool isFree = false;
 	do
@@ -161,6 +195,10 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], char player)
 						*m_stat1 = player;
 						*m_stat2 = player;
 						*m_stat3 = player;
+						m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y3) / 2) + 15, 80 + 30 * (float(*m_x1 + *m_x3) / 2) + 15);
+						if (*m_y1 == *m_y2)
+							if (Horiz())
+								Rotate();
 						Zone(arr);
 						return;
 					}
