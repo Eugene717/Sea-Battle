@@ -11,6 +11,12 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 {
 	Game* game = Game::GetInstance();
 
+	int min_board_x;
+	if (m_board_number == 1)
+		min_board_x = MIN_S_BOARD_X;
+	else
+		min_board_x = MIN_F_BOARD_X;
+
 	Point shot;
 	while (game->m_window.isOpen())
 	{
@@ -25,12 +31,12 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 			}
 			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (sf::IntRect(MIN_S_BOARD_X, MIN_Y, SQUARE_SIDE_SIZE * 10, SQUARE_SIDE_SIZE * 10).contains(sf::Mouse::getPosition(game->m_window)))
+				if (sf::IntRect(min_board_x, MIN_Y, SQUARE_SIDE_SIZE * 10, SQUARE_SIDE_SIZE * 10).contains(sf::Mouse::getPosition(game->m_window)))
 				{
 					sf::Vector2i mousePos = sf::Mouse::getPosition(game->m_window);
-					shot.first = (mousePos.x - MIN_S_BOARD_X) / 30; shot.second = (mousePos.y - MIN_Y) / 30;
+					shot.first = (mousePos.x - min_board_x) / 30; shot.second = (mousePos.y - MIN_Y) / 30;
 
-					sf::Vector2f middleCell(MIN_S_BOARD_X + shot.first * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.second * SQUARE_SIDE_SIZE + 15);
+					sf::Vector2f middleCell(min_board_x + shot.first * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.second * SQUARE_SIDE_SIZE + 15);
 
 					if (enemy[shot.first][shot.second] == ENEMY_ALIVE)
 					{

@@ -28,9 +28,8 @@ int main()
 			game->SinglePlayer();
 			break;
 		case 2:
-			//cout << "Не работает блять, хули клацаешь?\n";
-			//system("pause");
-			//system("cls");
+			game->m_window.clear(sf::Color::White);
+			game->OnePCGame();
 			break;
 		case 3:
 			//cout << "Не работает блять, хули клацаешь?\n";

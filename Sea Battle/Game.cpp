@@ -421,7 +421,108 @@ void Game::SinglePlayer()
 
 void Game::OnePCGame()
 {
+	m_pImpl->m_first = new Human(ENEMY_ALIVE, 1);
 
+	if (!dynamic_cast<Human*>(m_pImpl->m_first)->SetDisposition())
+	{
+		delete m_pImpl->m_first;
+		return;
+	}
+
+	m_pImpl->m_second = new Human(ENEMY_ALIVE, 2);
+
+	if (!dynamic_cast<Human*>(m_pImpl->m_second)->SetDisposition())
+	{
+		delete m_pImpl->m_second;
+		return;
+	}
+
+	Draw();
+
+	if (FirstTurn() == 'F')
+	{
+		do
+		{
+			while (true)  //игрок
+			{
+				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
+				{
+					m_pImpl->m_second->SearchDead();
+					Draw();
+					if (m_pImpl->m_second->Loss())
+					{
+						AnnounceWinner(0);
+						return;
+					}
+				}
+				else
+				{
+					Draw();
+					break;
+				}
+			}
+			while (true)  //2 игрок
+			{
+				if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
+				{
+					m_pImpl->m_first->SearchDead();
+					Draw();
+					if (m_pImpl->m_first->Loss())
+					{
+						AnnounceWinner(1);
+						return;
+					}
+				}
+				else
+				{
+					Draw();
+					break;
+				}
+			}
+		} while (true);
+	}
+	else
+	{
+		do
+		{
+			while (true)  //2 игрок
+			{
+				if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
+				{
+					m_pImpl->m_first->SearchDead();
+					Draw();
+					if (m_pImpl->m_first->Loss())
+					{
+						AnnounceWinner(1);
+						return;
+					}
+				}
+				else
+				{
+					Draw();
+					break;
+				}
+			}
+			while (true)  //игрок
+			{
+				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
+				{
+					m_pImpl->m_second->SearchDead();
+					Draw();
+					if (m_pImpl->m_second->Loss())
+					{
+						AnnounceWinner(0);
+						return;
+					}
+				}
+				else
+				{
+					Draw();
+					break;
+				}
+			}
+		} while (true);
+	}
 }
 
 void Game::OnlineGame()
@@ -574,40 +675,3 @@ bool Game::Exit()
 	}
 	return true;
 }
-
-
-//class ShipBody
-//{
-//	//bool horiz;
-//public:
-//	//sf::RectangleShape m_body;
-//	//ShipBody(const int& decksNumber);
-//	//void Rotate();
-//	bool Horiz() const;
-//};
-
-//ShipBody::ShipBody(const int& decksNumber)
-//{
-//	horiz = true;
-//	m_body.setFillColor(sf::Color::Blue);
-//	m_body.setSize(sf::Vector2f(30 * decksNumber, 30));
-//}
-
-//void ShipBody::Rotate()
-//{
-//	if (horiz)
-//	{
-//		m_body.rotate(90);
-//		horiz = false;
-//	}
-//	else
-//	{
-//		m_body.rotate(-90);
-//		horiz = true;
-//	}
-//}
-//
-//bool ShipBody::Horiz() const
-//{
-//	return horiz;
-//}

@@ -25,7 +25,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 	{
 		if (*x != 9)
 		{
-			if (arr[*y][*x + 1] != ALIVE)
+			if (arr[*y][*x + 1] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y, *x + 1));
@@ -33,7 +33,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 					arr[*y][*x + 1] = MISS;
 			}
 			if (*y != 9)
-				if (arr[*y + 1][*x + 1] != ALIVE)
+				if (arr[*y + 1][*x + 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y + 1, *x + 1));
@@ -41,7 +41,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 						arr[*y + 1][*x + 1] = MISS;
 				}
 			if (*y != 0)
-				if (arr[*y - 1][*x + 1] != ALIVE)
+				if (arr[*y - 1][*x + 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y - 1, *x + 1));
@@ -51,7 +51,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*x != 0)
 		{
-			if (arr[*y][*x - 1] != ALIVE)
+			if (arr[*y][*x - 1] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y, *x - 1));
@@ -59,7 +59,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 					arr[*y][*x - 1] = MISS;
 			}
 			if (*y != 9)
-				if (arr[*y + 1][*x - 1] != ALIVE)
+				if (arr[*y + 1][*x - 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y + 1, *x - 1));
@@ -67,7 +67,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 						arr[*y + 1][*x - 1] = MISS;
 				}
 			if (*y != 0)
-				if (arr[*y - 1][*x - 1] != ALIVE)
+				if (arr[*y - 1][*x - 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y - 1, *x - 1));
@@ -77,7 +77,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*y != 9)
 		{
-			if (arr[*y + 1][*x] != ALIVE)
+			if (arr[*y + 1][*x] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y + 1, *x));
@@ -87,7 +87,7 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*y != 0)
 		{
-			if (arr[*y - 1][*x] != ALIVE)
+			if (arr[*y - 1][*x] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y - 1, *x));

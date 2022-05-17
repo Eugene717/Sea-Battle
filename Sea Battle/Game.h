@@ -31,8 +31,8 @@ public:
 	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
 	int Menu();
 	void SinglePlayer();
-	void OnlineGame();
 	void OnePCGame();
+	void OnlineGame();
 };
 
 #endif // !GAME_H
