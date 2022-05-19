@@ -13,7 +13,7 @@ Ship::Ship(const int& decksNumber)
 	m_body->setOrigin(m_body->getGlobalBounds().width / 2, m_body->getGlobalBounds().height / 2);
 }
 
-std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const int* y, const bool& draw) const
+std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const int* y, const int& draw) const
 {
 	std::vector<sf::Vector2f> places;
 	if (draw)
@@ -25,7 +25,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 	{
 		if (*x != 9)
 		{
-			if (arr[*y][*x + 1] == EMPTY)
+			if (draw == 2)
+			{
+				if (arr[*y][*x + 1] != ALIVE)
+					places.push_back(sf::Vector2f(*y, *x + 1));
+			}
+			else if (arr[*y][*x + 1] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y, *x + 1));
@@ -33,7 +38,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 					arr[*y][*x + 1] = MISS;
 			}
 			if (*y != 9)
-				if (arr[*y + 1][*x + 1] == EMPTY)
+				if (draw == 2)
+				{
+					if (arr[*y + 1][*x + 1] != ALIVE)
+						places.push_back(sf::Vector2f(*y + 1, *x + 1));
+				}
+				else if (arr[*y + 1][*x + 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y + 1, *x + 1));
@@ -41,7 +51,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 						arr[*y + 1][*x + 1] = MISS;
 				}
 			if (*y != 0)
-				if (arr[*y - 1][*x + 1] == EMPTY)
+				if (draw == 2)
+				{
+					if (arr[*y - 1][*x + 1] != ALIVE)
+						places.push_back(sf::Vector2f(*y - 1, *x + 1));
+				}
+				else if (arr[*y - 1][*x + 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y - 1, *x + 1));
@@ -51,7 +66,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*x != 0)
 		{
-			if (arr[*y][*x - 1] == EMPTY)
+			if (draw == 2)
+			{
+				if (arr[*y][*x - 1] != ALIVE)
+					places.push_back(sf::Vector2f(*y, *x - 1));
+			}
+			else if (arr[*y][*x - 1] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y, *x - 1));
@@ -59,7 +79,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 					arr[*y][*x - 1] = MISS;
 			}
 			if (*y != 9)
-				if (arr[*y + 1][*x - 1] == EMPTY)
+				if (draw == 2)
+				{
+					if (arr[*y + 1][*x - 1] != ALIVE)
+						places.push_back(sf::Vector2f(*y + 1, *x - 1));
+				}
+				else if (arr[*y + 1][*x - 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y + 1, *x - 1));
@@ -67,7 +92,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 						arr[*y + 1][*x - 1] = MISS;
 				}
 			if (*y != 0)
-				if (arr[*y - 1][*x - 1] == EMPTY)
+				if (draw == 2)
+				{
+					if (arr[*y - 1][*x - 1] != ALIVE)
+						places.push_back(sf::Vector2f(*y - 1, *x - 1));
+				}
+				else if (arr[*y - 1][*x - 1] == EMPTY)
 				{
 					if (draw)
 						places.push_back(sf::Vector2f(*y - 1, *x - 1));
@@ -77,7 +107,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*y != 9)
 		{
-			if (arr[*y + 1][*x] == EMPTY)
+			if (draw == 2)
+			{
+				if (arr[*y + 1][*x] != ALIVE)
+					places.push_back(sf::Vector2f(*y + 1, *x));
+			}
+			else if (arr[*y + 1][*x] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y + 1, *x));
@@ -87,7 +122,12 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		}
 		if (*y != 0)
 		{
-			if (arr[*y - 1][*x] == EMPTY)
+			if (draw == 2)
+			{
+				if (arr[*y - 1][*x] != ALIVE)
+					places.push_back(sf::Vector2f(*y - 1, *x));
+			}
+			else if (arr[*y - 1][*x] == EMPTY)
 			{
 				if (draw)
 					places.push_back(sf::Vector2f(*y - 1, *x));
@@ -139,7 +179,7 @@ void Ship::ClearZone(char(&arr)[ROW][COL])
 {
 	if (m_stat1 != nullptr)
 	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x1, m_y1, true);
+		std::vector<sf::Vector2f> zone = Zone(arr, m_x1, m_y1, 2);
 		for (int i = 0; i < zone.size(); i++)
 		{
 			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
@@ -149,7 +189,7 @@ void Ship::ClearZone(char(&arr)[ROW][COL])
 	}
 	if (m_stat2 != nullptr)
 	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x2, m_y2, true);
+		std::vector<sf::Vector2f> zone = Zone(arr, m_x2, m_y2, 2);
 		for (int i = 0; i < zone.size(); i++)
 		{
 			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
@@ -159,7 +199,7 @@ void Ship::ClearZone(char(&arr)[ROW][COL])
 	}
 	if (m_stat3 != nullptr)
 	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x3, m_y3, true);
+		std::vector<sf::Vector2f> zone = Zone(arr, m_x3, m_y3, 2);
 		for (int i = 0; i < zone.size(); i++)
 		{
 			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
@@ -169,7 +209,7 @@ void Ship::ClearZone(char(&arr)[ROW][COL])
 	}
 	if (m_stat4 != nullptr)
 	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x4, m_y4, true);
+		std::vector<sf::Vector2f> zone = Zone(arr, m_x4, m_y4, 2);
 		for (int i = 0; i < zone.size(); i++)
 		{
 			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;

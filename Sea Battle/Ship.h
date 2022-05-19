@@ -30,7 +30,7 @@ protected:
 	sf::Vector2f* m_posGraphic;
 	sf::RectangleShape* m_body;
 	bool* m_disposited;
-	std::vector<sf::Vector2f> Zone(char(&arr)[ROW][COL], const int* x, const int* y, const bool& draw = false) const;
+	std::vector<sf::Vector2f> Zone(char(&arr)[ROW][COL], const int* x, const int* y, const int& draw = false) const;
 };
 
 inline Ship::~Ship() { }
