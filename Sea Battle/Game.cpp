@@ -3,16 +3,22 @@
 #include "Ships.h"
 #include "Players.h"
 #include <memory>
-
-using namespace std;
+#include <fstream>
 
 Game* Game::m_game = nullptr;
+struct Settings
+{
+	bool Music;
+	bool Sound;
+	std::string Name;
+};
 
 struct GameIMPL
 {
 	Player* m_first;
 	Player* m_second;
 	sf::Font m_font;
+	Settings m_settings;
 };
 
 Game::Game()
@@ -21,8 +27,18 @@ Game::Game()
 	std::random_device rd;
 	m_gen.seed(rd());
 
-	m_pImpl->m_font.loadFromFile("arial.ttf");
+	m_pImpl->m_settings.Sound = true;
+	m_pImpl->m_settings.Music = true;
+
+	m_pImpl->m_font.loadFromFile("resourses/arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
+
+	std::ifstream fin("resourses/settings.txt");
+	if (fin.is_open())
+		fin >> m_pImpl->m_settings.Name;
+
+	if (m_pImpl->m_settings.Name == "")
+		SetNameFirstTime();
 }
 
 Game* Game::GetInstance()
@@ -182,7 +198,7 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 		m_window.clear(sf::Color::White);
 		Draw();
 
-		vector<sf::RectangleShape> shots;
+		std::vector<sf::RectangleShape> shots;
 		shots.resize(places.size());
 
 		for (size_t i = 0; i < places.size(); i++)
@@ -281,7 +297,7 @@ int Game::Menu()
 			menuNum = 5;
 		}
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menuNum > 0)
+		if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left && menuNum > 0)
 		{
 			m_window.clear(sf::Color::White);
 			return menuNum;
@@ -528,6 +544,358 @@ void Game::OnePCGame()
 void Game::OnlineGame()
 {
 
+}
+
+void Game::Settings()
+{
+	m_window.clear(sf::Color::White);
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 100);
+
+	sf::Texture t_sound_on;
+	t_sound_on.loadFromFile("images/sound_on.png");
+	sf::Texture t_sound_off;
+	t_sound_off.loadFromFile("images/sound_off.png");
+
+	sf::Texture t_music_on;
+	t_music_on.loadFromFile("images/music_on.png");
+	sf::Texture t_music_off;
+	t_music_off.loadFromFile("images/music_off.png");
+
+	sf::Sprite s_sound;
+	sf::Sprite s_music;
+
+	if (m_pImpl->m_settings.Sound)
+		s_sound.setTexture(t_sound_on);
+	else
+		s_sound.setTexture(t_sound_off);
+
+	if (m_pImpl->m_settings.Music)
+		s_music.setTexture(t_music_on);
+	else
+		s_music.setTexture(t_music_off);
+
+	s_sound.setOrigin(24, 24);
+	s_music.setOrigin(24, 24);
+
+	s_sound.setPosition(324, 324);
+	s_music.setPosition(494, 324);
+
+	sf::Texture t_back;
+	t_back.loadFromFile("images/back.png");
+	sf::Sprite s_back;
+	s_back.setTexture(t_back);
+	s_back.setOrigin(24, 24);
+	s_back.setPosition(25, 575);
+
+	sf::RectangleShape shape;
+	shape.setFillColor(sf::Color::White);
+	shape.setOutlineColor(sf::Color::Black);
+	shape.setOutlineThickness(2);
+	shape.setSize(sf::Vector2f(300, 50));
+	shape.setOrigin(150, 75);
+	shape.setPosition(m_window.getSize().x / 2, m_window.getSize().y / 2);
+
+	sf::Texture t_check;
+	t_check.loadFromFile("images/check.png");
+	sf::Sprite s_check;
+	s_check.setTexture(t_check);
+	s_check.setOrigin(15, 15);
+	s_check.setPosition(m_window.getSize().x / 2 + 175, m_window.getSize().y / 2 - 60);
+
+	std::string str = m_pImpl->m_settings.Name;
+	sf::Text name(m_pImpl->m_settings.Name, m_pImpl->m_font, 28);
+	name.setFillColor(sf::Color::Black);
+	name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+	name.setPosition(centerPos.x, centerPos.y + 40);
+
+	sf::RectangleShape input;
+	input.setFillColor(sf::Color::Black);
+	input.setSize(sf::Vector2f(2, 46));
+	input.setOrigin(1, 23);
+	input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, name.getPosition().y + 10);
+
+	bool isPassEnter = false;
+	sf::Clock clock, clock2;
+	bool blink = true;
+
+	while (m_window.isOpen())
+	{
+		while (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::KeyPressed)
+			{
+				if (m_event.key.code == sf::Keyboard::Escape)
+					m_window.close();
+			}
+			if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
+			{
+				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					if (str.size() > 0)
+					{
+						m_pImpl->m_settings.Name = str;
+
+						std::FILE* file = fopen("resourses/settings.txt", "w");
+						fclose(file);
+
+						std::fstream fout("resourses/settings.txt");
+						fout << m_pImpl->m_settings.Name;
+					}
+				}
+				if (sf::IntRect(shape.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+					isPassEnter = true;
+				else
+				{
+					name.setString(m_pImpl->m_settings.Name);
+					str = m_pImpl->m_settings.Name;
+					isPassEnter = false;
+					name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+					name.setPosition(centerPos.x, centerPos.y + 40);
+					input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
+				}
+				if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+					return;
+				if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					if (m_pImpl->m_settings.Sound)
+					{
+						m_pImpl->m_settings.Sound = false;
+						s_sound.setTexture(t_sound_off);
+					}
+					else
+					{
+						m_pImpl->m_settings.Sound = true;
+						s_sound.setTexture(t_sound_on);
+					}
+				}
+				if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					if (m_pImpl->m_settings.Music)
+					{
+						m_pImpl->m_settings.Music = false;
+						s_music.setTexture(t_music_off);
+					}
+					else
+					{
+						m_pImpl->m_settings.Music = true;
+						s_music.setTexture(t_music_on);
+					}
+				}
+			}
+			if (m_event.type == sf::Event::TextEntered && isPassEnter)
+			{
+				if (m_event.text.unicode == '\b')
+				{
+					if (str.size() > 0)
+					{
+						str.pop_back();
+						name.setString(str);
+						name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+						name.setPosition(centerPos.x, centerPos.y + 40);
+						if (str.size() == 0)
+							input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+						else
+							input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
+					}
+				}
+				else if (m_event.text.unicode < 128)
+				{
+					if (str.size() < 10)
+					{
+						str += static_cast<char>(m_event.text.unicode);
+						name.setString(str);
+						name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+						name.setPosition(centerPos.x, centerPos.y + 40);
+						input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
+					}
+				}
+			}
+		}
+
+		s_check.setScale(1, 1);
+		if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_check.setScale(1.10, 1.10);
+		}
+		s_sound.setScale(1, 1);
+		if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_sound.setScale(1.10, 1.10);
+		}
+		s_music.setScale(1, 1);
+		if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_music.setScale(1.10, 1.10);
+		}
+		s_back.setScale(1, 1);
+		if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_back.setScale(1.10, 1.10);
+		}
+
+
+		m_window.clear(sf::Color::White);
+		m_window.draw(s_back);
+		m_window.draw(s_sound);
+		m_window.draw(s_music);
+		if (isPassEnter)
+		{
+			m_window.draw(shape);
+			m_window.draw(s_check);
+			if (blink)
+			{
+				if (clock2.getElapsedTime().asSeconds() >= 1)
+				{
+					blink = false;
+					clock2.restart();
+					clock.restart();
+				}
+				m_window.draw(input);
+			}
+			else if (clock.getElapsedTime().asSeconds() >= 1)
+			{
+				blink = true;
+				clock.restart();
+				clock2.restart();
+			}
+		}
+		m_window.draw(name);
+		m_window.display();
+	}
+}
+
+void Game::SetNameFirstTime()
+{
+	m_window.clear(sf::Color::White);
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 100);
+
+	sf::Text enter("Enter your name", m_pImpl->m_font);
+	enter.setFillColor(sf::Color::Black);
+	enter.setCharacterSize(30);
+	enter.setPosition(centerPos.x - enter.getGlobalBounds().width / 2, centerPos.y - enter.getGlobalBounds().height);
+
+	sf::RectangleShape shape;
+	shape.setFillColor(sf::Color::White);
+	shape.setOutlineColor(sf::Color::Black);
+	shape.setOutlineThickness(2);
+	shape.setSize(sf::Vector2f(300, 50));
+	shape.setOrigin(150, 75);
+	shape.setPosition(m_window.getSize().x / 2, m_window.getSize().y / 2);
+
+	sf::Texture t_next;
+	t_next.loadFromFile("images/next.png");
+	sf::Sprite s_next;
+	s_next.setTexture(t_next);
+	s_next.setOrigin(15, 15);
+	s_next.setPosition(m_window.getSize().x / 2 + 175, m_window.getSize().y / 2 - 50);
+
+	std::string str;
+	sf::Text name("", m_pImpl->m_font, 28);
+	name.setFillColor(sf::Color::Black);
+	name.setPosition(centerPos.x - 145, centerPos.y + 30);
+
+	sf::RectangleShape input;
+	input.setFillColor(sf::Color::Black);
+	input.setSize(sf::Vector2f(2, 46));
+	input.setOrigin(1, 23);
+	input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+
+	bool isPassEnter = true;
+	sf::Clock clock, clock2;
+	bool blink = true;
+
+	while (m_window.isOpen())
+	{
+		while (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::KeyPressed)
+			{
+				if (m_event.key.code == sf::Keyboard::Escape)
+					m_window.close();
+			}
+			if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
+			{
+				if (sf::IntRect(s_next.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					if (str.size() > 0)
+					{
+						m_pImpl->m_settings.Name = str;
+
+						std::FILE* file = fopen("resourses/settings.txt", "w");
+						fclose(file);
+
+						std::fstream fout("resourses/settings.txt");
+						fout << m_pImpl->m_settings.Name;
+						return;
+					}
+				}
+				if (sf::IntRect(shape.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+					isPassEnter = true;
+				else
+					isPassEnter = false;
+			}
+			if (m_event.type == sf::Event::TextEntered && isPassEnter)
+			{
+				if (m_event.text.unicode == '\b')
+				{
+					if (str.size() > 0)
+					{
+						str.pop_back();
+						name.setString(str);
+						if (str.size() == 0)
+							input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+						else
+							input.setPosition(name.getPosition().x + name.getGlobalBounds().width + 5, input.getPosition().y);
+					}
+				}
+				else if (m_event.text.unicode < 128)
+				{
+					if (str.size() < 10)
+					{
+						str += static_cast<char>(m_event.text.unicode);
+						name.setString(str); 
+						input.setPosition(name.getPosition().x + name.getGlobalBounds().width + 5, input.getPosition().y);
+					}
+				}
+			}
+		}
+
+		s_next.setScale(1, 1);
+		if (sf::IntRect(s_next.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_next.setScale(1.10, 1.10);
+		}
+
+		m_window.clear(sf::Color::White);
+		m_window.draw(enter);
+		m_window.draw(shape);
+		m_window.draw(name);
+		m_window.draw(s_next);
+		if (isPassEnter)
+		{
+			if (blink)
+			{
+				if (clock2.getElapsedTime().asSeconds() >= 1)
+				{
+					blink = false;
+					clock2.restart();
+					clock.restart();
+				}
+				m_window.draw(input);
+			}
+			else if (clock.getElapsedTime().asSeconds() >= 1)
+			{
+				blink = true;
+				clock.restart();
+				clock2.restart();
+			}
+		}
+		m_window.display();
+	}
 }
 
 char Game::FirstTurn()

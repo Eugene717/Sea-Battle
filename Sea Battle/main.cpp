@@ -24,11 +24,9 @@ int main()
 		switch (game->Menu())
 		{
 		case 1:
-			game->m_window.clear(sf::Color::White);
 			game->SinglePlayer();
 			break;
 		case 2:
-			game->m_window.clear(sf::Color::White);
 			game->OnePCGame();
 			break;
 		case 3:
@@ -37,9 +35,7 @@ int main()
 			//system("cls");
 			break;
 		case 4:
-			//cout << "Не работает блять, хули клацаешь?\n";
-			//system("pause");
-			//system("cls");
+			game->Settings();
 			break;
 		case 5:
 			if (game->Exit())

@@ -16,6 +16,7 @@ class Game
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 
+	void SetNameFirstTime();
 	char FirstTurn();
 	void ShowRemainingShips(Player* player, const int& board);
 	void AnnounceWinner(const int& player);
@@ -33,6 +34,7 @@ public:
 	void SinglePlayer();
 	void OnePCGame();
 	void OnlineGame();
+	void Settings();
 };
 
 #endif // !GAME_H
