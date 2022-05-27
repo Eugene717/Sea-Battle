@@ -4,6 +4,7 @@
 #include "Players.h"
 #include <memory>
 #include <fstream>
+#include <SFML/Audio.hpp>
 
 Game* Game::m_game = nullptr;
 struct Settings
@@ -15,6 +16,8 @@ struct Settings
 
 struct GameIMPL
 {
+	sf::Music m_music;
+
 	Player* m_first;
 	Player* m_second;
 	sf::Font m_font;
@@ -33,12 +36,24 @@ Game::Game()
 	m_pImpl->m_font.loadFromFile("resourses/arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
 
+	m_pImpl->m_music.setLoop(true);
+	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
+	m_pImpl->m_music.setVolume(50);
+
 	std::ifstream fin("resourses/settings.txt");
 	if (fin.is_open())
 		fin >> m_pImpl->m_settings.Name;
 
 	if (m_pImpl->m_settings.Name == "")
 		SetNameFirstTime();
+
+	m_pImpl->m_music.play();
+}
+
+Game::~Game()
+{		
+	delete m_pImpl;
+	delete m_game;
 }
 
 Game* Game::GetInstance()
@@ -331,6 +346,11 @@ void Game::SinglePlayer()
 
 	Draw();
 
+	m_pImpl->m_music.stop();
+	m_pImpl->m_music.openFromFile("sounds/game_music.wav");
+	if (m_pImpl->m_settings.Music)
+		m_pImpl->m_music.play();
+
 	while (m_window.isOpen())
 	{
 		while (m_window.pollEvent(m_event))
@@ -453,7 +473,12 @@ void Game::OnePCGame()
 		return;
 	}
 
-	Draw();
+	Draw(); 
+	
+	m_pImpl->m_music.stop();
+	m_pImpl->m_music.openFromFile("sounds/game_music.wav");
+	if (m_pImpl->m_settings.Music)
+		m_pImpl->m_music.play();
 
 	if (FirstTurn() == 'F')
 	{
@@ -587,6 +612,13 @@ void Game::Settings()
 	s_back.setOrigin(24, 24);
 	s_back.setPosition(25, 575);
 
+	sf::Texture t_check;
+	t_check.loadFromFile("images/check.png");
+	sf::Sprite s_check;
+	s_check.setTexture(t_check);
+	s_check.setOrigin(15, 15);
+	s_check.setPosition(m_window.getSize().x / 2 + 175, m_window.getSize().y / 2 - 60);
+
 	sf::RectangleShape shape;
 	shape.setFillColor(sf::Color::White);
 	shape.setOutlineColor(sf::Color::Black);
@@ -594,13 +626,6 @@ void Game::Settings()
 	shape.setSize(sf::Vector2f(300, 50));
 	shape.setOrigin(150, 75);
 	shape.setPosition(m_window.getSize().x / 2, m_window.getSize().y / 2);
-
-	sf::Texture t_check;
-	t_check.loadFromFile("images/check.png");
-	sf::Sprite s_check;
-	s_check.setTexture(t_check);
-	s_check.setOrigin(15, 15);
-	s_check.setPosition(m_window.getSize().x / 2 + 175, m_window.getSize().y / 2 - 60);
 
 	std::string str = m_pImpl->m_settings.Name;
 	sf::Text name(m_pImpl->m_settings.Name, m_pImpl->m_font, 28);
@@ -614,9 +639,21 @@ void Game::Settings()
 	input.setOrigin(1, 23);
 	input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, name.getPosition().y + 10);
 
+	sf::RectangleShape volumeBar;
+	volumeBar.setFillColor(sf::Color::Black);
+	volumeBar.setSize(sf::Vector2f(5, 100));
+	volumeBar.setOrigin(3, 50);
+	volumeBar.setPosition(-100, -100);
+
+	sf::CircleShape volumeCircle;
+	volumeCircle.setFillColor(sf::Color::Black);
+	volumeCircle.setRadius(10);
+	volumeCircle.setOrigin(10, 10);
+	volumeCircle.setPosition(-100, 454 - m_pImpl->m_music.getVolume());
+
 	bool isPassEnter = false;
 	sf::Clock clock, clock2;
-	bool blink = true;
+	bool blink = true, barClick = false;
 
 	while (m_window.isOpen())
 	{
@@ -631,7 +668,15 @@ void Game::Settings()
 			}
 			if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
 			{
-				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (barClick)  //set volume
+				{
+					barClick = false;
+					if (m_pImpl->m_music.getVolume() == 0)
+						m_pImpl->m_settings.Music = false;
+					else
+						m_pImpl->m_settings.Music = true;
+				}
+				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //set name
 				{
 					if (str.size() > 0)
 					{
@@ -644,9 +689,9 @@ void Game::Settings()
 						fout << m_pImpl->m_settings.Name;
 					}
 				}
-				if (sf::IntRect(shape.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (sf::IntRect(shape.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //cnange name
 					isPassEnter = true;
-				else
+				else   //cancel name set
 				{
 					name.setString(m_pImpl->m_settings.Name);
 					str = m_pImpl->m_settings.Name;
@@ -655,9 +700,12 @@ void Game::Settings()
 					name.setPosition(centerPos.x, centerPos.y + 40);
 					input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 				}
-				if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to main menu
 					return;
-				if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+			}
+			if (m_event.type == sf::Event::MouseButtonPressed && m_event.key.code == sf::Mouse::Left)  
+			{
+				if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play sound or not
 				{
 					if (m_pImpl->m_settings.Sound)
 					{
@@ -670,18 +718,24 @@ void Game::Settings()
 						s_sound.setTexture(t_sound_on);
 					}
 				}
-				if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play music or not
 				{
 					if (m_pImpl->m_settings.Music)
 					{
 						m_pImpl->m_settings.Music = false;
+						m_pImpl->m_music.pause();
 						s_music.setTexture(t_music_off);
 					}
 					else
 					{
 						m_pImpl->m_settings.Music = true;
+						m_pImpl->m_music.play();
 						s_music.setTexture(t_music_on);
 					}
+				}
+				if (sf::IntRect(volumeCircle.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window))) //volume settings
+				{
+					barClick = true;
 				}
 			}
 			if (m_event.type == sf::Event::TextEntered && isPassEnter)
@@ -713,30 +767,59 @@ void Game::Settings()
 				}
 			}
 		}
+		if (barClick)
+		{
+			if (sf::Mouse::getPosition(m_window).y >= 354 && sf::Mouse::getPosition(m_window).y <= 454)
+				volumeCircle.setPosition(volumeBar.getPosition().x, sf::Mouse::getPosition(m_window).y);
+			else if (sf::Mouse::getPosition(m_window).y <= 354)
+				volumeCircle.setPosition(volumeBar.getPosition().x, 354);
+			else if (sf::Mouse::getPosition(m_window).y >= 454)
+				volumeCircle.setPosition(volumeBar.getPosition().x, 454);
+
+			m_pImpl->m_music.setVolume(abs(volumeCircle.getPosition().y - 454));
+			if (m_pImpl->m_music.getVolume() == 0)
+				s_music.setTexture(t_music_off);
+			else
+				s_music.setTexture(t_music_on);
+		}
+
+		m_window.clear(sf::Color::White);
 
 		s_check.setScale(1, 1);
+		s_sound.setScale(1, 1);
+		s_back.setScale(1, 1);
+
 		if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			s_check.setScale(1.10, 1.10);
 		}
-		s_sound.setScale(1, 1);
-		if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-		{
-			s_sound.setScale(1.10, 1.10);
-		}
-		s_music.setScale(1, 1);
-		if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-		{
-			s_music.setScale(1.10, 1.10);
-		}
-		s_back.setScale(1, 1);
 		if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			s_back.setScale(1.10, 1.10);
 		}
+		if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_sound.setScale(1.10, 1.10);
+		}
+		if ((sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)) || sf::IntRect(volumeBar.getGlobalBounds().left - 25, volumeBar.getGlobalBounds().top - 25,
+			volumeBar.getGlobalBounds().width + 50, volumeBar.getGlobalBounds().height + 50).contains(sf::Mouse::getPosition(m_window))) && !barClick)
+		{
+			s_music.setScale(1.10, 1.10);
+			if (!barClick)
+			{
+				volumeBar.setPosition(s_music.getPosition().x - 5, s_music.getPosition().y + 80);
+				volumeCircle.setPosition(volumeBar.getPosition().x, volumeCircle.getPosition().y);
+			}
+		}
+		else if (!barClick)
+		{
+			s_music.setScale(1, 1);
+			volumeBar.setPosition(-100, -100);
+			volumeCircle.setPosition(-100, volumeCircle.getPosition().y);
+		}
 
-
-		m_window.clear(sf::Color::White);
+		m_window.draw(volumeBar);
+		m_window.draw(volumeCircle);
 		m_window.draw(s_back);
 		m_window.draw(s_sound);
 		m_window.draw(s_music);
@@ -976,7 +1059,13 @@ void Game::AnnounceWinner(const int& player)
 	m_window.clear(sf::Color::White);
 	m_window.draw(announce);
 	m_window.display();
+
+	m_pImpl->m_music.stop();
+	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
+
 	sf::sleep(sf::seconds(3));
+
+	m_pImpl->m_music.play();
 
 	delete m_pImpl->m_first;
 	delete m_pImpl->m_second;

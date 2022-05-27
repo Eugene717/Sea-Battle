@@ -195,14 +195,15 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 						*m_stat1 = player;
 						*m_stat2 = player;
 						*m_stat3 = player;
-						m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y3) / 2) + 15, 80 + 30 * (float(*m_x1 + *m_x3) / 2) + 15);
+						m_body->setPosition(50 + 30 * (float(*m_y1 + *m_y2 + *m_y3) / 3) + 15, 80 + 30 * (float(*m_x1 + *m_x2 + *m_x3) / 3) + 15);
 						if (*m_y1 == *m_y2)
 							if (Horiz())
 								Rotate();
 						Zone(arr);
 						return;
 					}
-				}				
+				}	
+				isFree = false;
 			}
 		}
 	} while (true);

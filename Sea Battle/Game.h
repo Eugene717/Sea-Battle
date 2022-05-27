@@ -13,6 +13,7 @@ class Game
 	static Game* m_game;
 
 	Game();
+	~Game();
 	Game(const Game&) = delete;
 	Game& operator=(const Game&) = delete;
 
