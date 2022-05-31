@@ -115,7 +115,7 @@ bool Human::SetDisposition()
 		m_Ships[i]->replace();
 	}
 
-	bool isMove = false;
+	bool isMove = false, sound = false;
 	int nShip = -1;
 
 	sf::Vector2f pos;
@@ -136,6 +136,7 @@ bool Human::SetDisposition()
 			{
 				if (sf::IntRect(s_random.getGlobalBounds()).contains(pos.x, pos.y))  //рандом
 				{
+					game->PlaySound(Sounds::select);
 					CleardBoard();
 					RandomShipsArrangement();
 				}
@@ -156,11 +157,17 @@ bool Human::SetDisposition()
 						game->m_window.clear(sf::Color::White);
 						for (int i = 0; i < 10; i++)
 							m_Ships[i]->EndArrange();
+
+						game->PlaySound(Sounds::select);
+
 						return true;
 					}
 				}
 				if (sf::IntRect(s_back.getGlobalBounds()).contains(pos.x, pos.y))  //назад
+				{
+					game->PlaySound(Sounds::select);
 					return false;
+				}
 			}
 
 			if (game->m_event.type == sf::Event::MouseButtonPressed)  //обработка нажатия по кораблю
@@ -174,6 +181,7 @@ bool Human::SetDisposition()
 							isMove = true;
 							nShip = i;
 							m_Ships[i]->ClearZone(m_Board);
+							game->PlaySound(Sounds::select);
 						}
 					}
 					for (int i = 0; i < 10; i++)
@@ -189,6 +197,8 @@ bool Human::SetDisposition()
 				{
 					if (isMove)
 					{
+						game->PlaySound(Sounds::select);
+
 						sf::Vector2f firstPos, lastPos;
 						if (m_Ships[nShip]->Horiz())
 						{
@@ -298,17 +308,34 @@ bool Human::SetDisposition()
 		{
 			s_random.setColor(sf::Color::Black);
 			game->m_window.draw(s_random);
+			if (!sound)
+			{
+				game->PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
+		else if (sf::IntRect(s_check.getGlobalBounds()).contains(pos.x, pos.y))
 		{
 			s_check.setColor(sf::Color::Black);
 			game->m_window.draw(s_check);
+			if (!sound)
+			{
+				game->PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(s_back.getGlobalBounds()).contains(pos.x, pos.y))
+		else if (sf::IntRect(s_back.getGlobalBounds()).contains(pos.x, pos.y))
 		{
 			s_back.setColor(sf::Color::Black);
 			game->m_window.draw(s_back);
+			if (!sound)
+			{
+				game->PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
+		else
+			sound = false;
 
 		game->m_window.display();
 	}

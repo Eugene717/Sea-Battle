@@ -4,6 +4,8 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 
+enum class Sounds { click, select, miss, enemy };
+
 struct GameIMPL;
 class Player;
 
@@ -31,6 +33,7 @@ public:
 	void Draw();
 	void DrawShot(const sf::Vector2f& place, const sf::Color& color);
 	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
+	void PlaySound(const Sounds& sound) const;
 	int Menu();
 	void SinglePlayer();
 	void OnePCGame();

@@ -17,6 +17,7 @@ struct Settings
 struct GameIMPL
 {
 	sf::Music m_music;
+	std::vector<std::pair<sf::SoundBuffer, sf::Sound>> m_sounds;
 
 	Player* m_first;
 	Player* m_second;
@@ -39,6 +40,23 @@ Game::Game()
 	m_pImpl->m_music.setLoop(true);
 	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
 	m_pImpl->m_music.setVolume(50);
+
+	sf::SoundBuffer buf;
+
+	buf.loadFromFile("sounds/click.wav");
+	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
+
+	buf.loadFromFile("sounds/click_select.wav");
+	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
+
+	buf.loadFromFile("sounds/click_miss_pos.wav");
+	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
+
+	buf.loadFromFile("sounds/click_enemy_pos.wav");
+	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
+
+	for (int i = 0; i < m_pImpl->m_sounds.size(); i++)
+		m_pImpl->m_sounds[i].second.setBuffer(m_pImpl->m_sounds[i].first);
 
 	std::ifstream fin("resourses/settings.txt");
 	if (fin.is_open())
@@ -238,6 +256,12 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 	}
 }
 
+void Game::PlaySound(const Sounds& sound) const
+{
+	if (m_pImpl->m_settings.Sound)
+		m_pImpl->m_sounds[(int)sound].second.play();
+}
+
 int Game::Menu()
 {
 	float centerPos = m_window.getSize().x / 2;
@@ -246,6 +270,7 @@ int Game::Menu()
 	header.setCharacterSize(72);
 	header.setStyle(sf::Text::Bold);
 	header.setPosition(centerPos - header.getGlobalBounds().width / 2, 0);
+	header.setFillColor(sf::Color::Black);
 
 	sf::Text singleplayer("Singlelayer", m_pImpl->m_font);
 	singleplayer.setPosition(centerPos - singleplayer.getGlobalBounds().width / 2, header.getPosition().y + 150);
@@ -262,7 +287,8 @@ int Game::Menu()
 	sf::Text exit("Exit", m_pImpl->m_font);
 	exit.setPosition(centerPos - exit.getGlobalBounds().width / 2, settings.getPosition().y + 70);
 
-	int menuNum;
+	int menuNum = -1;
+	bool sound = false;
 
 	while (m_window.isOpen())
 	{
@@ -275,46 +301,73 @@ int Game::Menu()
 				if (m_event.key.code == sf::Keyboard::Escape)
 					m_window.close();
 			}
-		}
-
-		menuNum = 0;
-
-		header.setFillColor(sf::Color::Black);
-		singleplayer.setFillColor(sf::Color::Black);
-		multiplayer.setFillColor(sf::Color::Black);
-		LANgame.setFillColor(sf::Color::Black);
-		settings.setFillColor(sf::Color::Black);
-		exit.setFillColor(sf::Color::Black);
+		}		
 
 		if (sf::IntRect(singleplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
-			singleplayer.setFillColor(sf::Color::Blue);
+			singleplayer.setFillColor(sf::Color::Blue);			
 			menuNum = 1;
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(multiplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(multiplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			multiplayer.setFillColor(sf::Color::Blue);
 			menuNum = 2;
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(LANgame.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(LANgame.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			LANgame.setFillColor(sf::Color::Blue);
 			menuNum = 3;
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(settings.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(settings.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			settings.setFillColor(sf::Color::Blue);
 			menuNum = 4;
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			exit.setFillColor(sf::Color::Blue);
 			menuNum = 5;
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else
+		{
+			menuNum = 0;
+			sound = false;
+			singleplayer.setFillColor(sf::Color::Black);
+			multiplayer.setFillColor(sf::Color::Black);
+			LANgame.setFillColor(sf::Color::Black);
+			settings.setFillColor(sf::Color::Black);
+			exit.setFillColor(sf::Color::Black);
 		}
 
 		if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left && menuNum > 0)
 		{
 			m_window.clear(sf::Color::White);
+			PlaySound(Sounds::select);
 			return menuNum;
 		}
 
@@ -654,6 +707,7 @@ void Game::Settings()
 	bool isPassEnter = false;
 	sf::Clock clock, clock2;
 	bool blink = true, barClick = false;
+	bool sound = false;
 
 	while (m_window.isOpen())
 	{
@@ -675,6 +729,8 @@ void Game::Settings()
 						m_pImpl->m_settings.Music = false;
 					else
 						m_pImpl->m_settings.Music = true;
+
+					PlaySound(Sounds::select);
 				}
 				if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //set name
 				{
@@ -687,12 +743,18 @@ void Game::Settings()
 
 						std::fstream fout("resourses/settings.txt");
 						fout << m_pImpl->m_settings.Name;
+
+						PlaySound(Sounds::select);
 					}
 				}
 				if (sf::IntRect(shape.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //cnange name
-					isPassEnter = true;
-				else   //cancel name set
 				{
+					PlaySound(Sounds::select);
+					isPassEnter = true;
+				}
+				else if (isPassEnter)  //cancel name set
+				{
+					PlaySound(Sounds::select);
 					name.setString(m_pImpl->m_settings.Name);
 					str = m_pImpl->m_settings.Name;
 					isPassEnter = false;
@@ -701,9 +763,12 @@ void Game::Settings()
 					input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 				}
 				if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to main menu
+				{
+					PlaySound(Sounds::select);
 					return;
+				}
 			}
-			if (m_event.type == sf::Event::MouseButtonPressed && m_event.key.code == sf::Mouse::Left)  
+			if (m_event.type == sf::Event::MouseButtonPressed && m_event.key.code == sf::Mouse::Left)
 			{
 				if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play sound or not
 				{
@@ -717,6 +782,7 @@ void Game::Settings()
 						m_pImpl->m_settings.Sound = true;
 						s_sound.setTexture(t_sound_on);
 					}
+					PlaySound(Sounds::select);
 				}
 				if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play music or not
 				{
@@ -725,17 +791,21 @@ void Game::Settings()
 						m_pImpl->m_settings.Music = false;
 						m_pImpl->m_music.pause();
 						s_music.setTexture(t_music_off);
+						volumeCircle.setPosition(s_music.getPosition().x, 454);
 					}
 					else
 					{
 						m_pImpl->m_settings.Music = true;
 						m_pImpl->m_music.play();
 						s_music.setTexture(t_music_on);
+						volumeCircle.setPosition(s_music.getPosition().x, 454 - m_pImpl->m_music.getVolume());
 					}
+					PlaySound(Sounds::select);
 				}
 				if (sf::IntRect(volumeCircle.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window))) //volume settings
 				{
 					barClick = true;
+					PlaySound(Sounds::select);
 				}
 			}
 			if (m_event.type == sf::Event::TextEntered && isPassEnter)
@@ -778,9 +848,15 @@ void Game::Settings()
 
 			m_pImpl->m_music.setVolume(abs(volumeCircle.getPosition().y - 454));
 			if (m_pImpl->m_music.getVolume() == 0)
+			{
 				s_music.setTexture(t_music_off);
+			}
 			else
+			{
 				s_music.setTexture(t_music_on);
+				if (m_pImpl->m_music.getStatus() == sf::Music::Status::Paused)
+					m_pImpl->m_music.play();
+			}
 		}
 
 		m_window.clear(sf::Color::White);
@@ -792,30 +868,51 @@ void Game::Settings()
 		if (sf::IntRect(s_check.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			s_check.setScale(1.10, 1.10);
-		}
-		if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-		{
-			s_back.setScale(1.10, 1.10);
-		}
-		if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-		{
-			s_sound.setScale(1.10, 1.10);
-		}
-		if ((sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)) || sf::IntRect(volumeBar.getGlobalBounds().left - 25, volumeBar.getGlobalBounds().top - 25,
-			volumeBar.getGlobalBounds().width + 50, volumeBar.getGlobalBounds().height + 50).contains(sf::Mouse::getPosition(m_window))) && !barClick)
-		{
-			s_music.setScale(1.10, 1.10);
-			if (!barClick)
+			if (!sound)
 			{
-				volumeBar.setPosition(s_music.getPosition().x - 5, s_music.getPosition().y + 80);
-				volumeCircle.setPosition(volumeBar.getPosition().x, volumeCircle.getPosition().y);
+				PlaySound(Sounds::click);
+				sound = true;
 			}
 		}
+		else if (sf::IntRect(s_back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_back.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_sound.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if ((sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)) || sf::IntRect(volumeBar.getGlobalBounds().left - 25, volumeBar.getGlobalBounds().top - 25,
+			volumeBar.getGlobalBounds().width + 50, volumeBar.getGlobalBounds().height + 50).contains(sf::Mouse::getPosition(m_window))) && !barClick)
+			{
+				s_music.setScale(1.10, 1.10);
+				if (!sound)
+				{
+					PlaySound(Sounds::click);
+					sound = true;
+				}
+				if (!barClick)
+				{
+					volumeBar.setPosition(s_music.getPosition().x - 5, s_music.getPosition().y + 80);
+					volumeCircle.setPosition(volumeBar.getPosition().x, volumeCircle.getPosition().y);
+				}
+			}
 		else if (!barClick)
 		{
 			s_music.setScale(1, 1);
 			volumeBar.setPosition(-100, -100);
 			volumeCircle.setPosition(-100, volumeCircle.getPosition().y);
+			sound = false;
 		}
 
 		m_window.draw(volumeBar);
@@ -1089,6 +1186,8 @@ bool Game::Exit()
 	yes.setPosition(centerPos.x - yes.getGlobalBounds().width / 2 - 50, centerPos.y - yes.getGlobalBounds().height / 2 + 50);
 	no.setPosition(centerPos.x - no.getGlobalBounds().width / 2 + 50, centerPos.y - no.getGlobalBounds().height / 2 + 50);
 
+	bool sound = false;
+
 	while (m_window.isOpen())
 	{
 		while (m_window.pollEvent(m_event))
@@ -1103,10 +1202,16 @@ bool Game::Exit()
 			if (m_event.type == m_event.MouseButtonReleased && m_event.mouseButton.button == sf::Mouse::Left)
 			{
 				if (sf::IntRect(yes.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					PlaySound(Sounds::select);
+					m_pImpl->m_music.stop();
+					sf::sleep(sf::seconds(1));
 					return true;
+				}
 				if (sf::IntRect(no.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
 					m_window.clear(sf::Color::White);
+					PlaySound(Sounds::select);
 					return false;
 				}
 			}
@@ -1118,11 +1223,23 @@ bool Game::Exit()
 		if (sf::IntRect(yes.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			yes.setFillColor(sf::Color::Blue);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
-		if (sf::IntRect(no.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(no.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			no.setFillColor(sf::Color::Blue);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
+		else
+			sound = false;
 
 		m_window.clear(sf::Color::White);
 		m_window.draw(exit);
