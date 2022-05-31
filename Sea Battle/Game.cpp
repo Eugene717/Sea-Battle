@@ -683,7 +683,7 @@ void Game::Settings()
 	std::string str = m_pImpl->m_settings.Name;
 	sf::Text name(m_pImpl->m_settings.Name, m_pImpl->m_font, 28);
 	name.setFillColor(sf::Color::Black);
-	name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+	name.setOrigin(name.getGlobalBounds().width / 2, 10);
 	name.setPosition(centerPos.x, centerPos.y + 40);
 
 	sf::RectangleShape input;
@@ -816,10 +816,10 @@ void Game::Settings()
 					{
 						str.pop_back();
 						name.setString(str);
-						name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+						name.setOrigin(name.getGlobalBounds().width / 2, 10);
 						name.setPosition(centerPos.x, centerPos.y + 40);
 						if (str.size() == 0)
-							input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+							input.setPosition(name.getGlobalBounds().left + 10, input.getPosition().y);
 						else
 							input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 					}
@@ -830,7 +830,7 @@ void Game::Settings()
 					{
 						str += static_cast<char>(m_event.text.unicode);
 						name.setString(str);
-						name.setOrigin(name.getGlobalBounds().width / 2, name.getGlobalBounds().height / 2);
+						name.setOrigin(name.getGlobalBounds().width / 2, 10);
 						name.setPosition(centerPos.x, centerPos.y + 40);
 						input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 					}
