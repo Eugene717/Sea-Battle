@@ -810,6 +810,7 @@ void Game::Settings()
 			}
 			if (m_event.type == sf::Event::TextEntered && isPassEnter)
 			{
+				PlaySound(Sounds::click);
 				if (m_event.text.unicode == '\b')
 				{
 					if (str.size() > 0)
@@ -974,17 +975,17 @@ void Game::SetNameFirstTime()
 	std::string str;
 	sf::Text name("", m_pImpl->m_font, 28);
 	name.setFillColor(sf::Color::Black);
-	name.setPosition(centerPos.x - 145, centerPos.y + 30);
+	name.setPosition(centerPos.x, centerPos.y + 40);
 
 	sf::RectangleShape input;
 	input.setFillColor(sf::Color::Black);
 	input.setSize(sf::Vector2f(2, 46));
 	input.setOrigin(1, 23);
-	input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+	input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, name.getPosition().y + 10);
 
 	bool isPassEnter = true;
 	sf::Clock clock, clock2;
-	bool blink = true;
+	bool blink = true, sound = false;
 
 	while (m_window.isOpen())
 	{
@@ -1001,6 +1002,7 @@ void Game::SetNameFirstTime()
 			{
 				if (sf::IntRect(s_next.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 				{
+					PlaySound(Sounds::select);
 					if (str.size() > 0)
 					{
 						m_pImpl->m_settings.Name = str;
@@ -1020,16 +1022,19 @@ void Game::SetNameFirstTime()
 			}
 			if (m_event.type == sf::Event::TextEntered && isPassEnter)
 			{
+				PlaySound(Sounds::click);
 				if (m_event.text.unicode == '\b')
 				{
 					if (str.size() > 0)
 					{
 						str.pop_back();
 						name.setString(str);
+						name.setOrigin(name.getGlobalBounds().width / 2, 10);
+						name.setPosition(centerPos.x, centerPos.y + 40);
 						if (str.size() == 0)
-							input.setPosition(name.getGlobalBounds().left + 10, name.getGlobalBounds().top + 20);
+							input.setPosition(name.getGlobalBounds().left + 10, input.getPosition().y);
 						else
-							input.setPosition(name.getPosition().x + name.getGlobalBounds().width + 5, input.getPosition().y);
+							input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 					}
 				}
 				else if (m_event.text.unicode < 128)
@@ -1037,8 +1042,10 @@ void Game::SetNameFirstTime()
 					if (str.size() < 10)
 					{
 						str += static_cast<char>(m_event.text.unicode);
-						name.setString(str); 
-						input.setPosition(name.getPosition().x + name.getGlobalBounds().width + 5, input.getPosition().y);
+						name.setString(str);
+						name.setOrigin(name.getGlobalBounds().width / 2, 10);
+						name.setPosition(centerPos.x, centerPos.y + 40);
+						input.setPosition(name.getPosition().x + name.getGlobalBounds().width / 2 + 5, input.getPosition().y);
 					}
 				}
 			}
@@ -1048,7 +1055,14 @@ void Game::SetNameFirstTime()
 		if (sf::IntRect(s_next.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			s_next.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
 		}
+		else
+			sound = false;
 
 		m_window.clear(sf::Color::White);
 		m_window.draw(enter);
