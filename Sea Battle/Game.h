@@ -4,7 +4,7 @@
 #include <random>
 #include <SFML/Graphics.hpp>
 
-enum class Sounds { click, select, miss, enemy };
+enum class Sounds { click, select, miss, enemy, sank };
 
 struct GameIMPL;
 class Player;

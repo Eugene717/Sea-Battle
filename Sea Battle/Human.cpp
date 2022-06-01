@@ -40,6 +40,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 
 					if (enemy[shot.first][shot.second] == ENEMY_ALIVE)
 					{
+						game->PlaySound(Sounds::enemy);
 						game->DrawShot(middleCell, sf::Color::Red);
 
 						enemy[shot.first][shot.second] = DEAD;
@@ -49,6 +50,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 					}
 					else if (enemy[shot.first][shot.second] == EMPTY)
 					{
+						game->PlaySound(Sounds::miss);
 						game->DrawShot(middleCell, sf::Color::Color(858585));
 
 						enemy[shot.first][shot.second] = MISS;

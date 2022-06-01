@@ -55,6 +55,9 @@ Game::Game()
 	buf.loadFromFile("sounds/click_enemy_pos.wav");
 	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
 
+	buf.loadFromFile("sounds/sank_ship.wav");
+	m_pImpl->m_sounds.push_back(std::make_pair<sf::SoundBuffer, sf::Sound>(sf::SoundBuffer(buf), sf::Sound()));
+
 	for (int i = 0; i < m_pImpl->m_sounds.size(); i++)
 		m_pImpl->m_sounds[i].second.setBuffer(m_pImpl->m_sounds[i].first);
 
@@ -421,6 +424,7 @@ void Game::SinglePlayer()
 		{
 			do
 			{
+				sf::sleep(sf::milliseconds(300));
 				while (true)  //игрок
 				{
 					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
@@ -439,6 +443,7 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
+				sf::sleep(sf::milliseconds(300));
 				while (true)  //ИИ
 				{
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
@@ -465,6 +470,7 @@ void Game::SinglePlayer()
 		{
 			do
 			{
+				sf::sleep(sf::milliseconds(300));
 				while (true)  //ИИ
 				{
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
@@ -485,6 +491,7 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
+				sf::sleep(sf::milliseconds(300));
 				while (true)  //игрок
 				{
 					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))

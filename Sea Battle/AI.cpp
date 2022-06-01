@@ -169,12 +169,14 @@ bool AI::Shoot1Deck(char(&enemy)[ROW][COL])
 
 			if (enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] == ALIVE)
 			{
+				game->PlaySound(Sounds::enemy);
 				game->DrawShot(middleCell, sf::Color::Red);
 				enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] = DEAD;
 				return true;
 			}
 			else
 			{
+				game->PlaySound(Sounds::miss);
 				game->DrawShot(middleCell, sf::Color::Color(858585));
 				enemy[m_pImpl->m_one->second][m_pImpl->m_one->first] = MISS;
 				delete m_pImpl->m_one;
@@ -232,12 +234,14 @@ bool AI::Shoot2Deck(char(&enemy)[ROW][COL])
 
 				if (enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] == ALIVE)
 				{
+					game->PlaySound(Sounds::enemy);
 					game->DrawShot(middleCell, sf::Color::Red);
 					enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] = DEAD;
 					return true;
 				}
 				else
 				{
+					game->PlaySound(Sounds::miss);
 					game->DrawShot(middleCell, sf::Color::Color(858585));
 					enemy[m_pImpl->m_two->second][m_pImpl->m_two->first] = MISS;
 					delete m_pImpl->m_two;
@@ -273,6 +277,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
@@ -283,6 +288,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
@@ -304,6 +310,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
@@ -311,6 +318,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else  //промах
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
@@ -335,6 +343,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
@@ -342,6 +351,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
@@ -362,6 +372,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = DEAD;
 
@@ -372,6 +383,7 @@ bool AI::Shoot3Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_three->second][m_pImpl->m_three->first] = MISS;
 
@@ -406,6 +418,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
@@ -413,6 +426,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
@@ -434,6 +448,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
@@ -441,6 +456,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
@@ -465,6 +481,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
@@ -472,6 +489,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 
@@ -493,6 +511,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 
 						if (enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] == ALIVE)
 						{
+							game->PlaySound(Sounds::enemy);
 							game->DrawShot(middleCell, sf::Color::Red);
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = DEAD;
 
@@ -500,6 +519,7 @@ bool AI::Shoot4Deck(char(&enemy)[ROW][COL])
 						}
 						else
 						{
+							game->PlaySound(Sounds::miss);
 							game->DrawShot(middleCell, sf::Color(858585));
 							enemy[m_pImpl->m_four->second][m_pImpl->m_four->first] = MISS;
 

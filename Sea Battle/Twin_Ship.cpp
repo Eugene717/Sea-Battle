@@ -161,6 +161,7 @@ bool Twin_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 			places[i].y = MIN_Y + places[i].y * SQUARE_SIDE_SIZE + 15;
 		}
 
+		game->PlaySound(Sounds::sank);
 		game->DrawShots(places, sf::Color(858585));
 		Zone(arr);
 
