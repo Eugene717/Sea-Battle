@@ -424,9 +424,9 @@ void Game::SinglePlayer()
 		{
 			do
 			{
-				sf::sleep(sf::milliseconds(300));
 				while (true)  //игрок
 				{
+					sf::sleep(sf::milliseconds(300));
 					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 					{
 						m_pImpl->m_second->SearchDead();
@@ -443,9 +443,9 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
-				sf::sleep(sf::milliseconds(300));
 				while (true)  //ИИ
 				{
+					sf::sleep(sf::milliseconds(300));
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
 						m_pImpl->m_first->SearchDead();
@@ -470,9 +470,9 @@ void Game::SinglePlayer()
 		{
 			do
 			{
-				sf::sleep(sf::milliseconds(300));
 				while (true)  //ИИ
 				{
+					sf::sleep(sf::milliseconds(300));
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
 						m_pImpl->m_first->SearchDead();
@@ -491,9 +491,9 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
-				sf::sleep(sf::milliseconds(300));
 				while (true)  //игрок
 				{
+					sf::sleep(sf::milliseconds(300));
 					if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 					{
 						m_pImpl->m_second->SearchDead();
@@ -546,6 +546,7 @@ void Game::OnePCGame()
 		{
 			while (true)  //игрок
 			{
+				sf::sleep(sf::milliseconds(300));
 				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 				{
 					m_pImpl->m_second->SearchDead();
@@ -564,6 +565,7 @@ void Game::OnePCGame()
 			}
 			while (true)  //2 игрок
 			{
+				sf::sleep(sf::milliseconds(300));
 				if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 				{
 					m_pImpl->m_first->SearchDead();
@@ -588,6 +590,7 @@ void Game::OnePCGame()
 		{
 			while (true)  //2 игрок
 			{
+				sf::sleep(sf::milliseconds(300));
 				if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 				{
 					m_pImpl->m_first->SearchDead();
@@ -606,6 +609,7 @@ void Game::OnePCGame()
 			}
 			while (true)  //игрок
 			{
+				sf::sleep(sf::milliseconds(300));
 				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
 				{
 					m_pImpl->m_second->SearchDead();
