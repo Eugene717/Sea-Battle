@@ -32,6 +32,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 			{
 				if (game->m_event.key.code == sf::Keyboard::Escape)
 				{
+					game->PlaySound(Sounds::select);
 					if (game->MiniMenu())
 						game->Draw();
 					else return false;
@@ -41,6 +42,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 			{
 				if (sf::IntRect(s_menu->getGlobalBounds()).contains(sf::Mouse::getPosition(game->m_window)))
 				{
+					game->PlaySound(Sounds::select);
 					if (game->MiniMenu())
 						game->Draw();
 					else return false;
