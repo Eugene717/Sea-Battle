@@ -48,6 +48,8 @@ Game::Game()
 
 	m_pImpl->m_t_menu.loadFromFile("images/menu.png");
 	m_pImpl->m_s_menu.setTexture(m_pImpl->m_t_menu);
+	m_pImpl->m_s_menu.setOrigin(25, 25);
+	m_pImpl->m_s_menu.setPosition(26, 26);
 
 	sf::SoundBuffer buf;
 
@@ -689,7 +691,7 @@ void Game::OnePCGame()
 
 void Game::OnlineGame()
 {
-//	sf::Packet packet;
+	sf::Packet packet;
 
 
 }
@@ -901,7 +903,10 @@ void Game::Settings()
 	volumeCircle.setFillColor(sf::Color::Black);
 	volumeCircle.setRadius(10);
 	volumeCircle.setOrigin(10, 10);
-	volumeCircle.setPosition(-100, 454 - m_pImpl->m_music.getVolume());
+	if (m_pImpl->m_settings.Music)
+		volumeCircle.setPosition(-100, 454 - m_pImpl->m_music.getVolume());
+	else
+		volumeCircle.setPosition(-100, 454);
 
 	bool isPassEnter = false;
 	sf::Clock clock, clock2;
@@ -1326,7 +1331,7 @@ bool Game::MiniMenu()
 
 		if (sf::IntRect(tcontinue.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
-			tcontinue.setScale(1.10, 1.10);
+			tcontinue.setFillColor(sf::Color::Blue);
 			if (!sound)
 			{
 				PlaySound(Sounds::click);
@@ -1628,7 +1633,8 @@ void Game::GameEnd()
 	m_pImpl->m_music.stop();
 	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
 
-	m_pImpl->m_music.play();
+	if (m_pImpl->m_settings.Music)
+		m_pImpl->m_music.play();
 
 	m_pImpl->m_menuReturn = false;
 

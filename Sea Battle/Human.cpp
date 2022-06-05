@@ -19,6 +19,8 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 	else
 		min_board_x = MIN_F_BOARD_X;
 
+	bool sound = false;
+
 	Point shot;
 	while (game->m_window.isOpen())
 	{
@@ -73,6 +75,22 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 				}
 			}
 		}
+		if (sf::IntRect(s_menu->getGlobalBounds()).contains(sf::Mouse::getPosition(game->m_window)))
+		{
+			s_menu->setScale(1.10, 1.10);
+			if (!sound)
+			{
+				game->PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else
+		{
+			sound = false;
+			s_menu->setScale(1, 1);
+		}
+		game->m_window.clear(sf::Color::White);
+		game->Draw();
 	}
 	return false;
 }

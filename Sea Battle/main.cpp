@@ -30,9 +30,7 @@ int main()
 			game->OnePCGame();
 			break;
 		case 3:
-			//cout << "Не работает блять, хули клацаешь?\n";
-			//system("pause");
-			//system("cls");
+			game->OnlineGame();
 			break;
 		case 4:
 			game->Settings();
