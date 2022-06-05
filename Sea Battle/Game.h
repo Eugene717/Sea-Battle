@@ -3,6 +3,7 @@
 #define GAME_H
 #include <random>
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 enum class Sounds { click, select, miss, enemy, sank };
 
@@ -21,8 +22,10 @@ class Game
 
 	void SetNameFirstTime();
 	char FirstTurn();
+	bool SearchGame(sf::TcpSocket& socket);
 	void ShowRemainingShips(Player* player, const int& board);
 	void AnnounceWinner(const int& player);
+	void GameEnd();
 public:
 	sf::RenderWindow m_window;
 	sf::Event m_event;
@@ -33,12 +36,14 @@ public:
 	void Draw();
 	void DrawShot(const sf::Vector2f& place, const sf::Color& color);
 	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
+	sf::Sprite* GetMenuSprite() const;
 	void PlaySound(const Sounds& sound) const;
 	int Menu();
 	void SinglePlayer();
 	void OnePCGame();
 	void OnlineGame();
 	void Settings();
+	bool MiniMenu();
 };
 
 #endif // !GAME_H

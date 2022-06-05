@@ -5,6 +5,7 @@
 #include <memory>
 #include <fstream>
 #include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
 
 Game* Game::m_game = nullptr;
 struct Settings
@@ -19,10 +20,13 @@ struct GameIMPL
 	sf::Music m_music;
 	std::vector<std::pair<sf::SoundBuffer, sf::Sound>> m_sounds;
 
+	bool m_menuReturn;
 	Player* m_first;
 	Player* m_second;
 	sf::Font m_font;
 	Settings m_settings;
+	sf::Texture m_t_menu;
+	sf::Sprite m_s_menu;
 };
 
 Game::Game()
@@ -33,6 +37,7 @@ Game::Game()
 
 	m_pImpl->m_settings.Sound = true;
 	m_pImpl->m_settings.Music = true;
+	m_pImpl->m_menuReturn = false;
 
 	m_pImpl->m_font.loadFromFile("resourses/arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
@@ -40,6 +45,9 @@ Game::Game()
 	m_pImpl->m_music.setLoop(true);
 	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
 	m_pImpl->m_music.setVolume(50);
+
+	m_pImpl->m_t_menu.loadFromFile("images/menu.png");
+	m_pImpl->m_s_menu.setTexture(m_pImpl->m_t_menu);
 
 	sf::SoundBuffer buf;
 
@@ -178,6 +186,8 @@ void Game::Draw()
 		m_window.draw(line);
 	}
 
+	m_window.draw(m_pImpl->m_s_menu);
+
 	m_window.display();
 }
 
@@ -257,6 +267,11 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 
 		break;
 	}
+}
+
+sf::Sprite* Game::GetMenuSprite() const
+{
+	return &m_pImpl->m_s_menu;
 }
 
 void Game::PlaySound(const Sounds& sound) const
@@ -443,6 +458,13 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
+				if (!m_window.isOpen())
+					return;
+				else if (m_pImpl->m_menuReturn)
+				{
+					GameEnd();
+					return;
+				}
 				while (true)  //ИИ
 				{
 					sf::sleep(sf::milliseconds(300));
@@ -510,6 +532,13 @@ void Game::SinglePlayer()
 						break;
 					}
 				}
+				if (!m_window.isOpen())
+					return;
+				else if (m_pImpl->m_menuReturn)
+				{
+					GameEnd();
+					return;
+				}
 			} while (true);
 		}
 	}
@@ -563,6 +592,13 @@ void Game::OnePCGame()
 					break;
 				}
 			}
+			if (!m_window.isOpen())
+				return;
+			else if (m_pImpl->m_menuReturn)
+			{
+				GameEnd();
+				return;
+			}
 			while (true)  //2 игрок
 			{
 				sf::sleep(sf::milliseconds(300));
@@ -581,6 +617,13 @@ void Game::OnePCGame()
 					Draw();
 					break;
 				}
+			}
+			if (!m_window.isOpen())
+				return;
+			else if (m_pImpl->m_menuReturn)
+			{
+				GameEnd();
+				return;
 			}
 		} while (true);
 	}
@@ -607,6 +650,13 @@ void Game::OnePCGame()
 					break;
 				}
 			}
+			if (!m_window.isOpen())
+				return;
+			else if (m_pImpl->m_menuReturn)
+			{
+				GameEnd();
+				return;
+			}
 			while (true)  //игрок
 			{
 				sf::sleep(sf::milliseconds(300));
@@ -626,13 +676,151 @@ void Game::OnePCGame()
 					break;
 				}
 			}
+			if (!m_window.isOpen())
+				return;
+			else if (m_pImpl->m_menuReturn)
+			{
+				GameEnd();
+				return;
+			}
 		} while (true);
 	}
 }
 
 void Game::OnlineGame()
 {
+//	sf::Packet packet;
 
+
+}
+
+bool Game::SearchGame(sf::TcpSocket& socket)
+{
+	//sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
+
+	//sf::Text loading("   Loading . . .", m_pImpl->m_font);
+	//loading.setFillColor(sf::Color::Black);
+	//loading.setCharacterSize(30);
+	//loading.setStyle(sf::Text::Style::Bold);
+	//loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
+
+	//m_window.clear(sf::Color::White);
+	//m_window.draw(loading);
+	//m_window.display();
+
+	//if (socket.connect("localhost", 55055, sf::seconds(3)) != sf::Socket::Status::Done)   //192.168.0.105 для примера
+	//{
+	//	loading.setString("       Failed connection\nCheck Ethernet connection");
+	//	loading.setCharacterSize(24);
+	//	loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
+
+	//	m_window.clear(sf::Color::White);
+	//	m_window.draw(loading);
+	//	m_window.display();
+	//	sf::sleep(sf::seconds(3));
+
+	//	return '\0';
+	//}
+
+	//sf::Packet packet;
+	//std::string turn, enemyName;
+
+	//socket.setBlocking(false);
+
+	//loading.setString("  Searching . . .");
+	//sf::Text back("Back", m_pImpl->m_font);
+	//back.setFillColor(sf::Color::Black);
+	//back.setCharacterSize(24);
+	//back.setPosition(35 - back.getGlobalBounds().width / 2, 475 - back.getGlobalBounds().height);
+
+	//while (m_window.isOpen())
+	//{
+	//	if (m_window.pollEvent(m_event))
+	//	{
+	//		if (m_event.type == sf::Event::Closed)
+	//			m_window.close();
+	//		if (m_event.type == sf::Event::KeyReleased)
+	//		{
+	//			if (m_event.key.code == sf::Keyboard::Escape)
+	//			{
+	//				if (DrawMenu())
+	//				{
+	//					socket.disconnect();
+	//					return '\0';
+	//				}
+	//			}
+	//		}
+	//		if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
+	//		{
+	//			if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+	//			{
+	//				m_window.clear(sf::Color::White);
+	//				socket.setBlocking(true);
+	//				socket.disconnect();
+	//				return '\1';
+	//			}
+	//		}
+	//	}
+
+	//	if (socket.receive(packet) == sf::Socket::Done)
+	//	{
+	//		packet >> turn;
+	//		packet.clear();
+
+	//		packet << myName;
+	//		socket.send(packet);
+	//		packet.clear();
+
+	//		socket.setBlocking(true);
+
+	//		if (socket.receive(packet) == sf::Socket::Done)
+	//		{
+	//			packet >> enemyName;
+	//			packet.clear();
+	//		}
+
+	//		if (turn == "f")
+	//		{
+	//			m_pImpl->m_first = new Human('w');
+	//			m_pImpl->m_second = new Human('b');
+	//		}
+	//		else
+	//		{
+	//			m_pImpl->m_first = new Human('b');
+	//			m_pImpl->m_second = new Human('w');
+	//		}
+
+	//		m_pImpl->m_first->SetName(myName);
+	//		m_pImpl->m_second->SetName(enemyName);
+
+	//		socket.setBlocking(false);
+
+	//		m_pImpl->m_MP = true;
+
+	//		loading.setString("Start Game");
+	//		m_window.clear(sf::Color::White);
+	//		m_window.draw(loading);
+	//		m_window.display();
+	//		sf::sleep(sf::seconds(1));
+
+	//		ShowPlayersNames();
+	//		m_dataPacket.m_finishGame = false;
+
+	//		return turn[0];
+	//	}
+
+	//	back.setFillColor(sf::Color::Black);
+	//	if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+	//	{
+	//		back.setFillColor(sf::Color::Blue);
+	//	}
+
+	//	m_window.clear(sf::Color::White);
+	//	m_window.draw(loading);
+	//	m_window.draw(back);
+	//	m_window.display();
+	//}
+	return false;
 }
 
 void Game::Settings()
@@ -958,6 +1146,254 @@ void Game::Settings()
 	}
 }
 
+bool Game::MiniMenu()
+{
+	m_window.clear(sf::Color::White);
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 100);
+
+	sf::Texture t_sound_on;
+	t_sound_on.loadFromFile("images/sound_on.png");
+	sf::Texture t_sound_off;
+	t_sound_off.loadFromFile("images/sound_off.png");
+
+	sf::Texture t_music_on;
+	t_music_on.loadFromFile("images/music_on.png");
+	sf::Texture t_music_off;
+	t_music_off.loadFromFile("images/music_off.png");
+
+	sf::Sprite s_sound;
+	sf::Sprite s_music;
+
+	if (m_pImpl->m_settings.Sound)
+		s_sound.setTexture(t_sound_on);
+	else
+		s_sound.setTexture(t_sound_off);
+
+	if (m_pImpl->m_settings.Music)
+		s_music.setTexture(t_music_on);
+	else
+		s_music.setTexture(t_music_off);
+
+	s_sound.setOrigin(24, 24);
+	s_music.setOrigin(24, 24);
+
+	s_sound.setPosition(324, 324);
+	s_music.setPosition(494, 324);
+
+	sf::Text tcontinue("continue", m_pImpl->m_font, 28);
+	tcontinue.setFillColor(sf::Color::Black);
+	tcontinue.setOrigin(tcontinue.getGlobalBounds().width / 2, 10);
+	tcontinue.setPosition(centerPos.x, centerPos.y - 40);
+
+	sf::Text menu("Return to main menu", m_pImpl->m_font, 28);
+	menu.setFillColor(sf::Color::Black);
+	menu.setOrigin(menu.getGlobalBounds().width / 2, 10);
+	menu.setPosition(centerPos.x, centerPos.y);
+
+	sf::Text exit("Exit to desctop", m_pImpl->m_font, 28);
+	exit.setFillColor(sf::Color::Black);
+	exit.setOrigin(exit.getGlobalBounds().width / 2, 10);
+	exit.setPosition(centerPos.x, centerPos.y + 50);	
+
+	sf::RectangleShape volumeBar;
+	volumeBar.setFillColor(sf::Color::Black);
+	volumeBar.setSize(sf::Vector2f(5, 100));
+	volumeBar.setOrigin(3, 50);
+	volumeBar.setPosition(-100, -100);
+
+	sf::CircleShape volumeCircle;
+	volumeCircle.setFillColor(sf::Color::Black);
+	volumeCircle.setRadius(10);
+	volumeCircle.setOrigin(10, 10);
+	volumeCircle.setPosition(-100, 454 - m_pImpl->m_music.getVolume());
+
+	bool sound = false, barClick = false;;
+
+	while (m_window.isOpen())
+	{
+		while (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::KeyPressed)
+			{
+				if (m_event.key.code == sf::Keyboard::Escape)
+					m_window.close();
+			}
+			if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
+			{		
+				if (barClick)  //set volume
+				{
+					barClick = false;
+					if (m_pImpl->m_music.getVolume() == 0)
+						m_pImpl->m_settings.Music = false;
+					else
+						m_pImpl->m_settings.Music = true;
+
+					PlaySound(Sounds::select);
+				}
+				if (sf::IntRect(tcontinue.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to game
+				{
+					PlaySound(Sounds::select);
+					m_window.clear(sf::Color::White);
+					return true;;
+				}
+				if (sf::IntRect(menu.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to game
+				{
+					PlaySound(Sounds::select);
+					m_window.clear(sf::Color::White);
+					m_pImpl->m_menuReturn = true;
+					return false;
+				}
+				if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to game
+				{
+					PlaySound(Sounds::select);
+					sf::sleep(sf::milliseconds(300));
+					m_window.clear(sf::Color::White);
+					m_window.close();
+					return false;
+				}
+			}
+			if (m_event.type == sf::Event::MouseButtonPressed && m_event.key.code == sf::Mouse::Left)
+			{
+				if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play sound or not
+				{
+					if (m_pImpl->m_settings.Sound)
+					{
+						m_pImpl->m_settings.Sound = false;
+						s_sound.setTexture(t_sound_off);
+					}
+					else
+					{
+						m_pImpl->m_settings.Sound = true;
+						s_sound.setTexture(t_sound_on);
+					}
+					PlaySound(Sounds::select);
+				}
+				if (sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //play music or not
+				{
+					if (m_pImpl->m_settings.Music)
+					{
+						m_pImpl->m_settings.Music = false;
+						m_pImpl->m_music.pause();
+						s_music.setTexture(t_music_off);
+						volumeCircle.setPosition(s_music.getPosition().x, 454);
+					}
+					else
+					{
+						m_pImpl->m_settings.Music = true;
+						m_pImpl->m_music.play();
+						s_music.setTexture(t_music_on);
+						volumeCircle.setPosition(s_music.getPosition().x, 454 - m_pImpl->m_music.getVolume());
+					}
+					PlaySound(Sounds::select);
+				}
+				if (sf::IntRect(volumeCircle.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window))) //volume settings
+				{
+					barClick = true;
+					PlaySound(Sounds::select);
+				}
+			}			
+		}
+		if (barClick)
+		{
+			if (sf::Mouse::getPosition(m_window).y >= 354 && sf::Mouse::getPosition(m_window).y <= 454)
+				volumeCircle.setPosition(volumeBar.getPosition().x, sf::Mouse::getPosition(m_window).y);
+			else if (sf::Mouse::getPosition(m_window).y <= 354)
+				volumeCircle.setPosition(volumeBar.getPosition().x, 354);
+			else if (sf::Mouse::getPosition(m_window).y >= 454)
+				volumeCircle.setPosition(volumeBar.getPosition().x, 454);
+
+			m_pImpl->m_music.setVolume(abs(volumeCircle.getPosition().y - 454));
+			if (m_pImpl->m_music.getVolume() == 0)
+			{
+				s_music.setTexture(t_music_off);
+			}
+			else
+			{
+				s_music.setTexture(t_music_on);
+				if (m_pImpl->m_music.getStatus() == sf::Music::Status::Paused)
+					m_pImpl->m_music.play();
+			}
+		}
+
+		m_window.clear(sf::Color::White);
+
+		s_sound.setScale(1, 1);
+		tcontinue.setFillColor(sf::Color::Black);
+		menu.setFillColor(sf::Color::Black);
+		exit.setFillColor(sf::Color::Black);
+
+		if (sf::IntRect(tcontinue.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			tcontinue.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if(sf::IntRect(menu.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			menu.setFillColor(sf::Color::Blue);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if(sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			exit.setFillColor(sf::Color::Blue);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if (sf::IntRect(s_sound.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			s_sound.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else if ((sf::IntRect(s_music.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)) || sf::IntRect(volumeBar.getGlobalBounds().left - 25, volumeBar.getGlobalBounds().top - 25,
+			volumeBar.getGlobalBounds().width + 50, volumeBar.getGlobalBounds().height + 50).contains(sf::Mouse::getPosition(m_window))) && !barClick)
+		{
+			s_music.setScale(1.10, 1.10);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+			if (!barClick)
+			{
+				volumeBar.setPosition(s_music.getPosition().x - 5, s_music.getPosition().y + 80);
+				volumeCircle.setPosition(volumeBar.getPosition().x, volumeCircle.getPosition().y);
+			}
+		}
+		else if (!barClick)
+		{
+			s_music.setScale(1, 1);
+			volumeBar.setPosition(-100, -100);
+			volumeCircle.setPosition(-100, volumeCircle.getPosition().y);
+			sound = false;
+		}
+
+		m_window.draw(volumeBar);
+		m_window.draw(volumeCircle);
+		m_window.draw(s_sound);
+		m_window.draw(s_music);
+		m_window.draw(tcontinue);
+		m_window.draw(menu);
+		m_window.draw(exit);
+		m_window.display();
+	}
+}
+
 void Game::SetNameFirstTime()
 {
 	m_window.clear(sf::Color::White);
@@ -1182,12 +1618,19 @@ void Game::AnnounceWinner(const int& player)
 	m_window.draw(announce);
 	m_window.display();
 
+	sf::sleep(sf::seconds(3));
+
+	GameEnd();
+}
+
+void Game::GameEnd()
+{
 	m_pImpl->m_music.stop();
 	m_pImpl->m_music.openFromFile("sounds/menu_music.wav");
 
-	sf::sleep(sf::seconds(3));
-
 	m_pImpl->m_music.play();
+
+	m_pImpl->m_menuReturn = false;
 
 	delete m_pImpl->m_first;
 	delete m_pImpl->m_second;
