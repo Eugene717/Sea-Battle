@@ -9,6 +9,7 @@ enum class Sounds { click, select, miss, enemy, sank };
 
 struct GameIMPL;
 class Player;
+struct GameDataPacket;
 
 class Game
 {
@@ -22,8 +23,11 @@ class Game
 
 	void SetNameFirstTime();
 	char FirstTurn();
-	bool SearchGame(sf::TcpSocket& socket);
+	char SearchGame(sf::TcpSocket& socket, std::string enemyName);
+	void SendMyBoard(sf::TcpSocket& socket);
+	void ReceiveEnemyBoard(sf::TcpSocket& socket);
 	void ShowRemainingShips(Player* player, const int& board);
+	void ShutdownMes(const std::string& name);
 	void AnnounceWinner(const int& player);
 	void GameEnd();
 public:
@@ -36,6 +40,7 @@ public:
 	void Draw();
 	void DrawShot(const sf::Vector2f& place, const sf::Color& color);
 	void DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& color);
+	GameDataPacket* GetPacket();
 	sf::Sprite* GetMenuSprite() const;
 	void PlaySound(const Sounds& sound) const;
 	int Menu();

@@ -60,6 +60,12 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 	} while (true);
 }
 
+void Unit_Ship::SetMPPos(char(&arr)[ROW][COL])
+{
+	m_stat1 = &arr[*m_y1][*m_x1];
+	*m_stat1 = ENEMY_ALIVE;
+}
+
 std::vector<sf::Vector2f> Unit_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
 { 
 	std::vector<sf::Vector2f> places = Ship::Zone(arr, m_x1, m_y1, draw);
@@ -93,4 +99,14 @@ bool Unit_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 		return true;
 	}
 	return false;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, Unit_Ship* m)
+{
+	return packet << *m->m_x1 << *m->m_y1;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Unit_Ship* m)
+{
+	return packet >> *m->m_x1 >> *m->m_y1;
 }

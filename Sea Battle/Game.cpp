@@ -1,11 +1,12 @@
-#include "Game.h"
-#include "Constants.h"
-#include "Ships.h"
-#include "Players.h"
 #include <memory>
 #include <fstream>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
+#include "Game.h"
+#include "Constants.h"
+#include "Ships.h"
+#include "Players.h"
+#include "GameDataPacket.h"
 
 Game* Game::m_game = nullptr;
 struct Settings
@@ -20,13 +21,15 @@ struct GameIMPL
 	sf::Music m_music;
 	std::vector<std::pair<sf::SoundBuffer, sf::Sound>> m_sounds;
 
-	bool m_menuReturn;
+	bool m_menuReturn, m_MP;
 	Player* m_first;
 	Player* m_second;
 	sf::Font m_font;
 	Settings m_settings;
 	sf::Texture m_t_menu;
 	sf::Sprite m_s_menu;
+
+	GameDataPacket m_dataPacket;
 };
 
 Game::Game()
@@ -38,6 +41,7 @@ Game::Game()
 	m_pImpl->m_settings.Sound = true;
 	m_pImpl->m_settings.Music = true;
 	m_pImpl->m_menuReturn = false;
+	m_pImpl->m_MP = false;
 
 	m_pImpl->m_font.loadFromFile("resourses/arial.ttf");
 	m_window.create(sf::VideoMode(800, 600), "Sea Battle");
@@ -276,6 +280,14 @@ sf::Sprite* Game::GetMenuSprite() const
 	return &m_pImpl->m_s_menu;
 }
 
+GameDataPacket* Game::GetPacket()
+{
+	if (m_pImpl->m_MP)
+		return &m_pImpl->m_dataPacket;
+	else
+		return nullptr;
+}
+
 void Game::PlaySound(const Sounds& sound) const
 {
 	if (m_pImpl->m_settings.Sound)
@@ -430,11 +442,6 @@ void Game::SinglePlayer()
 		{
 			if (m_event.type == sf::Event::Closed)
 				m_window.close();
-			if (m_event.type == sf::Event::KeyPressed)
-			{
-				if (m_event.key.code == sf::Keyboard::Escape)
-					m_window.close();
-			}
 		}		
 
 		if (FirstTurn() == 'F')
@@ -691,138 +698,268 @@ void Game::OnePCGame()
 
 void Game::OnlineGame()
 {
+	sf::TcpSocket socket;
+	std::string enemyName;
+	bool finish = false;
+
+	char turn = SearchGame(socket, enemyName);
+	if (turn == '\1')
+		return;
+
 	sf::Packet packet;
+	socket.setBlocking(false);
 
+	m_pImpl->m_music.stop();
+	m_pImpl->m_music.openFromFile("sounds/game_music.wav");
+	if (m_pImpl->m_settings.Music)
+		m_pImpl->m_music.play();
 
+	Draw();
+
+	while (m_window.isOpen())
+	{
+		while (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+		}
+
+		if (turn == 'f')
+		{
+			while (true) 
+			{
+				sf::sleep(sf::milliseconds(300));
+				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
+				{
+					packet << m_pImpl->m_dataPacket;
+					socket.send(packet);
+					packet.clear();
+					
+					if (m_pImpl->m_second->SearchDead())
+					{
+						Draw();
+						if (m_pImpl->m_second->Loss())
+						{
+							AnnounceWinner(0);
+							socket.disconnect();
+							return;
+						}
+					}
+				}
+				else
+				{
+					packet << m_pImpl->m_dataPacket;
+					socket.send(packet);
+					packet.clear();
+
+					Draw();
+					turn = 's';
+					break;
+				}
+			}
+		}
+		else
+		{
+			while (true)
+			{
+				if (static_cast<Human*>(m_pImpl->m_second)->ShootMP(m_pImpl->m_first->m_Board, socket))
+				{
+					if (m_pImpl->m_first->SearchDead())
+					{
+						if (m_pImpl->m_first->Loss())
+						{
+							AnnounceWinner(1);
+							socket.disconnect();
+							m_pImpl->m_MP = false;
+							return;
+						}
+					}
+				}
+				else
+				{
+					turn = 'f';
+					break;
+				}
+			}
+		}
+	}
+	socket.disconnect();
 }
 
-bool Game::SearchGame(sf::TcpSocket& socket)
+char Game::SearchGame(sf::TcpSocket& socket, std::string enemyName)
 {
-	//sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
 
-	//sf::Text loading("   Loading . . .", m_pImpl->m_font);
-	//loading.setFillColor(sf::Color::Black);
-	//loading.setCharacterSize(30);
-	//loading.setStyle(sf::Text::Style::Bold);
-	//loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
+	sf::Text loading("   Loading . . .", m_pImpl->m_font);
+	loading.setFillColor(sf::Color::Black);
+	loading.setCharacterSize(30);
+	loading.setStyle(sf::Text::Style::Bold);
+	loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
 
-	//m_window.clear(sf::Color::White);
-	//m_window.draw(loading);
-	//m_window.display();
+	m_window.clear(sf::Color::White);
+	m_window.draw(loading);
+	m_window.display();
 
-	//if (socket.connect("localhost", 55055, sf::seconds(3)) != sf::Socket::Status::Done)   //192.168.0.105 для примера
-	//{
-	//	loading.setString("       Failed connection\nCheck Ethernet connection");
-	//	loading.setCharacterSize(24);
-	//	loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
+	if (socket.connect("localhost", 55000, sf::seconds(3)) != sf::Socket::Status::Done)   //192.178.0.105 for example
+	{
+		loading.setString("       Failed connection\nCheck Ethernet connection");
+		loading.setCharacterSize(24);
+		loading.setPosition(centerPos.x - loading.getGlobalBounds().width / 2, centerPos.y - loading.getGlobalBounds().height);
 
-	//	m_window.clear(sf::Color::White);
-	//	m_window.draw(loading);
-	//	m_window.display();
-	//	sf::sleep(sf::seconds(3));
+		m_window.clear(sf::Color::White);
+		m_window.draw(loading);
+		m_window.display();
+		sf::sleep(sf::seconds(3));
 
-	//	return '\0';
-	//}
+		return '\0';
+	}
 
-	//sf::Packet packet;
-	//std::string turn, enemyName;
+	sf::Packet packet;
+	std::string turn;
+	bool sound = false;
 
-	//socket.setBlocking(false);
+	socket.setBlocking(false);
 
-	//loading.setString("  Searching . . .");
-	//sf::Text back("Back", m_pImpl->m_font);
-	//back.setFillColor(sf::Color::Black);
-	//back.setCharacterSize(24);
-	//back.setPosition(35 - back.getGlobalBounds().width / 2, 475 - back.getGlobalBounds().height);
+	loading.setString("  Searching . . .");
+	sf::Text back("Back", m_pImpl->m_font);
+	back.setFillColor(sf::Color::Black);
+	back.setCharacterSize(24);
+	back.setPosition(35 - back.getGlobalBounds().width / 2, 475 - back.getGlobalBounds().height);
 
-	//while (m_window.isOpen())
-	//{
-	//	if (m_window.pollEvent(m_event))
-	//	{
-	//		if (m_event.type == sf::Event::Closed)
-	//			m_window.close();
-	//		if (m_event.type == sf::Event::KeyReleased)
-	//		{
-	//			if (m_event.key.code == sf::Keyboard::Escape)
-	//			{
-	//				if (DrawMenu())
-	//				{
-	//					socket.disconnect();
-	//					return '\0';
-	//				}
-	//			}
-	//		}
-	//		if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
-	//		{
-	//			if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-	//			{
-	//				m_window.clear(sf::Color::White);
-	//				socket.setBlocking(true);
-	//				socket.disconnect();
-	//				return '\1';
-	//			}
-	//		}
-	//	}
+	while (m_window.isOpen())
+	{
+		if (m_window.pollEvent(m_event))
+		{
+			if (m_event.type == sf::Event::Closed)
+				m_window.close();
+			if (m_event.type == sf::Event::MouseButtonReleased && m_event.key.code == sf::Mouse::Left)
+			{
+				if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+				{
+					PlaySound(Sounds::select);
+					m_window.clear(sf::Color::White);
+					socket.setBlocking(true);
+					socket.disconnect();
+					return '\1';
+				}
+			}
+		}
 
-	//	if (socket.receive(packet) == sf::Socket::Done)
-	//	{
-	//		packet >> turn;
-	//		packet.clear();
+		if (socket.receive(packet) == sf::Socket::Done)
+		{
+			packet >> turn;
+			packet.clear();
 
-	//		packet << myName;
-	//		socket.send(packet);
-	//		packet.clear();
+			packet << m_pImpl->m_settings.Name;
+			socket.send(packet);
+			packet.clear();
 
-	//		socket.setBlocking(true);
+			socket.setBlocking(true);
 
-	//		if (socket.receive(packet) == sf::Socket::Done)
-	//		{
-	//			packet >> enemyName;
-	//			packet.clear();
-	//		}
+			if (socket.receive(packet) == sf::Socket::Done)
+			{
+				packet >> enemyName;
+				packet.clear();
+			}
 
-	//		if (turn == "f")
-	//		{
-	//			m_pImpl->m_first = new Human('w');
-	//			m_pImpl->m_second = new Human('b');
-	//		}
-	//		else
-	//		{
-	//			m_pImpl->m_first = new Human('b');
-	//			m_pImpl->m_second = new Human('w');
-	//		}
+			socket.setBlocking(false);
+			m_pImpl->m_MP = true;
 
-	//		m_pImpl->m_first->SetName(myName);
-	//		m_pImpl->m_second->SetName(enemyName);
+			m_pImpl->m_first = new Human(ALIVE, 1);
+			m_pImpl->m_second = new Human(ENEMY_ALIVE, 2);
 
-	//		socket.setBlocking(false);
+			if (!dynamic_cast<Human*>(m_pImpl->m_first)->SetDisposition())
+			{
+				delete m_pImpl->m_first;
+				delete m_pImpl->m_second;
 
-	//		m_pImpl->m_MP = true;
+				socket.disconnect();
+				return '\1';
+			}
 
-	//		loading.setString("Start Game");
-	//		m_window.clear(sf::Color::White);
-	//		m_window.draw(loading);
-	//		m_window.display();
-	//		sf::sleep(sf::seconds(1));
+			SendMyBoard(socket);
 
-	//		ShowPlayersNames();
-	//		m_dataPacket.m_finishGame = false;
+			m_window.clear(sf::Color::White);
+			loading.setString("Wait opponent");
+			m_window.draw(loading);
+			m_window.display();
 
-	//		return turn[0];
-	//	}
+			ReceiveEnemyBoard(socket);
 
-	//	back.setFillColor(sf::Color::Black);
-	//	if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
-	//	{
-	//		back.setFillColor(sf::Color::Blue);
-	//	}
+			m_window.clear(sf::Color::White);
 
-	//	m_window.clear(sf::Color::White);
-	//	m_window.draw(loading);
-	//	m_window.draw(back);
-	//	m_window.display();
-	//}
-	return false;
+			if (turn[0] == 'f')
+				loading.setString("   Start game\nYou shoot first");
+			else
+				loading.setString("\tStart game\nEnemy shoot first");
+
+			m_window.draw(loading);
+			m_window.display();
+			sf::sleep(sf::seconds(1));
+			m_window.clear(sf::Color::White);
+
+			return turn[0];
+		}
+
+		back.setFillColor(sf::Color::Black);
+		if (sf::IntRect(back.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		{
+			back.setFillColor(sf::Color::Blue);
+			if (!sound)
+			{
+				PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else
+			sound = false;
+
+		m_window.clear(sf::Color::White);
+		m_window.draw(loading);
+		m_window.draw(back);
+		m_window.display();
+	}
+	return '\1';
+}
+
+void Game::SendMyBoard(sf::TcpSocket& socket)
+{
+	sf::Packet packet;
+
+	m_pImpl->m_first->SendShips(packet);
+
+	socket.send(packet);
+}
+
+void Game::ReceiveEnemyBoard(sf::TcpSocket& socket)
+{
+	sf::Packet packet;
+	if (!socket.isBlocking())
+		socket.setBlocking(true);
+
+	socket.receive(packet);
+	
+	m_pImpl->m_second->GetShips(packet);
+
+	socket.setBlocking(false);
+}
+
+void Game::ShutdownMes(const std::string& name)
+{
+	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
+
+	sf::Text shutdown(name + " left from game", m_pImpl->m_font);
+	shutdown.setFillColor(sf::Color::Black);
+	shutdown.setCharacterSize(30);
+	shutdown.setStyle(sf::Text::Style::Bold);
+	shutdown.setPosition(centerPos.x - shutdown.getGlobalBounds().width / 2, centerPos.y - shutdown.getGlobalBounds().height);
+
+	sf::sleep(sf::seconds(1));
+	m_window.clear(sf::Color::White);
+	m_window.draw(shutdown);
+	m_window.display();
+
+	sf::sleep(sf::seconds(1));
 }
 
 void Game::Settings()
@@ -1637,6 +1774,7 @@ void Game::GameEnd()
 		m_pImpl->m_music.play();
 
 	m_pImpl->m_menuReturn = false;
+	m_pImpl->m_MP = false;
 
 	delete m_pImpl->m_first;
 	delete m_pImpl->m_second;

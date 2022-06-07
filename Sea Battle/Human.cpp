@@ -1,6 +1,7 @@
 #include "Human.h"
 #include "Game.h"
 #include "Ships.h"
+#include "GameDataPacket.h"
 
 using Point = std::pair<int, int>;
 
@@ -12,6 +13,7 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 	Game* game = Game::GetInstance();
 
 	sf::Sprite* s_menu = game->GetMenuSprite();
+	GameDataPacket* packet = game->GetPacket();
 
 	int min_board_x;
 	if (m_board_number == 1)
@@ -51,6 +53,12 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 				{
 					sf::Vector2i mousePos = sf::Mouse::getPosition(game->m_window);
 					shot.first = (mousePos.x - min_board_x) / 30; shot.second = (mousePos.y - MIN_Y) / 30;
+
+					if (packet != nullptr)
+					{
+						packet->m_shootPos.x = shot.first;
+						packet->m_shootPos.y = shot.second;
+					}
 
 					sf::Vector2f middleCell(min_board_x + shot.first * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.second * SQUARE_SIDE_SIZE + 15);
 
@@ -95,6 +103,97 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 		game->Draw();
 	}
 	return false;
+}
+
+bool Human::ShootMP(char(&enemy)[ROW][COL], sf::TcpSocket& socket)
+{
+	Game* game = Game::GetInstance();
+
+	sf::Sprite* s_menu = game->GetMenuSprite();
+	GameDataPacket* dataPacket = game->GetPacket();
+	sf::Packet packet;
+
+	Point shot;
+	bool sound = false;
+
+	while (game->m_window.isOpen())
+	{
+		while (game->m_window.pollEvent(game->m_event))
+		{
+			if (game->m_event.type == sf::Event::Closed)
+				game->m_window.close();
+			if (game->m_event.type == sf::Event::KeyPressed)
+			{
+				if (game->m_event.key.code == sf::Keyboard::Escape)
+				{
+					game->PlaySound(Sounds::select);
+					if (game->MiniMenu())
+						game->Draw();
+					else return false;
+				}
+			}
+			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
+			{
+				if (sf::IntRect(s_menu->getGlobalBounds()).contains(sf::Mouse::getPosition(game->m_window)))
+				{
+					game->PlaySound(Sounds::select);
+					if (game->MiniMenu())
+						game->Draw();
+					else return false;
+				}
+			}
+		}
+		if (sf::IntRect(s_menu->getGlobalBounds()).contains(sf::Mouse::getPosition(game->m_window)))
+		{
+			s_menu->setScale(1.10, 1.10);
+			if (!sound)
+			{
+				game->PlaySound(Sounds::click);
+				sound = true;
+			}
+		}
+		else
+		{
+			sound = false;
+			s_menu->setScale(1, 1);
+		}
+		game->m_window.clear(sf::Color::White);
+		game->Draw();
+
+		sf::Socket::Status status = socket.receive(packet);
+		if (status == sf::Socket::Done)
+		{
+			packet >> *dataPacket;
+			packet.clear();
+
+			shot.first = dataPacket->m_shootPos.x;
+			shot.second = dataPacket->m_shootPos.y;
+
+			sf::Vector2f middleCell(MIN_F_BOARD_X + shot.first * SQUARE_SIDE_SIZE + 15, MIN_Y + shot.second * SQUARE_SIDE_SIZE + 15);
+
+			if (enemy[shot.first][shot.second] == ALIVE)
+			{
+				game->PlaySound(Sounds::enemy);
+				game->DrawShot(middleCell, sf::Color::Red);
+
+				enemy[shot.first][shot.second] = DEAD;
+				game->Draw();
+
+				return true;
+			}
+			else if (enemy[shot.first][shot.second] == EMPTY)
+			{
+				game->PlaySound(Sounds::miss);
+				game->DrawShot(middleCell, sf::Color::Color(858585));
+
+				enemy[shot.first][shot.second] = MISS;
+				game->Draw();
+
+				return false;
+			}
+		}
+	}
+	return false;	
 }
 
 bool Human::SetDisposition()

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameDataPacket.cpp" />
     <ClCompile Include="Human.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="AI.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameDataPacket.h" />
     <ClInclude Include="Human.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />

@@ -130,6 +130,14 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 	} while (true);
 }
 
+void Twin_Ship::SetMPPos(char(&arr)[ROW][COL])
+{
+	m_stat1 = &arr[*m_y1][*m_x1];
+	m_stat2 = &arr[*m_y2][*m_x2];
+	*m_stat1 = ENEMY_ALIVE;
+	*m_stat2 = ENEMY_ALIVE;
+}
+
 std::vector<sf::Vector2f> Twin_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
 {
 	std::vector<sf::Vector2f> places;
@@ -168,4 +176,14 @@ bool Twin_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 		return true;
 	}
 	return false;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, Twin_Ship* m)
+{
+	return packet << *m->m_x1 << *m->m_y1  << *m->m_x2 << *m->m_y2;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Twin_Ship* m)
+{
+	return packet >> *m->m_x1 >> *m->m_y1 >> *m->m_x2 >> *m->m_y2;
 }

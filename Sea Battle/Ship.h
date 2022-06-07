@@ -3,6 +3,7 @@
 #define SHIP_H
 #include "Constants.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 class Ship :public sf::Drawable
 {
@@ -12,6 +13,7 @@ public:
 	virtual ~Ship() = 0;
 	virtual void SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player) = 0;
 	virtual void RandomlyArrange(char(&arr)[ROW][COL], const char& player) = 0;
+	virtual void SetMPPos(char(&arr)[ROW][COL]) = 0;
 	virtual bool Kill(char(&arr)[ROW][COL], const int& board) = 0; 
 	void Rotate();
 	sf::FloatRect getGlobalBounds() const;
@@ -23,7 +25,7 @@ public:
 	bool Disposition();
 	void DrawZone(char(&arr)[ROW][COL]);
 	void ClearZone(char(&arr)[ROW][COL]);
-	void EndArrange();
+	void EndArrange();	
 protected:
 	int* m_x1, * m_y1, * m_x2, * m_y2, * m_x3, * m_y3, * m_x4, * m_y4;
 	char* m_stat1, * m_stat2, * m_stat3, * m_stat4;

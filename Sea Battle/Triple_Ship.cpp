@@ -209,6 +209,16 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 	} while (true);
 }
 
+void Triple_Ship::SetMPPos(char(&arr)[ROW][COL])
+{
+	m_stat1 = &arr[*m_y1][*m_x1];
+	m_stat2 = &arr[*m_y2][*m_x2];
+	m_stat3 = &arr[*m_y3][*m_x3];
+	*m_stat1 = ENEMY_ALIVE;
+	*m_stat2 = ENEMY_ALIVE;
+	*m_stat3 = ENEMY_ALIVE;
+}
+
 std::vector<sf::Vector2f> Triple_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
 {
 	std::vector<sf::Vector2f> places;
@@ -249,4 +259,14 @@ bool Triple_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 		return true;
 	}
 	return false;
+}
+
+sf::Packet& operator<<(sf::Packet& packet, Triple_Ship* m)
+{
+	return packet << *m->m_x1 << *m->m_y1 << *m->m_x2 << *m->m_y2 << *m->m_x3 << *m->m_y3;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Triple_Ship* m)
+{
+	return packet >> *m->m_x1 >> *m->m_y1 >> *m->m_x2 >> *m->m_y2 >> *m->m_x3 >> *m->m_y3;
 }

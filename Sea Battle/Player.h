@@ -2,6 +2,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <sfml/Network.hpp>
 #include <vector>
 #include <memory>
 #include "Constants.h"
@@ -21,8 +22,10 @@ public:
 	bool Loss() const;
 	void RandomShipsArrangement();
 	void CleardBoard();
-	void SearchDead();
+	bool SearchDead();
 	virtual bool Shoot(char(&enemy)[ROW][COL]) = 0;	
+	void SendShips(sf::Packet& packet);
+	void GetShips(sf::Packet& packet);
 };
 
 #endif // !PLAYER_H
