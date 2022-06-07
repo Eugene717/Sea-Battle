@@ -75,6 +75,8 @@ Game::Game()
 	for (int i = 0; i < m_pImpl->m_sounds.size(); i++)
 		m_pImpl->m_sounds[i].second.setBuffer(m_pImpl->m_sounds[i].first);
 
+	m_pImpl->m_sounds[4].second.setVolume(50);
+
 	std::ifstream fin("resourses/settings.txt");
 	if (fin.is_open())
 		fin >> m_pImpl->m_settings.Name;
