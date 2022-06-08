@@ -23,9 +23,9 @@ class Game
 
 	void SetNameFirstTime();
 	char FirstTurn();
-	char SearchGame(sf::TcpSocket& socket, std::string enemyName);
+	char SearchGame(sf::TcpSocket& socket);
 	void SendMyBoard(sf::TcpSocket& socket);
-	void ReceiveEnemyBoard(sf::TcpSocket& socket);
+	bool ReceiveEnemyBoard(sf::TcpSocket& socket);
 	void ShowRemainingShips(Player* player, const int& board);
 	void ShutdownMes(const std::string& name);
 	void AnnounceWinner(const int& player);

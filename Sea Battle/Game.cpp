@@ -22,6 +22,8 @@ struct GameIMPL
 	std::vector<std::pair<sf::SoundBuffer, sf::Sound>> m_sounds;
 
 	bool m_menuReturn, m_MP;
+	std::string m_enemyName;
+
 	Player* m_first;
 	Player* m_second;
 	sf::Font m_font;
@@ -113,7 +115,23 @@ void Game::Draw()
 
 		boardFrame.setPosition(MIN_S_BOARD_X, MIN_Y);
 
-		m_window.draw(boardFrame);   //enemyboard
+		m_window.draw(boardFrame);   //enemyboard				
+	}
+	if (m_pImpl->m_MP)
+	{
+		sf::Text Name(m_pImpl->m_settings.Name, m_pImpl->m_font);
+		Name.setCharacterSize(24);
+		Name.setFillColor(sf::Color::Black);
+		Name.setOrigin(Name.getGlobalBounds().width, Name.getGlobalBounds().height);
+		Name.setPosition(MIN_F_BOARD_X + 150 + Name.getGlobalBounds().width / 2, MIN_Y - 20);
+
+		m_window.draw(Name);
+
+		Name.setString(m_pImpl->m_enemyName);
+		Name.setOrigin(Name.getGlobalBounds().width, Name.getGlobalBounds().height);
+		Name.setPosition(MIN_S_BOARD_X + 150 + Name.getGlobalBounds().width / 2, MIN_Y - 20);
+
+		m_window.draw(Name);
 	}
 
 	sf::RectangleShape status;
@@ -701,12 +719,19 @@ void Game::OnePCGame()
 void Game::OnlineGame()
 {
 	sf::TcpSocket socket;
-	std::string enemyName;
 	bool finish = false;
 
-	char turn = SearchGame(socket, enemyName);
-	if (turn == '\1')
-		return;
+	char turn;
+	while (true)
+	{
+		turn = SearchGame(socket);
+		if (turn == '\1')
+			return;
+		else if (turn == '\2')
+			continue;
+		else
+			break;
+	}
 
 	sf::Packet packet;
 	socket.setBlocking(false);
@@ -726,12 +751,27 @@ void Game::OnlineGame()
 				m_window.close();
 		}
 
+		if (socket.receive(packet) == sf::Socket::Disconnected)
+		{
+			socket.disconnect();
+			ShutdownMes(m_pImpl->m_enemyName);
+			AnnounceWinner(0);
+			return;
+		}
+
 		if (turn == 'f')
 		{
 			while (true) 
 			{
 				sf::sleep(sf::milliseconds(300));
-				if (m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board))
+				bool shotRes = m_pImpl->m_first->Shoot(m_pImpl->m_second->m_Board);
+				if (m_pImpl->m_dataPacket.m_shootPos.x == 777)
+				{
+					socket.disconnect();
+					return;
+				}
+
+				if (shotRes)
 				{
 					packet << m_pImpl->m_dataPacket;
 					socket.send(packet);
@@ -766,6 +806,8 @@ void Game::OnlineGame()
 			{
 				if (static_cast<Human*>(m_pImpl->m_second)->ShootMP(m_pImpl->m_first->m_Board, socket))
 				{
+					if (socket.receive(packet) == sf::Socket::Disconnected)
+						break;;
 					if (m_pImpl->m_first->SearchDead())
 					{
 						if (m_pImpl->m_first->Loss())
@@ -788,7 +830,7 @@ void Game::OnlineGame()
 	socket.disconnect();
 }
 
-char Game::SearchGame(sf::TcpSocket& socket, std::string enemyName)
+char Game::SearchGame(sf::TcpSocket& socket)
 {
 	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
 
@@ -846,8 +888,8 @@ char Game::SearchGame(sf::TcpSocket& socket, std::string enemyName)
 				}
 			}
 		}
-
-		if (socket.receive(packet) == sf::Socket::Done)
+		sf::Socket::Status status = socket.receive(packet);
+		if (status == sf::Socket::Done)
 		{
 			packet >> turn;
 			packet.clear();
@@ -860,12 +902,9 @@ char Game::SearchGame(sf::TcpSocket& socket, std::string enemyName)
 
 			if (socket.receive(packet) == sf::Socket::Done)
 			{
-				packet >> enemyName;
+				packet >> m_pImpl->m_enemyName;
 				packet.clear();
 			}
-
-			socket.setBlocking(false);
-			m_pImpl->m_MP = true;
 
 			m_pImpl->m_first = new Human(ALIVE, 1);
 			m_pImpl->m_second = new Human(ENEMY_ALIVE, 2);
@@ -886,7 +925,13 @@ char Game::SearchGame(sf::TcpSocket& socket, std::string enemyName)
 			m_window.draw(loading);
 			m_window.display();
 
-			ReceiveEnemyBoard(socket);
+			if (!ReceiveEnemyBoard(socket))
+			{
+				socket.disconnect();
+				ShutdownMes("Enemy");
+				GameEnd();
+				return '\2';
+			}
 
 			m_window.clear(sf::Color::White);
 
@@ -933,23 +978,25 @@ void Game::SendMyBoard(sf::TcpSocket& socket)
 	socket.send(packet);
 }
 
-void Game::ReceiveEnemyBoard(sf::TcpSocket& socket)
+bool Game::ReceiveEnemyBoard(sf::TcpSocket& socket)
 {
 	sf::Packet packet;
 	if (!socket.isBlocking())
 		socket.setBlocking(true);
 
-	socket.receive(packet);
+	if (socket.receive(packet) == sf::Socket::Disconnected)
+		return false;
 	
 	m_pImpl->m_second->GetShips(packet);
 
 	socket.setBlocking(false);
+	return true;
 }
 
 void Game::ShutdownMes(const std::string& name)
 {
 	sf::Vector2f centerPos = sf::Vector2f(m_window.getSize().x / 2, m_window.getSize().y / 2 - 40);
-
+	
 	sf::Text shutdown(name + " left from game", m_pImpl->m_font);
 	shutdown.setFillColor(sf::Color::Black);
 	shutdown.setCharacterSize(30);
@@ -1382,14 +1429,14 @@ bool Game::MiniMenu()
 					m_window.clear(sf::Color::White);
 					return true;;
 				}
-				if (sf::IntRect(menu.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to game
+				if (sf::IntRect(menu.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to menu
 				{
 					PlaySound(Sounds::select);
 					m_window.clear(sf::Color::White);
 					m_pImpl->m_menuReturn = true;
 					return false;
 				}
-				if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))  //return to game
+				if (sf::IntRect(exit.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window))) 
 				{
 					PlaySound(Sounds::select);
 					sf::sleep(sf::milliseconds(300));
@@ -1777,6 +1824,7 @@ void Game::GameEnd()
 
 	m_pImpl->m_menuReturn = false;
 	m_pImpl->m_MP = false;
+	m_pImpl->m_enemyName = "";
 
 	delete m_pImpl->m_first;
 	delete m_pImpl->m_second;

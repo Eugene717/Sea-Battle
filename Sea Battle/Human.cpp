@@ -37,7 +37,11 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 					game->PlaySound(Sounds::select);
 					if (game->MiniMenu())
 						game->Draw();
-					else return false;
+					else
+					{
+						packet->m_shootPos.x = 777;
+						return false;
+					}
 				}
 			}
 			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
@@ -47,7 +51,11 @@ bool Human::Shoot(char(&enemy)[ROW][COL])
 					game->PlaySound(Sounds::select);
 					if (game->MiniMenu())
 						game->Draw();
-					else return false;
+					else
+					{
+						packet->m_shootPos.x = 777;
+						return false;
+					}
 				}
 				if (sf::IntRect(min_board_x, MIN_Y, SQUARE_SIDE_SIZE * 10, SQUARE_SIDE_SIZE * 10).contains(sf::Mouse::getPosition(game->m_window)))
 				{
@@ -129,7 +137,11 @@ bool Human::ShootMP(char(&enemy)[ROW][COL], sf::TcpSocket& socket)
 					game->PlaySound(Sounds::select);
 					if (game->MiniMenu())
 						game->Draw();
-					else return false;
+					else
+					{
+						socket.disconnect();
+						return false;
+					}
 				}
 			}
 			if (game->m_event.type == game->m_event.MouseButtonReleased && game->m_event.mouseButton.button == sf::Mouse::Left)
@@ -160,7 +172,9 @@ bool Human::ShootMP(char(&enemy)[ROW][COL], sf::TcpSocket& socket)
 		game->m_window.clear(sf::Color::White);
 		game->Draw();
 
-		sf::Socket::Status status = socket.receive(packet);
+		sf::Socket::Status status = socket.receive(packet);		
+		if (status == sf::Socket::Disconnected)
+			return false;
 		if (status == sf::Socket::Done)
 		{
 			packet >> *dataPacket;
