@@ -269,6 +269,7 @@ void Game::DrawShots(const std::vector<sf::Vector2f>& places, const sf::Color& c
 
 		m_window.clear(sf::Color::White);
 		Draw();
+		Draw();
 
 		std::vector<sf::RectangleShape> shots;
 		shots.resize(places.size());
@@ -733,6 +734,7 @@ void Game::OnlineGame()
 			break;
 	}
 
+	m_pImpl->m_MP = true;
 	sf::Packet packet;
 	socket.setBlocking(false);
 
@@ -753,9 +755,9 @@ void Game::OnlineGame()
 
 		if (socket.receive(packet) == sf::Socket::Disconnected)
 		{
-			socket.disconnect();
 			ShutdownMes(m_pImpl->m_enemyName);
 			AnnounceWinner(0);
+			socket.disconnect();
 			return;
 		}
 
@@ -932,7 +934,7 @@ char Game::SearchGame(sf::TcpSocket& socket)
 				GameEnd();
 				return '\2';
 			}
-
+						
 			m_window.clear(sf::Color::White);
 
 			if (turn[0] == 'f')
@@ -1008,7 +1010,9 @@ void Game::ShutdownMes(const std::string& name)
 	m_window.draw(shutdown);
 	m_window.display();
 
-	sf::sleep(sf::seconds(1));
+	sf::sleep(sf::seconds(2));
+	m_window.clear(sf::Color::White);
+	m_window.display();
 }
 
 void Game::Settings()
