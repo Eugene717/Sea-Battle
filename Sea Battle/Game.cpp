@@ -328,14 +328,14 @@ int Game::Menu()
 	sf::Text singleplayer("Singlelayer", m_pImpl->m_font);
 	singleplayer.setPosition(centerPos - singleplayer.getGlobalBounds().width / 2, header.getPosition().y + 150);
 
-	sf::Text multiplayer("One PC", m_pImpl->m_font);
-	multiplayer.setPosition(centerPos - multiplayer.getGlobalBounds().width / 2, singleplayer.getPosition().y + 70);
+	sf::Text OnePC("One PC", m_pImpl->m_font);
+	OnePC.setPosition(centerPos - OnePC.getGlobalBounds().width / 2, singleplayer.getPosition().y + 70);
 
-	sf::Text LANgame("Multiplayer", m_pImpl->m_font);
-	LANgame.setPosition(centerPos - LANgame.getGlobalBounds().width / 2, multiplayer.getPosition().y + 70);
+	sf::Text multiplayer("Multiplayer", m_pImpl->m_font);
+	multiplayer.setPosition(centerPos - multiplayer.getGlobalBounds().width / 2, OnePC.getPosition().y + 70);
 
 	sf::Text settings("Settings", m_pImpl->m_font);
-	settings.setPosition(centerPos - settings.getGlobalBounds().width / 2, LANgame.getPosition().y + 70);
+	settings.setPosition(centerPos - settings.getGlobalBounds().width / 2, multiplayer.getPosition().y + 70);
 
 	sf::Text exit("Exit", m_pImpl->m_font);
 	exit.setPosition(centerPos - exit.getGlobalBounds().width / 2, settings.getPosition().y + 70);
@@ -366,9 +366,9 @@ int Game::Menu()
 				sound = true;
 			}
 		}
-		else if (sf::IntRect(multiplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(OnePC.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
-			multiplayer.setFillColor(sf::Color::Blue);
+			OnePC.setFillColor(sf::Color::Blue);
 			menuNum = 2;
 			if (!sound)
 			{
@@ -376,16 +376,16 @@ int Game::Menu()
 				sound = true;
 			}
 		}
-		else if (sf::IntRect(LANgame.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
+		else if (sf::IntRect(multiplayer.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
-			LANgame.setFillColor(sf::Color::Blue);
+			multiplayer.setFillColor(sf::Color::Blue);
 			menuNum = 3;
 			if (!sound)
 			{
 				PlaySound(Sounds::click);
 				sound = true;
 			}
-		}
+		}		
 		else if (sf::IntRect(settings.getGlobalBounds()).contains(sf::Mouse::getPosition(m_window)))
 		{
 			settings.setFillColor(sf::Color::Blue);
@@ -411,8 +411,8 @@ int Game::Menu()
 			menuNum = 0;
 			sound = false;
 			singleplayer.setFillColor(sf::Color::Black);
+			OnePC.setFillColor(sf::Color::Black);
 			multiplayer.setFillColor(sf::Color::Black);
-			LANgame.setFillColor(sf::Color::Black);
 			settings.setFillColor(sf::Color::Black);
 			exit.setFillColor(sf::Color::Black);
 		}
@@ -427,8 +427,8 @@ int Game::Menu()
 		m_window.clear(sf::Color::White);
 		m_window.draw(header);
 		m_window.draw(singleplayer);
+		m_window.draw(OnePC);
 		m_window.draw(multiplayer);
-		m_window.draw(LANgame);
 		m_window.draw(settings);
 		m_window.draw(exit);
 		m_window.display();
