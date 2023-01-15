@@ -13,7 +13,7 @@ Ship::Ship(const int& decksNumber)
 	m_body->setOrigin(m_body->getGlobalBounds().width / 2, m_body->getGlobalBounds().height / 2);
 }
 
-std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const int* y, const int& draw) const
+std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int x, const int y, const bool& draw) const
 {
 	std::vector<sf::Vector2f> places;
 	if (draw)
@@ -21,122 +21,119 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int* x, const i
 		places.reserve(sizeof(sf::Vector2f) * 8);
 	}
 
-	if (x != nullptr && y != nullptr)
+	if (x != 9)
 	{
-		if (*x != 9)
+		if (draw)
 		{
-			if (draw == 2)
+			if (arr[y][x + 1] != ALIVE)
+				places.push_back(sf::Vector2f(y, x + 1));
+		}
+		else if (arr[y][x + 1] == EMPTY)
+		{
+			if (draw)
+				places.push_back(sf::Vector2f(y, x + 1));
+			else
+				arr[y][x + 1] = MISS;
+		}
+		if (y != 9)
+			if (draw)
 			{
-				if (arr[*y][*x + 1] != ALIVE)
-					places.push_back(sf::Vector2f(*y, *x + 1));
+				if (arr[y + 1][x + 1] != ALIVE)
+					places.push_back(sf::Vector2f(y + 1, x + 1));
 			}
-			else if (arr[*y][*x + 1] == EMPTY)
+			else if (arr[y + 1][x + 1] == EMPTY)
 			{
 				if (draw)
-					places.push_back(sf::Vector2f(*y, *x + 1));
+					places.push_back(sf::Vector2f(y + 1, x + 1));
 				else
-					arr[*y][*x + 1] = MISS;
+					arr[y + 1][x + 1] = MISS;
 			}
-			if (*y != 9)
-				if (draw == 2)
-				{
-					if (arr[*y + 1][*x + 1] != ALIVE)
-						places.push_back(sf::Vector2f(*y + 1, *x + 1));
-				}
-				else if (arr[*y + 1][*x + 1] == EMPTY)
-				{
-					if (draw)
-						places.push_back(sf::Vector2f(*y + 1, *x + 1));
-					else
-						arr[*y + 1][*x + 1] = MISS;
-				}
-			if (*y != 0)
-				if (draw == 2)
-				{
-					if (arr[*y - 1][*x + 1] != ALIVE)
-						places.push_back(sf::Vector2f(*y - 1, *x + 1));
-				}
-				else if (arr[*y - 1][*x + 1] == EMPTY)
-				{
-					if (draw)
-						places.push_back(sf::Vector2f(*y - 1, *x + 1));
-					else
-						arr[*y - 1][*x + 1] = MISS;
-				}
-		}
-		if (*x != 0)
-		{
-			if (draw == 2)
+		if (y != 0)
+			if (draw)
 			{
-				if (arr[*y][*x - 1] != ALIVE)
-					places.push_back(sf::Vector2f(*y, *x - 1));
+				if (arr[y - 1][x + 1] != ALIVE)
+					places.push_back(sf::Vector2f(y - 1, x + 1));
 			}
-			else if (arr[*y][*x - 1] == EMPTY)
+			else if (arr[y - 1][x + 1] == EMPTY)
 			{
 				if (draw)
-					places.push_back(sf::Vector2f(*y, *x - 1));
+					places.push_back(sf::Vector2f(y - 1, x + 1));
 				else
-					arr[*y][*x - 1] = MISS;
+					arr[y - 1][x + 1] = MISS;
 			}
-			if (*y != 9)
-				if (draw == 2)
-				{
-					if (arr[*y + 1][*x - 1] != ALIVE)
-						places.push_back(sf::Vector2f(*y + 1, *x - 1));
-				}
-				else if (arr[*y + 1][*x - 1] == EMPTY)
-				{
-					if (draw)
-						places.push_back(sf::Vector2f(*y + 1, *x - 1));
-					else
-						arr[*y + 1][*x - 1] = MISS;
-				}
-			if (*y != 0)
-				if (draw == 2)
-				{
-					if (arr[*y - 1][*x - 1] != ALIVE)
-						places.push_back(sf::Vector2f(*y - 1, *x - 1));
-				}
-				else if (arr[*y - 1][*x - 1] == EMPTY)
-				{
-					if (draw)
-						places.push_back(sf::Vector2f(*y - 1, *x - 1));
-					else
-						arr[*y - 1][*x - 1] = MISS;
-				}
-		}
-		if (*y != 9)
-		{
-			if (draw == 2)
-			{
-				if (arr[*y + 1][*x] != ALIVE)
-					places.push_back(sf::Vector2f(*y + 1, *x));
-			}
-			else if (arr[*y + 1][*x] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(*y + 1, *x));
-				else
-					arr[*y + 1][*x] = MISS;
-			}
-		}
-		if (*y != 0)
-		{
-			if (draw == 2)
-			{
-				if (arr[*y - 1][*x] != ALIVE)
-					places.push_back(sf::Vector2f(*y - 1, *x));
-			}
-			else if (arr[*y - 1][*x] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(*y - 1, *x));
-				else
-					arr[*y - 1][*x] = MISS;
-			}
-		}
-
 	}
+	if (x != 0)
+	{
+		if (draw)
+		{
+			if (arr[y][x - 1] != ALIVE)
+				places.push_back(sf::Vector2f(y, x - 1));
+		}
+		else if (arr[y][x - 1] == EMPTY)
+		{
+			if (draw)
+				places.push_back(sf::Vector2f(y, x - 1));
+			else
+				arr[y][x - 1] = MISS;
+		}
+		if (y != 9)
+			if (draw)
+			{
+				if (arr[y + 1][x - 1] != ALIVE)
+					places.push_back(sf::Vector2f(y + 1, x - 1));
+			}
+			else if (arr[y + 1][x - 1] == EMPTY)
+			{
+				if (draw)
+					places.push_back(sf::Vector2f(y + 1, x - 1));
+				else
+					arr[y + 1][x - 1] = MISS;
+			}
+		if (y != 0)
+			if (draw)
+			{
+				if (arr[y - 1][x - 1] != ALIVE)
+					places.push_back(sf::Vector2f(y - 1, x - 1));
+			}
+			else if (arr[y - 1][x - 1] == EMPTY)
+			{
+				if (draw)
+					places.push_back(sf::Vector2f(y - 1, x - 1));
+				else
+					arr[y - 1][x - 1] = MISS;
+			}
+	}
+	if (y != 9)
+	{
+		if (draw)
+		{
+			if (arr[y + 1][x] != ALIVE)
+				places.push_back(sf::Vector2f(y + 1, x));
+		}
+		else if (arr[y + 1][x] == EMPTY)
+		{
+			if (draw)
+				places.push_back(sf::Vector2f(y + 1, x));
+			else
+				arr[y + 1][x] = MISS;
+		}
+	}
+	if (y != 0)
+	{
+		if (draw)
+		{
+			if (arr[y - 1][x] != ALIVE)
+				places.push_back(sf::Vector2f(y - 1, x));
+		}
+		else if (arr[y - 1][x] == EMPTY)
+		{
+			if (draw)
+				places.push_back(sf::Vector2f(y - 1, x));
+			else
+				arr[y - 1][x] = MISS;
+		}
+	}
+
 	places.shrink_to_fit();
 
 	return places;
@@ -161,62 +158,6 @@ void Ship::replace()
 void Ship::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(*m_body);
-}
-
-void Ship::DrawZone(char(&arr)[ROW][COL])
-{
-	if (m_stat1 != nullptr)
-		Zone(arr, m_x1, m_y1);
-	if (m_stat2 != nullptr)
-		Zone(arr, m_x2, m_y2);
-	if (m_stat3 != nullptr)
-		Zone(arr, m_x3, m_y3);
-	if (m_stat4 != nullptr)
-		Zone(arr, m_x4, m_y4);
-}
-
-void Ship::ClearZone(char(&arr)[ROW][COL])
-{
-	if (m_stat1 != nullptr)
-	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x1, m_y1, 2);
-		for (int i = 0; i < zone.size(); i++)
-		{
-			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-		}
-		*m_stat1 = EMPTY;
-		m_stat1 = nullptr;
-	}
-	if (m_stat2 != nullptr)
-	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x2, m_y2, 2);
-		for (int i = 0; i < zone.size(); i++)
-		{
-			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-		}
-		*m_stat2 = EMPTY;
-		m_stat2 = nullptr;
-	}
-	if (m_stat3 != nullptr)
-	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x3, m_y3, 2);
-		for (int i = 0; i < zone.size(); i++)
-		{
-			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-		}
-		*m_stat3 = EMPTY;
-		m_stat3 = nullptr;
-	}
-	if (m_stat4 != nullptr)
-	{
-		std::vector<sf::Vector2f> zone = Zone(arr, m_x4, m_y4, 2);
-		for (int i = 0; i < zone.size(); i++)
-		{
-			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-		}
-		*m_stat4 = EMPTY;
-		m_stat4 = nullptr;
-	}
 }
 
 bool Ship::Horiz()

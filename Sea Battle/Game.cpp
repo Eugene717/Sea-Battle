@@ -720,7 +720,6 @@ void Game::OnePCGame()
 void Game::OnlineGame()
 {
 	sf::TcpSocket socket;
-	bool finish = false;
 
 	char turn;
 	while (true)

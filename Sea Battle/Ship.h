@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
+struct ShipIMPL;
+
 class Ship :public sf::Drawable
 {
 	bool* m_horiz;
@@ -23,16 +25,15 @@ public:
 	bool Horiz();
 	void Desposited();
 	bool Disposition();
-	void DrawZone(char(&arr)[ROW][COL]);
-	void ClearZone(char(&arr)[ROW][COL]);
+	virtual void DrawZone(char(&arr)[ROW][COL]) = 0;
+	virtual	void ClearZone(char(&arr)[ROW][COL]) = 0;
 	void EndArrange();	
 protected:
-	int* m_x1, * m_y1, * m_x2, * m_y2, * m_x3, * m_y3, * m_x4, * m_y4;
-	char* m_stat1, * m_stat2, * m_stat3, * m_stat4;
+	ShipIMPL* m_pImpl;
 	sf::Vector2f* m_posGraphic;
 	sf::RectangleShape* m_body;
 	bool* m_disposited;
-	std::vector<sf::Vector2f> Zone(char(&arr)[ROW][COL], const int* x, const int* y, const int& draw = false) const;
+	std::vector<sf::Vector2f> Zone(char(&arr)[ROW][COL], const int x, const int y, const bool& draw = false) const;
 };
 
 inline Ship::~Ship() { }

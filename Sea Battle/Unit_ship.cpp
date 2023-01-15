@@ -1,17 +1,21 @@
 #include "Unit_ship.h"
 #include "Game.h"
 
-using namespace std;
+struct ShipIMPL
+{
+	int m_x1, m_y1;
+	char* m_stat1;
+};
 
 Unit_Ship::Unit_Ship() :Ship(1)
 {
-	m_x1 = new int;	m_y1 = new int;
+	m_pImpl = new ShipIMPL;
+	m_pImpl->m_stat1 = nullptr;
 }
 
 Unit_Ship::~Unit_Ship()
 {
-	delete m_x1;
-	delete m_y1;
+	delete m_pImpl;
 }
 
 void Unit_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const char& player)
@@ -25,9 +29,9 @@ void Unit_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	else
 	{
 		*m_disposited = true;
-		*m_x1 = x;
-		*m_y1 = y;
-		m_body->setPosition(50 + 30 * *m_y1 + 15, 80 + 30 * *m_x1 + 15);
+		m_pImpl->m_x1 = x;
+		m_pImpl->m_y1 = y;
+		m_body->setPosition(50 + 30 * y + 15, 80 + 30 * x + 15);
 		*m_posGraphic = m_body->getPosition();
 	}
 
@@ -36,8 +40,8 @@ void Unit_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	{
 		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
 	}
-	m_stat1 = &arr[*m_y1][*m_x1];
-	*m_stat1 = player;
+	m_pImpl->m_stat1 = &arr[y][x];
+	*m_pImpl->m_stat1 = player;
 }
 
 void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
@@ -47,13 +51,15 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 	*m_disposited = true;
 	do
 	{
-		*m_y1 = game->m_gen() % 10;
-	    *m_x1 = game->m_gen() % 10;
-		if (arr[*m_y1][*m_x1] == EMPTY)
+		int x1 = game->m_gen() % 10;
+		int y1 = game->m_gen() % 10;
+		if (arr[y1][x1] == EMPTY)
 		{
-			m_stat1 = &arr[*m_y1][*m_x1];
-			*m_stat1 = player;
-			m_body->setPosition(50 + 30 * *m_y1 + 15, 80 + 30 * *m_x1 + 15);
+			m_pImpl->m_x1 = x1;
+			m_pImpl->m_y1 = y1;
+			m_pImpl->m_stat1 = &arr[y1][x1];
+			*m_pImpl->m_stat1 = player;
+			m_body->setPosition(50 + 30 * y1 + 15, 80 + 30 * x1 + 15);
 			Zone(arr);		
 			return;
 		}
@@ -62,20 +68,39 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 
 void Unit_Ship::SetMPPos(char(&arr)[ROW][COL])
 {
-	m_stat1 = &arr[*m_y1][*m_x1];
-	*m_stat1 = ENEMY_ALIVE;
+	m_pImpl->m_stat1 = &arr[m_pImpl->m_y1][m_pImpl->m_x1];
+	*m_pImpl->m_stat1 = ENEMY_ALIVE;
+}
+
+void Unit_Ship::DrawZone(char(&arr)[ROW][COL])
+{
+	if (m_pImpl->m_stat1 != nullptr)
+		Zone(arr, true);
+}
+
+void Unit_Ship::ClearZone(char(&arr)[ROW][COL])
+{
+	std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
+
+	for (int i = 0; i < zone.size(); i++)
+	{
+		arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
+	}
+
+	*m_pImpl->m_stat1 = EMPTY;
+	m_pImpl->m_stat1 = nullptr;
 }
 
 std::vector<sf::Vector2f> Unit_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
 { 
-	std::vector<sf::Vector2f> places = Ship::Zone(arr, m_x1, m_y1, draw);
+	std::vector<sf::Vector2f> places = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, draw);
 
 	return places;
 }
 
 bool Unit_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 {
-	if (*m_stat1 == DEAD)
+	if (*m_pImpl->m_stat1 == DEAD)
 	{
 		Game* game = Game::GetInstance();
 		int min_board_x;
@@ -103,10 +128,10 @@ bool Unit_Ship::Kill(char(&arr)[ROW][COL], const int& board)
 
 sf::Packet& operator<<(sf::Packet& packet, Unit_Ship* m)
 {
-	return packet << *m->m_x1 << *m->m_y1;
+	return packet << m->m_pImpl->m_x1 << m->m_pImpl->m_y1;
 }
 
 sf::Packet& operator>>(sf::Packet& packet, Unit_Ship* m)
 {
-	return packet >> *m->m_x1 >> *m->m_y1;
+	return packet >> m->m_pImpl->m_x1 >> m->m_pImpl->m_y1;
 }
