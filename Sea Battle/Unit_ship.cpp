@@ -75,20 +75,23 @@ void Unit_Ship::SetMPPos(char(&arr)[ROW][COL])
 void Unit_Ship::DrawZone(char(&arr)[ROW][COL])
 {
 	if (m_pImpl->m_stat1 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 }
 
 void Unit_Ship::ClearZone(char(&arr)[ROW][COL])
 {
-	std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
-
-	for (int i = 0; i < zone.size(); i++)
+	if (*m_disposited)
 	{
-		arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-	}
+		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
 
-	*m_pImpl->m_stat1 = EMPTY;
-	m_pImpl->m_stat1 = nullptr;
+		for (int i = 0; i < zone.size(); i++)
+		{
+			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
+		}
+
+		*m_pImpl->m_stat1 = EMPTY;
+		m_pImpl->m_stat1 = nullptr;
+	}
 }
 
 std::vector<sf::Vector2f> Unit_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const

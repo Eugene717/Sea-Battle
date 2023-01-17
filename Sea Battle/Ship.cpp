@@ -2,7 +2,6 @@
 
 Ship::Ship(const int& decksNumber)
 {
-	m_pImpl = nullptr;
 	m_horiz = new bool;
 	*m_horiz = true;
 	m_disposited = new bool;
@@ -26,113 +25,67 @@ std::vector<sf::Vector2f> Ship::Zone(char(&arr)[ROW][COL], const int x, const in
 	{
 		if (draw)
 		{
-			if (arr[y][x + 1] != ALIVE)
+			if (arr[y][x + 1] != DEAD)
 				places.push_back(sf::Vector2f(y, x + 1));
 		}
 		else if (arr[y][x + 1] == EMPTY)
 		{
-			if (draw)
-				places.push_back(sf::Vector2f(y, x + 1));
-			else
-				arr[y][x + 1] = MISS;
+			arr[y][x + 1] = MISS;
 		}
+
 		if (y != 9)
 			if (draw)
-			{
-				if (arr[y + 1][x + 1] != ALIVE)
-					places.push_back(sf::Vector2f(y + 1, x + 1));
-			}
+				places.push_back(sf::Vector2f(y + 1, x + 1));
 			else if (arr[y + 1][x + 1] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(y + 1, x + 1));
-				else
-					arr[y + 1][x + 1] = MISS;
-			}
+				arr[y + 1][x + 1] = MISS;
+
 		if (y != 0)
 			if (draw)
-			{
-				if (arr[y - 1][x + 1] != ALIVE)
-					places.push_back(sf::Vector2f(y - 1, x + 1));
-			}
+				places.push_back(sf::Vector2f(y - 1, x + 1));
 			else if (arr[y - 1][x + 1] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(y - 1, x + 1));
-				else
-					arr[y - 1][x + 1] = MISS;
-			}
+				arr[y - 1][x + 1] = MISS;
 	}
 	if (x != 0)
 	{
 		if (draw)
 		{
-			if (arr[y][x - 1] != ALIVE)
+			if (arr[y][x - 1] != DEAD)
 				places.push_back(sf::Vector2f(y, x - 1));
 		}
 		else if (arr[y][x - 1] == EMPTY)
-		{
-			if (draw)
-				places.push_back(sf::Vector2f(y, x - 1));
-			else
-				arr[y][x - 1] = MISS;
-		}
+			arr[y][x - 1] = MISS;
+
 		if (y != 9)
 			if (draw)
-			{
-				if (arr[y + 1][x - 1] != ALIVE)
-					places.push_back(sf::Vector2f(y + 1, x - 1));
-			}
+				places.push_back(sf::Vector2f(y + 1, x - 1));
 			else if (arr[y + 1][x - 1] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(y + 1, x - 1));
-				else
-					arr[y + 1][x - 1] = MISS;
-			}
+				arr[y + 1][x - 1] = MISS;
+
 		if (y != 0)
 			if (draw)
-			{
-				if (arr[y - 1][x - 1] != ALIVE)
-					places.push_back(sf::Vector2f(y - 1, x - 1));
-			}
+				places.push_back(sf::Vector2f(y - 1, x - 1));
 			else if (arr[y - 1][x - 1] == EMPTY)
-			{
-				if (draw)
-					places.push_back(sf::Vector2f(y - 1, x - 1));
-				else
-					arr[y - 1][x - 1] = MISS;
-			}
+				arr[y - 1][x - 1] = MISS;
 	}
 	if (y != 9)
 	{
 		if (draw)
 		{
-			if (arr[y + 1][x] != ALIVE)
+			if (arr[y + 1][x] != DEAD)
 				places.push_back(sf::Vector2f(y + 1, x));
 		}
 		else if (arr[y + 1][x] == EMPTY)
-		{
-			if (draw)
-				places.push_back(sf::Vector2f(y + 1, x));
-			else
-				arr[y + 1][x] = MISS;
-		}
+			arr[y + 1][x] = MISS;
 	}
 	if (y != 0)
 	{
 		if (draw)
 		{
-			if (arr[y - 1][x] != ALIVE)
+			if (arr[y - 1][x] != DEAD)
 				places.push_back(sf::Vector2f(y - 1, x));
 		}
 		else if (arr[y - 1][x] == EMPTY)
-		{
-			if (draw)
-				places.push_back(sf::Vector2f(y - 1, x));
-			else
-				arr[y - 1][x] = MISS;
-		}
+			arr[y - 1][x] = MISS;
 	}
 
 	places.shrink_to_fit();

@@ -237,39 +237,42 @@ void Quadraple_Ship::SetMPPos(char(&arr)[ROW][COL])
 void Quadraple_Ship::DrawZone(char(&arr)[ROW][COL])
 {
 	if (m_pImpl->m_stat1 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 	if (m_pImpl->m_stat2 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 	if (m_pImpl->m_stat3 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 	if (m_pImpl->m_stat4 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 }
 
 void Quadraple_Ship::ClearZone(char(&arr)[ROW][COL])
 {
-	std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
-	std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
-	std::vector<sf::Vector2f> zone3 = Ship::Zone(arr, m_pImpl->m_x3, m_pImpl->m_y3, true);
-	std::vector<sf::Vector2f> zone4 = Ship::Zone(arr, m_pImpl->m_x4, m_pImpl->m_y4, true);
-
-	zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
-	zone.insert(zone.end(), std::make_move_iterator(zone3.begin()), std::make_move_iterator(zone3.end()));
-	zone.insert(zone.end(), std::make_move_iterator(zone4.begin()), std::make_move_iterator(zone4.end()));
-
-	for (int i = 0; i < zone.size(); i++)
+	if (*m_disposited)
 	{
-		arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-	}
+		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
+		std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
+		std::vector<sf::Vector2f> zone3 = Ship::Zone(arr, m_pImpl->m_x3, m_pImpl->m_y3, true);
+		std::vector<sf::Vector2f> zone4 = Ship::Zone(arr, m_pImpl->m_x4, m_pImpl->m_y4, true);
 
-	*m_pImpl->m_stat1 = EMPTY;
-	*m_pImpl->m_stat2 = EMPTY;
-	*m_pImpl->m_stat3 = EMPTY;
-	*m_pImpl->m_stat4 = EMPTY;
-	m_pImpl->m_stat1 = nullptr;
-	m_pImpl->m_stat2 = nullptr;
-	m_pImpl->m_stat3 = nullptr;
-	m_pImpl->m_stat4 = nullptr;
+		zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
+		zone.insert(zone.end(), std::make_move_iterator(zone3.begin()), std::make_move_iterator(zone3.end()));
+		zone.insert(zone.end(), std::make_move_iterator(zone4.begin()), std::make_move_iterator(zone4.end()));
+
+		for (int i = 0; i < zone.size(); i++)
+		{
+			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
+		}
+
+		*m_pImpl->m_stat1 = EMPTY;
+		*m_pImpl->m_stat2 = EMPTY;
+		*m_pImpl->m_stat3 = EMPTY;
+		*m_pImpl->m_stat4 = EMPTY;
+		m_pImpl->m_stat1 = nullptr;
+		m_pImpl->m_stat2 = nullptr;
+		m_pImpl->m_stat3 = nullptr;
+		m_pImpl->m_stat4 = nullptr;
+	}
 }
 
 std::vector<sf::Vector2f> Quadraple_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const

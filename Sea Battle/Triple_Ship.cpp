@@ -139,33 +139,6 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 				if (arr[y2][x2] == EMPTY && arr[y1][x1] == EMPTY)
 				{
 					int x3, y3;
-					/*if (dir == 0)
-					{
-						if (y2 != 0)
-						{
-							y3 = y2 - 1;
-							x3 = x2;
-						}
-						else
-						{
-							y3 = y1 + 1;
-							x3 = x2;
-						}
-					}
-					else if (dir == 1)
-					{
-						if (x2 != 9)
-						{
-							x3 = x2 + 1;
-							y3 = 2;
-						}
-						else
-						{
-							x3 = x1 - 1;
-							y3 = y2;
-						}
-					}
-					else*/ 
 					if (dir == 2)
 					{
 						if (y2 != 9)
@@ -236,33 +209,36 @@ void Triple_Ship::SetMPPos(char(&arr)[ROW][COL])
 void Triple_Ship::DrawZone(char(&arr)[ROW][COL])
 {
 	if (m_pImpl->m_stat1 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 	if (m_pImpl->m_stat2 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 	if (m_pImpl->m_stat3 != nullptr)
-		Zone(arr, true);
+		Zone(arr, false);
 }
 
 void Triple_Ship::ClearZone(char(&arr)[ROW][COL])
 {
-	std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
-	std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
-	std::vector<sf::Vector2f> zone3 = Ship::Zone(arr, m_pImpl->m_x3, m_pImpl->m_y3, true);
-
-	zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
-	zone.insert(zone.end(), std::make_move_iterator(zone3.begin()), std::make_move_iterator(zone3.end()));
-
-	for (int i = 0; i < zone.size(); i++)
+	if (*m_disposited)
 	{
-		arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
-	}
+		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
+		std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
+		std::vector<sf::Vector2f> zone3 = Ship::Zone(arr, m_pImpl->m_x3, m_pImpl->m_y3, true);
 
-	*m_pImpl->m_stat1 = EMPTY;
-	*m_pImpl->m_stat2 = EMPTY;
-	*m_pImpl->m_stat3 = EMPTY;
-	m_pImpl->m_stat1 = nullptr;
-	m_pImpl->m_stat2 = nullptr;
-	m_pImpl->m_stat3 = nullptr;
+		zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
+		zone.insert(zone.end(), std::make_move_iterator(zone3.begin()), std::make_move_iterator(zone3.end()));
+
+		for (int i = 0; i < zone.size(); i++)
+		{
+			arr[(int)zone[i].x][(int)zone[i].y] = EMPTY;
+		}
+
+		*m_pImpl->m_stat1 = EMPTY;
+		*m_pImpl->m_stat2 = EMPTY;
+		*m_pImpl->m_stat3 = EMPTY;
+		m_pImpl->m_stat1 = nullptr;
+		m_pImpl->m_stat2 = nullptr;
+		m_pImpl->m_stat3 = nullptr;
+	}
 }
 
 std::vector<sf::Vector2f> Triple_Ship::Zone(char(&arr)[ROW][COL], const bool& draw) const
