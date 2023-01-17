@@ -101,8 +101,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 				{
 					y2 = y1 - 1;
 					x2 = x1;
-					//swap(*m_y1, *m_y2);
-					//dir = 2;
+					std::swap(y1, y2);
+					dir = 2;
 					isFree = true;
 				}
 				break;
@@ -111,8 +111,6 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 				{
 					y2 = y1;
 					x2 = x1 + 1;
-					//swap(*m_x1, *m_x2);
-					//dir = 3;
 					isFree = true;
 				}
 				break;
@@ -129,6 +127,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 				{
 					y2 = y1;
 					x2 = x1 - 1;
+					std::swap(x1, x2);
+					dir = 1;
 					isFree = true;
 				}
 				break;
@@ -139,7 +139,7 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 				if (arr[y2][x2] == EMPTY && arr[y1][x1] == EMPTY)
 				{
 					int x3, y3;
-					if (dir == 0)
+					/*if (dir == 0)
 					{
 						if (y2 != 0)
 						{
@@ -165,7 +165,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 							y3 = y2;
 						}
 					}
-					else if (dir == 2)
+					else*/ 
+					if (dir == 2)
 					{
 						if (y2 != 9)
 						{
@@ -174,20 +175,26 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 						}
 						else  //m_y2 == 9
 						{
-							y3 = y1 - 1;
+                            y3 = y2;
+							y2 = y1;
+							y1 -= 1;
+							//y3 = y1 - 1;
 							x3 = x2;
 						}
 					}
-					else if (dir == 3)
+					else if (dir == 1)
 					{
-						if (x2 != 0)
+						if (x2 != 9)
 						{
-							x3 = x2 - 1;
+							x3 = x2 + 1;
 							y3 = y2;
 						}
-						else  //m_x2 == 0
+						else  //m_x2 == 9
 						{
-							x3 = x1 + 1;
+							x3 = x2;
+							x2 = x1;
+							x1 -= 1;
+							//x3 = x1 - 1;
 							y3 = y2;
 						}
 					}
@@ -210,8 +217,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 						return;
 					}
 				}	
-				isFree = false;
 			}
+			isFree = false;
 		}
 	} while (true);
 }

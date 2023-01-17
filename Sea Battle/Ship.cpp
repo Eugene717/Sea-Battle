@@ -2,6 +2,7 @@
 
 Ship::Ship(const int& decksNumber)
 {
+	m_pImpl = nullptr;
 	m_horiz = new bool;
 	*m_horiz = true;
 	m_disposited = new bool;
