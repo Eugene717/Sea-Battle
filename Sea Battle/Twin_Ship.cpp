@@ -31,16 +31,17 @@ void Twin_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
-		if (!*m_disposited)
-			return;
-		if (x == x2)
+		if (x != x2)
 		{
 			if (!Horiz())
 				Rotate();
 		}
 		else
 			if (Horiz())
-				Rotate();			
+				Rotate();
+
+		if (!*m_disposited)
+			return;
 	}
 	else
 	{
@@ -58,8 +59,8 @@ void Twin_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	{
 		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
 	}
-	m_pImpl->m_stat1 = &arr[y][x];
-	m_pImpl->m_stat2 = &arr[y2][x2];
+	m_pImpl->m_stat1 = &arr[m_pImpl->m_y1][m_pImpl->m_x1];
+	m_pImpl->m_stat2 = &arr[m_pImpl->m_y2][m_pImpl->m_x2];
 	*m_pImpl->m_stat1 = player;
 	*m_pImpl->m_stat2 = player;
 }
@@ -125,7 +126,9 @@ void Twin_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 					*m_pImpl->m_stat2 = player;
 					m_pImpl->m_x1 = x1;	m_pImpl->m_x2 = x2;
 					m_pImpl->m_y1 = y1; m_pImpl->m_y2 = y2;
-					m_body->setPosition(50 + 30 * (float(y1 + y2) / 2) + 15, 80 + 30 * (float(x1 + x2) / 2) + 15);
+
+					m_posGraphic->x = 50 + 30 * (float(y1 + y2) / 2) + 15; m_posGraphic->y = 80 + 30 * (float(x1 + x2) / 2) + 15;
+					m_body->setPosition(*m_posGraphic);
 					if (y1 == y2)
 						if (Horiz())
 							Rotate();

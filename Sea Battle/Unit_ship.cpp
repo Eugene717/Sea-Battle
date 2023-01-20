@@ -40,7 +40,7 @@ void Unit_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	{
 		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
 	}
-	m_pImpl->m_stat1 = &arr[y][x];
+	m_pImpl->m_stat1 = &arr[m_pImpl->m_y1][m_pImpl->m_x1];
 	*m_pImpl->m_stat1 = player;
 }
 
@@ -59,7 +59,9 @@ void Unit_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 			m_pImpl->m_y1 = y1;
 			m_pImpl->m_stat1 = &arr[y1][x1];
 			*m_pImpl->m_stat1 = player;
-			m_body->setPosition(50 + 30 * y1 + 15, 80 + 30 * x1 + 15);
+
+			m_posGraphic->x = 50 + 30 * y1 + 15; m_posGraphic->y = 80 + 30 * x1 + 15;
+			m_body->setPosition(*m_posGraphic);
 			Zone(arr);		
 			return;
 		}

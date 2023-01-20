@@ -42,9 +42,7 @@ void Quadraple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], co
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY || arr[y3][x3] != EMPTY || arr[y4][x4] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
-		if (!*m_disposited)
-			return;
-		if (x == x2)
+		if (x != x2)
 		{
 			if (!Horiz())
 				Rotate();
@@ -52,6 +50,9 @@ void Quadraple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], co
 		else
 			if (Horiz())
 				Rotate();
+
+		if (!*m_disposited)
+			return;
 	}
 	else
 	{
@@ -74,13 +75,13 @@ void Quadraple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], co
 	{
 		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
 	}
-	m_pImpl->m_stat1 = &arr[y][x];
+	m_pImpl->m_stat1 = &arr[m_pImpl->m_y1][m_pImpl->m_x1];
 	*m_pImpl->m_stat1 = player;
-	m_pImpl->m_stat2 = &arr[y2][x2];
+	m_pImpl->m_stat2 = &arr[m_pImpl->m_y2][m_pImpl->m_x2];
 	*m_pImpl->m_stat2 = player;
-	m_pImpl->m_stat3 = &arr[y3][x3];
+	m_pImpl->m_stat3 = &arr[m_pImpl->m_y3][m_pImpl->m_x3];
 	*m_pImpl->m_stat3 = player;
-	m_pImpl->m_stat4 = &arr[y4][x4];
+	m_pImpl->m_stat4 = &arr[m_pImpl->m_y4][m_pImpl->m_x4];
 	*m_pImpl->m_stat4 = player;
 }
 
@@ -212,7 +213,9 @@ void Quadraple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 			*m_pImpl->m_stat2 = player;
 			*m_pImpl->m_stat3 = player;
 			*m_pImpl->m_stat4 = player;
-			m_body->setPosition(50 + 30 * (float(m_pImpl->m_y1 + m_pImpl->m_y4) / 2) + 15, 80 + 30 * (float(m_pImpl->m_x1 + m_pImpl->m_x4) / 2) + 15);
+
+			m_posGraphic->x = 50 + 30 * (float(m_pImpl->m_y1 + m_pImpl->m_y4) / 2) + 15; m_posGraphic->y = 80 + 30 * (float(m_pImpl->m_x1 + m_pImpl->m_x4) / 2) + 15;
+			m_body->setPosition(*m_posGraphic);
 			if (m_pImpl->m_y1 == m_pImpl->m_y2)
 				if (Horiz())
 					Rotate();

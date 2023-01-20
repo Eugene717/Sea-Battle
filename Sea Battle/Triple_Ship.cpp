@@ -38,9 +38,7 @@ void Triple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY || arr[y3][x3] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
-		if (!*m_disposited)
-			return;
-		if (x == x2)
+		if (x != x2)
 		{
 			if (!Horiz())
 				Rotate();
@@ -48,6 +46,9 @@ void Triple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const
 		else
 			if (Horiz())
 				Rotate();
+
+		if (!*m_disposited)
+			return;
 	}
 	else
 	{
@@ -68,11 +69,11 @@ void Triple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const
 	{
 		arr[(int)zone[i].x][(int)zone[i].y] = MISS;
 	}
-	m_pImpl->m_stat1 = &arr[y][x];
+	m_pImpl->m_stat1 = &arr[m_pImpl->m_y1][m_pImpl->m_x1];
 	*m_pImpl->m_stat1 = player;
-	m_pImpl->m_stat2 = &arr[y2][x2];
+	m_pImpl->m_stat2 = &arr[m_pImpl->m_y2][m_pImpl->m_x2];
 	*m_pImpl->m_stat2 = player;
-	m_pImpl->m_stat3 = &arr[y3][x3];
+	m_pImpl->m_stat3 = &arr[m_pImpl->m_y3][m_pImpl->m_x3];
 	*m_pImpl->m_stat3 = player;
 }
 
@@ -182,7 +183,8 @@ void Triple_Ship::RandomlyArrange(char(&arr)[ROW][COL], const char& player)
 						m_pImpl->m_x1 = x1; m_pImpl->m_x2 = x2; m_pImpl->m_x3 = x3;
 						m_pImpl->m_y1 = y1; m_pImpl->m_y2 = y2; m_pImpl->m_y3 = y3;
 
-						m_body->setPosition(50 + 30 * (float(y1 + y2 + y3) / 3) + 15, 80 + 30 * (float(x1 + x2 + x3) / 3) + 15);
+						m_posGraphic->x = 50 + 30 * (float(y1 + y3) / 2) + 15; m_posGraphic->y = 80 + 30 * (float(x1 + x3) / 2) + 15;
+						m_body->setPosition(*m_posGraphic);
 						if (y1 == y2)
 							if (Horiz())
 								Rotate();
