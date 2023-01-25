@@ -501,7 +501,6 @@ void Game::SinglePlayer()
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
 						m_pImpl->m_first->SearchDead();
-						dynamic_cast<AI*>(m_pImpl->m_second)->SankShip(m_pImpl->m_first->m_Board);
 
 						Draw();
 						if (m_pImpl->m_first->Loss())
@@ -528,7 +527,6 @@ void Game::SinglePlayer()
 					if (m_pImpl->m_second->Shoot(m_pImpl->m_first->m_Board))
 					{
 						m_pImpl->m_first->SearchDead();
-						dynamic_cast<AI*>(m_pImpl->m_second)->SankShip(m_pImpl->m_first->m_Board);
 
 						Draw();
 						if (m_pImpl->m_first->Loss())

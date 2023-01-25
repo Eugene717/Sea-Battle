@@ -57,6 +57,9 @@
     <ClInclude Include="GameDataPacket.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="AIState.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AI.cpp">
@@ -90,6 +93,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="GameDataPacket.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="AIState.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,20 +1,23 @@
 #pragma once
 #include "Player.h"
 
-struct AI_IMPL;
+class AIState;
+class FirstDeckState;
+class SecondDeckState;
+class ThirdDeckState;
+class FourDeckState;
 
 class AI :public Player
 {
-	AI_IMPL* m_pImpl;
-
-	bool Shoot1Deck(char(&enemy)[ROW][COL]);
-	bool Shoot2Deck(char(&enemy)[ROW][COL]);
-	bool Shoot3Deck(char(&enemy)[ROW][COL]);
-	bool Shoot4Deck(char(&enemy)[ROW][COL]);
+	AIState* m_state;
 public:
+	static FirstDeckState m_first_state;
+	static SecondDeckState m_second_state;
+	static ThirdDeckState m_third_state;
+	static FourDeckState m_four_state;
+
 	AI(const char& player = ENEMY_ALIVE);
 	~AI();
-	void SankShip(const char(&enemy)[ROW][COL]);
 	bool Shoot(char(&enemy)[ROW][COL]) override;
 };
 
