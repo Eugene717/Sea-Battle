@@ -38,13 +38,13 @@ void Triple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY || arr[y3][x3] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
-		if (x != x2)
+		if (m_pImpl->m_y1 == m_pImpl->m_y2)  //vert
 		{
-			if (!Horiz())
+			if (Horiz())
 				Rotate();
 		}
 		else
-			if (Horiz())
+			if (!Horiz())
 				Rotate();
 
 		if (!*m_disposited)
@@ -222,12 +222,7 @@ void Triple_Ship::ClearZone(char(&arr)[ROW][COL])
 {
 	if (*m_disposited)
 	{
-		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
-		std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
-		std::vector<sf::Vector2f> zone3 = Ship::Zone(arr, m_pImpl->m_x3, m_pImpl->m_y3, true);
-
-		zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
-		zone.insert(zone.end(), std::make_move_iterator(zone3.begin()), std::make_move_iterator(zone3.end()));
+		std::vector<sf::Vector2f> zone = Zone(arr, true);
 
 		for (int i = 0; i < zone.size(); i++)
 		{

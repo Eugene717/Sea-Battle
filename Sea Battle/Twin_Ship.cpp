@@ -31,13 +31,13 @@ void Twin_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
-		if (x != x2)
+		if (m_pImpl->m_y1 == m_pImpl->m_y2)  //vert
 		{
-			if (!Horiz())
+			if (Horiz())
 				Rotate();
 		}
 		else
-			if (Horiz())
+			if (!Horiz())
 				Rotate();
 
 		if (!*m_disposited)
@@ -161,10 +161,7 @@ void Twin_Ship::ClearZone(char(&arr)[ROW][COL])
 {
 	if (*m_disposited)
 	{
-		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
-		std::vector<sf::Vector2f> zone2 = Ship::Zone(arr, m_pImpl->m_x2, m_pImpl->m_y2, true);
-
-		zone.insert(zone.end(), std::make_move_iterator(zone2.begin()), std::make_move_iterator(zone2.end()));
+		std::vector<sf::Vector2f> zone = Zone(arr, true);
 
 		for (int i = 0; i < zone.size(); i++)
 		{

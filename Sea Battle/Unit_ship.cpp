@@ -84,7 +84,7 @@ void Unit_Ship::ClearZone(char(&arr)[ROW][COL])
 {
 	if (*m_disposited)
 	{
-		std::vector<sf::Vector2f> zone = Ship::Zone(arr, m_pImpl->m_x1, m_pImpl->m_y1, true);
+		std::vector<sf::Vector2f> zone = Zone(arr, true);
 
 		for (int i = 0; i < zone.size(); i++)
 		{
