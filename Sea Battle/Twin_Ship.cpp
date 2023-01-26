@@ -31,6 +31,14 @@ void Twin_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], const c
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
+
+		if (!*m_disposited)
+		{
+			if (!Horiz())
+				Rotate();
+			return;
+		}
+
 		if (m_pImpl->m_y1 == m_pImpl->m_y2)  //vert
 		{
 			if (Horiz())

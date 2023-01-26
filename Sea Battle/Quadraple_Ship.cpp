@@ -42,6 +42,14 @@ void Quadraple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], co
 	if (arr[y][x] != EMPTY || arr[y2][x2] != EMPTY || arr[y3][x3] != EMPTY || arr[y4][x4] != EMPTY)
 	{
 		m_body->setPosition(*m_posGraphic);
+
+		if (!*m_disposited)
+		{
+			if (!Horiz())
+				Rotate();
+			return;
+		}
+
 		if (m_pImpl->m_y1 == m_pImpl->m_y2)  //vert
 		{
 			if (Horiz())
@@ -51,8 +59,6 @@ void Quadraple_Ship::SetPos(const int& x, const int& y, char(&arr)[ROW][COL], co
 			if (!Horiz())
 				Rotate();
 
-		if (!*m_disposited)
-			return;
 	}
 	else
 	{
