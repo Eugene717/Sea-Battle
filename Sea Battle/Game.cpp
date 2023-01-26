@@ -8,7 +8,6 @@
 #include "Players.h"
 #include "GameDataPacket.h"
 
-Game* Game::m_game = nullptr;
 struct Settings
 {
 	bool Music;
@@ -92,14 +91,12 @@ Game::Game()
 Game::~Game()
 {		
 	delete m_pImpl;
-	delete m_game;
 }
 
 Game* Game::GetInstance()
 {
-	if (m_game == nullptr)
-		m_game = new Game();
-	return m_game;
+	static Game* game = new Game();
+	return game;
 }
 
 void Game::Draw()

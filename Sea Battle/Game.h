@@ -14,7 +14,6 @@ struct GameDataPacket;
 class Game
 {
 	GameIMPL* m_pImpl;
-	static Game* m_game;
 
 	Game();
 	~Game();
