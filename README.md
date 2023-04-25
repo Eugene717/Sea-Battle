@@ -5,7 +5,7 @@ Windows Sea Battle is a classic naval strategy game with options for singleplaye
 - Singleplayer (vs bot)
 - One PC game
 - Multiplayer
-  - Without the [Server](https://github.com/Eugene717/Server) don't work
+  - Don't work without the [Server](https://github.com/Eugene717/Server)
 - Musical accompaniment
 
 ## Installation:
