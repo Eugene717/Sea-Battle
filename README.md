@@ -10,7 +10,6 @@ Windows Sea Battle is a classic naval strategy game with options for singleplaye
 - Players take turns guessing the location of their opponent's ships by calling out a coordinate on the grid.
 - If a ship is located on the guessed coordinate, it is "hit," and the player gets another turn.
 - The objective of the game is to sink all of the opponent's ships before they sink yours.
-
 - Musical accompaniment
 
 ## Installation:
